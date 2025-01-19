@@ -25,3 +25,6 @@ body {
     background: #0056b3;
   }
   
+  *{
+    background-color: red;
+  }
