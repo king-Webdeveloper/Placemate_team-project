@@ -3,26 +3,55 @@ const { PrismaClient } = require("@prisma/client");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+
 const app = express();
 const prisma = new PrismaClient();
+
+// Swagger definition
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Kapook The Project',
+    version: '1.0.0',
+    description: 'API Kakๆ',
+  },
+  servers: [
+    {
+      url: 'http://localhost:5000',
+      description: 'Development server',
+    },
+  ],
+};
+
+// Options for the swagger docs
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*.js'], // Path to the API docs
+};
+
+// Initialize swagger-jsdoc
+const swaggerSpec = swaggerJsdoc(options);
+
+// Use swagger-ui-express for your app documentation endpoint
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Example Routes
-app.get("/business_hour", async (req, res) => {
-  const business_hour = await prisma.business_hour.findMany();
-  res.json(business_hour);
-});
+const businessHourRoutes = require('./routes/businessHourRoute'); // Adjust the path as necessary
+app.use('/api', businessHourRoutes);
 
-// app.post("/business_hour", async (req, res) => {
-//   const { business_hour, day } = req.body;
-//   const newUser = await prisma.user.create({
-//     data: { business_hour, day },
-//   });
-//   res.json(newUser);
-// });
+const getUserRoutes = require('./routes/getUserRoute'); // Adjust the path as necessary
+app.use('/api', getUserRoutes);
+
+const exampleRoutes = require('./routes/example');
+app.use('/api', exampleRoutes);
+
+const registerUserRoutes = require('./routes/authRoute'); // Adjust the path as necessary
+app.use('/api', registerUserRoutes);
 
 // Start Server
 const PORT = 5000;

@@ -3,8 +3,16 @@ PlaceMate WebApplication สำหรับการแนะนำสถาน�
 
 # create and setting backend (23/01/2025)
 
+# -1. create backend folder
+
+# 0. go to backend folder
+cd backend
+
+# 0.1. create env file
+cp .env_example .env
+
 # 1. create backend folder and create package.json
-npm init -y 
+npm init -y
 
 # 2. สร้าง Dependencies (ตัวกลางที่เชื่อมต่อ backend กับ database)
 npm install express prisma @prisma/client body-parser cors
@@ -30,5 +38,14 @@ npx prisma generate
 
 # 9. ตรวจสอบการใช้งาน
 npm run dev
+
+# 10. Install Swagger
+npm install swagger-ui-express swagger-jsdoc
+
+# 11. Install bcrypt
+npm install bcrypt
+
+# 12. Install jwtToken
+npm install jsonwebtoken
 
 
