@@ -13,9 +13,9 @@ const prisma = new PrismaClient();
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Kapook The Project',
+    title: 'Placemate',
     version: '1.0.0',
-    description: 'API Kakๆ',
+    description: 'API',
   },
   servers: [
     {
@@ -24,6 +24,11 @@ const swaggerDefinition = {
     },
   ],
 };
+
+app.get("/business_hour", async (req, res) => {
+  const business_hours = await prisma.business_hour.findMany();
+  res.json(business_hours);
+});
 
 // Options for the swagger docs
 const options = {

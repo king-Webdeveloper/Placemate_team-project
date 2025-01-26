@@ -48,4 +48,17 @@ npm install bcrypt
 # 12. Install jwtToken
 npm install jsonwebtoken
 
+# create and setting frontend (25/01/2025)
+
+# 1. สร้าง react app frontend (ไม่ต้องทำ)
+npx create-react-app frontend
+
+# 2. ติดตั้ง Axios (library ตัวหนึ่งของ JavaScript, TypeScript ที่ใช้ในการจัดการกับ API ด้วยวิธี HTTP methods)
+npm install axios
+
+# 3. ติดตั้ง web vitals (library ของ react เพื่อบันทึกประสบการณ์ของผู้ใช้ในเว็บเพจ)
+npm i web-vitals --save-dev
+
+# 4.เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
+npm start
 
