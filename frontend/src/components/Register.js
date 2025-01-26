@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import "./Login.css"; // Import CSS
+import "./Register.css"; // Import CSS
 
-function Login() {
+function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -9,24 +10,23 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch("http://localhost:5000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/profile";
+        alert("Registration successful!");
+        window.location.href = "/login";
       } else {
-        alert(data.message || "Login failed!");
+        const errorData = await response.json();
+        alert(errorData.message || "Registration failed!");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error registering user:", error);
       alert("An error occurred. Please try again.");
     }
   };
@@ -34,12 +34,22 @@ function Login() {
   return (
     <div className="container">
       <img
-        src="/" // ใส่โลโก้
+        src="/logo.png" // ใส่โลโก้
         alt="Logo"
         className="logo"
       />
-      <h2>Login</h2>
+      <h2>Register</h2>
       <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
         <div>
           <label htmlFor="email">Email:</label>
           <input
@@ -60,13 +70,13 @@ function Login() {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
       <p>
-        Don't have an account? <a href="/register">Register</a>
+        Already have an account? <a href="/login">Login</a>
       </p>
     </div>
   );
 }
 
-export default Login;
+export default Register;
