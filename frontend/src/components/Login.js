@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import "./Login.css"; // Import CSS
 
+
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // จัดการ error
+  const [loading, setLoading] = useState(false); // แสดงสถานะ loading
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("http://localhost:5000/api/login", {
@@ -14,39 +19,37 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/profile";
+        window.location.href = "/profile"; // Redirect ไปหน้า Profile
       } else {
         alert(data.message || "Login failed!");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      alert("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="container">
-      <img
-        src="/" // ใส่โลโก้
-        alt="Logo"
-        className="logo"
-      />
+      <img src="/logo.png" alt="Logo" className="logo" />
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="username">Username:</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
@@ -60,7 +63,10 @@ function Login() {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
       <p>
         Don't have an account? <a href="/register">Register</a>

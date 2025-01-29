@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import "./Register.css"; // Import CSS
 
 function Register() {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState(""); // ✅ เปลี่ยนจาก name เป็น username
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // จัดการ Error Message
+  const [loading, setLoading] = useState(false); // แสดงสถานะ Loading
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("http://localhost:5000/api/register", {
@@ -15,38 +19,37 @@ function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ username, email, password }), // ✅ เปลี่ยน name เป็น username
       });
+
+      const data = await response.json();
 
       if (response.ok) {
         alert("Registration successful!");
-        window.location.href = "/login";
+        window.location.href = "/login"; // Redirect ไป Login
       } else {
-        const errorData = await response.json();
-        alert(errorData.message || "Registration failed!");
+        setError(data.error || "Registration failed!");
       }
     } catch (error) {
       console.error("Error registering user:", error);
-      alert("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="container">
-      <img
-        src="/logo.png" // ใส่โลโก้
-        alt="Logo"
-        className="logo"
-      />
+      <img src="/logo.png" alt="Logo" className="logo" />
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name">Name:</label>
+          <label htmlFor="username">Username:</label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)} // ✅ ใช้ setUsername
             required
           />
         </div>
@@ -70,7 +73,10 @@ function Register() {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
       <p>
         Already have an account? <a href="/login">Login</a>
