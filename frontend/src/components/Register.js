@@ -40,7 +40,7 @@ function Register() {
 
   return (
     <div className="container">
-      <img src="/logo.png" alt="Logo" className="logo" />
+      <img src="/PM1.png" alt="Logo" className="logo" />
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <div>
