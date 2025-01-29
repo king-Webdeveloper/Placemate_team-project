@@ -4,27 +4,29 @@ import './index.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Login from "./components/Login.js";
-import Register from "./components/Register";
-import Profile from "./components/Profile";
+// import Login from "./components/Login.js";
+// import Register from "./components/Register";
+// import Profile from "./components/Profile";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root")); // ใช้ createRoot
 root.render(
   <React.StrictMode>
     <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+        <App /> {/* ✅ ให้ App จัดการ Routing เอง */}
     </Router>
   </React.StrictMode>
 );
 
+reportWebVitals();
 
 
+
+
+{/* <Route path="/" element={<App />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} /> */}
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
