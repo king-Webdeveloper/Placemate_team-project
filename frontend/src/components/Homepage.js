@@ -6,7 +6,7 @@ function Homepage() {
   return (
     <div className="homepage">
       <header>
-        <img src="/PM1.png" alt="Logo" className="logo" />
+        <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav>
           <Link to="/login">Login</Link>
           <Link to="/register">Register</Link>

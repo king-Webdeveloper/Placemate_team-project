@@ -1,80 +1,108 @@
-/* Login.css & Register.css */
-.container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    text-align: center;
-    background-color: #f9f9f9;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-  }
-  
-  .logo {
-    max-width: 150px;
-    margin-bottom: 20px;
-  }
-  
-  h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  label {
-    text-align: left;
-    color: #555;
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  
-  input:focus {
-    border-color: #007BFF;
-  }
-  
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  p {
-    margin-top: 15px;
-    font-size: 14px;
-  }
-  
-  p a {
-    color: #007BFF;
-    text-decoration: none;
-  }
-  
-  p a:hover {
-    text-decoration: underline;
-  }
-  
+/* Register.css */
+
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #dfe9f3, #ffffff);
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+}
+
+.register-container {
+  max-width: 400px;
+  width: 100%;
+  padding: 35px;
+  text-align: center;
+  background: white;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.register-container .logo {
+  max-width: 200px;
+  margin: 20px auto;
+  display: block;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+.register-container .logo:hover {
+  transform: scale(1.15);
+  opacity: 0.9;
+}
+
+.register-container h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.register-container label {
+  text-align: left;
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.register-container input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box;
+}
+
+.register-container input:focus {
+  border-color: #007BFF;
+  box-shadow: 0px 0px 10px rgba(0, 91, 255, 0.3);
+}
+
+.register-container button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #007BFF, #0056b3);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.4s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.register-container button:hover {
+  background: linear-gradient(to right, #0056b3, #004099);
+  transform: scale(1.05);
+  box-shadow: 0px 6px 20px rgba(0, 91, 255, 0.4);
+}
+
+.register-container button:active {
+  transform: scale(0.95);
+  box-shadow: 0px 3px 10px rgba(0, 91, 255, 0.5);
+}
+
+.register-container p {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #444;
+}
+
+.register-container p a {
+  color: #0056b3;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.register-container p a:hover {
+  text-decoration: underline;
+}
