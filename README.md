@@ -36,17 +36,17 @@ npx prisma generate
     "dev": "nodemon index.js"
   },
 
-# 9. ตรวจสอบการใช้งาน
-npm run dev
-
-# 10. Install Swagger
+# 9. Install Swagger
 npm install swagger-ui-express swagger-jsdoc
 
-# 11. Install bcrypt
+# 10. Install bcrypt
 npm install bcrypt
 
-# 12. Install jwtToken
+# 11. Install jwtToken
 npm install jsonwebtoken
+
+# 12. ตรวจสอบการใช้งาน
+npm run dev
 
 # create and setting frontend (25/01/2025)
 
