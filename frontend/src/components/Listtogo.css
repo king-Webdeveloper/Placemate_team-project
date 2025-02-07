@@ -1,0 +1,96 @@
+/* ตั้งค่าพื้นฐานของเว็บไซต์ */
+body {
+    background-color: #ffffff; /* สีพื้นหลังของเว็บไซต์ */
+    color: #000000; /* สีตัวอักษรหลัก */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Header */
+  nav {
+    background-color: #007BFF; /* สี header */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+  }
+  
+  nav .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  nav .menu a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+  }
+  
+  nav .menu a:hover {
+    text-decoration: underline;
+  }
+  
+  /* ส่วนของเว็บไซต์ */
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  /* กล่องค้นหา */
+  .search-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-box input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .search-box button {
+    margin-left: 10px;
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .search-box button:hover {
+    background-color: #333;
+  }
+  
+  /* กล่องแสดงรายชื่อสถานที่ */
+  .place-card {
+    background-color: #555; /* สีของพื้นที่ที่แสดงข้อมูล */
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .place-card img {
+    width: 100px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  
+  .place-card .place-info {
+    flex: 1;
+    margin-left: 15px;
+  }
+  
+  
+  
