@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Register.css"; // Import CSS
+import { Link } from "react-router-dom"; 
 
 function Register() {
   const [username, setUsername] = useState(""); // ✅ เปลี่ยนจาก name เป็น username
@@ -82,6 +83,7 @@ function Register() {
         <p>
           Already have an account? <a href="/login">Login</a>
         </p>
+        <Link to="/" className="back-button">← Back to Homepage</Link>
       </div>
     </div>
   );

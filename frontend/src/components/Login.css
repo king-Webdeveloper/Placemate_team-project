@@ -107,4 +107,21 @@
   .login-container p a:hover {
     text-decoration: underline;
   }
+
+  .login-container .back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    color: #007BFF;
+    font-weight: bold;
+    text-decoration: none;
+    border: 1px solid #007BFF;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .login-container .back-button:hover {
+    background-color: #007BFF;
+    color: white;
+  }
   

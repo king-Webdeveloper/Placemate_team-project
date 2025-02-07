@@ -45,3 +45,24 @@ function Profile() {
 }
 
 export default Profile;
+
+// import React from "react";
+// import { useNavigate } from "react-router-dom";
+
+// const Profile = () => {
+//   const navigate = useNavigate();
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("token"); // ลบ token ออกจาก localStorage
+//     navigate("/login"); // ส่งไปยังหน้า Login
+//   };
+
+//   return (
+//     <div className="profile-container">
+//       <h1>Profile Page</h1>
+//       <button onClick={handleLogout} className="text-red-500">ออกจากระบบ</button>
+//     </div>
+//   );
+// };
+
+// export default Profile;

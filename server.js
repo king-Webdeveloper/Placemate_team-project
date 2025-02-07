@@ -66,3 +66,40 @@ app.post('/login', async (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+// List to go
+// ดึงรายการสถานที่จาก place
+app.get('/api/listtogo', async (req, res) => {
+  try {
+    const result = await pool.query
+    ('SELECT id, place_id, name FROM place');
+    
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch place data" });
+  }
+});
+
+// เพิ่มสถานที่ไปยัง list_to_go
+app.post('/api/list-to-go/add', async (req, res) => {
+  const { place_id, name } = req.body;
+
+  try {
+    await pool.query('INSERT INTO list_to_go (place_id, name) VALUES ($1, $2)', [place_id, name]);
+    res.status(201).send('Place added to List to Go');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// ลบสถานที่ออกจาก list_to_go
+app.delete('/api/list-to-go/remove', async (req, res) => {
+  const { place_id } = req.body;
+
+  try {
+    await pool.query('DELETE FROM list_to_go WHERE place_id = $1', [place_id]);
+    res.send('Place removed from List to Go');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
