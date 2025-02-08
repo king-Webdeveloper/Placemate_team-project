@@ -47,7 +47,8 @@ function Homepage() {
             </div>
           ))}
         </div>
-      </section>
+      </section> 
+
 
       {/* ✅ Recommended Places (การ์ดสถานที่) */}
       <section className="recommended">
@@ -70,6 +71,7 @@ function Homepage() {
           ))}
         </div>
       </section>
+      
 
       {/* ✅ FAQ Section (Accordion) */}
       <section className="faq">
