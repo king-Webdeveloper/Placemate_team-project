@@ -73,7 +73,7 @@ const prisma = new PrismaClient();
 router.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
     try {
-        console.log(req.body);
+        // console.log(req.body);
         if (!username || !email || !password) {
             return res.status(400).json({ error: "Username, Email, and password are required" });
         }
