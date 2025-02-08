@@ -1,0 +1,49 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .listtogo-search-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px; /* ปรับขนาดสูงสุดของช่องค้นหา */
+    background-color: #ddd; /* สีเทาอ่อน */
+    border-radius: 25px; /* มุมโค้ง */
+    padding: 5px;
+    position: relative;
+  }
+  
+  .listtogo-search-input {
+    flex: 1; 
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 25px; /* ทำให้ขอบโค้ง */
+  }
+  
+  .listtogo-search-button {
+    background-color: #666; /* สีเทาเข้ม */
+    color: white;
+    border: none;
+    border-radius: 20px; /* ทำให้ปุ่มโค้ง */
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  .listtogo-search-button:hover {
+    background-color: #555; /* สีเข้มขึ้นเมื่อ hover */
+  }
