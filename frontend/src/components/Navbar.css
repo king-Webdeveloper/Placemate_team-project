@@ -1,0 +1,51 @@
+.Navbarspace {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+  }
+  
+  .navbar {
+    background-color: #007BFF; /* สี Header */
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px;
+    color: white;
+  }
+  
+  /* ขนาดโลโก้ */
+  .navbar-logo {
+    width: 60px;
+    height: auto;
+  }
+  
+  /* กล่องเก็บเมนูกลาง */
+  .nav-center {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1; /* ขยายพื้นที่ให้ตรงกลาง */
+    gap: 60px; /* ระยะห่างระหว่าง List to Go, Planner, About Us */
+    color: white;
+    margin: 10px;
+  }
+  
+  nav-center a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px;
+  }
+
+
+  .nav-profile {
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+  }
+  
