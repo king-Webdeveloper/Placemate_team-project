@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Login.css"; // Import CSS
 
 
@@ -72,6 +73,7 @@ function Login() {
         <p>
           Don't have an account? <a href="/register">Register</a>
         </p>
+        <Link to="/" className="back-button">← Back to Homepage</Link>
       </div>
     </div>
   );

@@ -1,119 +1,299 @@
 /* ✅ ปรับขนาดและการจัดวาง Homepage */
 .homepage {
-  width: 90%;
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: "Arial", sans-serif;
+  padding: 20px;
 }
 
 /* ✅ ปรับ Header ให้ดูบาลานซ์ขึ้น */
-.homepage header {
+.homepage .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 12px;
+  padding: 15px 40px;
+  background-color: white;
+  color: black;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  /* margin-bottom: 20px; */
+  border-radius: 12px;
+}
+
+
+.homepage .navbar-nav {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center; /* จัดให้อยู่ตรงกลาง */
+  gap: 30px;
 }
 
 /* ✅ ปรับขนาดโลโก้ให้เหมาะสม */
 .homepage .logo {
-  height: 60px;
-  margin: 0;
+  height: 50px;
+  margin-right: 20px;
 }
 
-/* ✅ จัดให้ Navigation มีระยะห่างที่ดีขึ้น */
-.homepage nav {
+/* ✅ ปรับ Navigation */
+.homepage .navbar nav {
   display: flex;
-  gap: 25px;
+  gap: 20px;
 }
 
-.homepage nav a {
-  color: white;
+.homepage .navbar nav a {
+  color: black;
   text-decoration: none;
   font-weight: bold;
   font-size: 18px;
   transition: all 0.3s ease-in-out;
   padding: 10px;
+  border-radius: 20px;
 }
 
-.homepage nav a:hover {
+.homepage .navbar nav a:hover {
+  background-color: #ff7043;
+  color: #000;
   text-decoration: underline;
   transform: scale(1.05);
 }
 
-/* ✅ ปรับ Hero Section ให้ไม่กว้างเกินไป */
-.homepage .hero {
-  max-width: 800px;
-  margin: 60px auto;
-  padding: 60px;
-  background-color: #f4f4f4;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* ✅ ปรับฟอนต์ให้ดูบาลานซ์ */
-.homepage .hero h1 {
-  font-size: 2.5rem;
-  color: #333;
-}
-
-.homepage .hero p {
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-}
-
-/* ✅ ปรับปุ่มให้ดูเด่นและไม่ใหญ่เกินไป */
-.homepage .btn {
-  padding: 12px 25px;
-  background-color: #007BFF;
-  color: white;
+.homepage .login-btn {
+  font-weight: bold;
   text-decoration: none;
-  border-radius: 8px;
-  font-size: 18px;
+  color: black;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: #ff7043;
+  color: white;
+  background-color: #ff7b54; /* เปลี่ยนเป็นโทนส้มแบบ Soft */
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent; /* เพิ่มเส้นขอบแบบโปร่งใส */
+}
+
+/* ✅ ปุ่ม Hover */
+.homepage .login-btn:hover {
+  background: #ff5733; /* สีเข้มขึ้นเล็กน้อย */
+  color: rgb(0, 0, 0);
+  border: 2px solid #ff2e00; /* เพิ่มขอบให้ดูเด่นขึ้น */
+  box-shadow: 0px 4px 10px rgba(255, 87, 51, 0.3); /* เพิ่มเงานุ่ม ๆ */
+}
+
+/* ✅ ปรับ Search Section */
+.homepage .search-bar {
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.homepage .search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  max-width: 600px;
+  flex-wrap: nowrap; /* ไม่ให้แท็กขึ้นบรรทัดใหม่ */
+}
+
+.homepage .tag {
+  background: #e0e0e0;
+  color: black;
+  border: none;
+  padding: 10px 18px; /* ปรับขนาดปุ่มให้ใหญ่ขึ้น */
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-weight: bold;
+}
+
+.homepage .tag:hover {
+  background: #000;
+  color: white;
+}
+
+/* ✅ ปรับ Input ค้นหา */
+.homepage .search-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  gap: 10px;
+}
+
+.homepage .search-field {
+  flex-grow: 1;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.homepage .search-btn {
+  padding: 12px 18px;
+  background-color: #ff7043;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
   font-weight: bold;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.homepage .btn:hover {
-  background: #0056b3;
+.homepage .search-btn:hover {
+  background: #e64a19;
+}
+
+/* ✅ ปรับ Hero Section */
+.homepage .hero {
+  width: 100%;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  padding: 80px 20px;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  min-height: 350px;
+}
+
+.homepage .carousel {
+  width: 100%;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.homepage .carousel-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* ✅ ปรับ Layout ของ Recommended Places */
+.homepage .recommended {
+  padding: 20px;
+}
+
+.homepage .place-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.homepage .place-card {
+  background: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.homepage .place-card:hover {
   transform: scale(1.05);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.homepage .place-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.homepage .place-info {
+  padding: 12px;
+  text-align: center;
+}
+
+.homepage .place-category {
+  display: block;
+  font-size: 14px;
+  color: #ff7043;
+  font-weight: bold;
+}
+
+.homepage .place-rating {
+  display: block;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ✅ ปรับ FAQ Section */
+.homepage .faq {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.homepage .faq-item {
+  margin-bottom: 10px;
+}
+
+.homepage .faq-question {
+  width: 100%;
+  background: #e0e0e0;
+  color: black;
+  padding: 12px;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 8px;
+}
+
+.homepage .faq-question:hover {
+  background: #bdbdbd;
+}
+
+.homepage .faq-answer {
+  display: none;
+  padding: 10px;
+  background: #f9f9f9;
+  border-left: 3px solid #ff7043;
+  border-radius: 8px;
 }
 
 /* ✅ Responsive สำหรับหน้าจอเล็ก */
 @media (max-width: 768px) {
   .homepage {
-    width: 95%;
+    width: 100%;
   }
 
-  .homepage header {
+  .homepage .navbar {
     flex-direction: column;
     text-align: center;
-    padding: 20px;
+    padding: 15px;
   }
 
   .homepage .logo {
-    height: 50px;
+    height: 40px;
   }
 
-  .homepage nav {
+  .homepage .navbar nav {
     margin-top: 10px;
   }
 
   .homepage .hero {
-    padding: 40px;
+    padding: 50px 20px;
+    font-size: 1.5rem;
   }
 
-  .homepage .hero h1 {
-    font-size: 2rem;
-  }
-
-  .homepage .hero p {
-    font-size: 1.1rem;
+  .homepage .place-grid {
+    grid-template-columns: 1fr;
   }
 
   .homepage .btn {
