@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -8,8 +10,12 @@ import ListToGo from "./components/Listtogo";
 import "./App.css";
 
 function App() {
+  const location = useLocation();
+  const showNavbar = ["/profile", "/listtogo"].includes(location.pathname);
+
   return (
-    <Router> {/* Wrap everything inside <Router> */}
+    <>
+      {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
@@ -17,7 +23,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/listtogo" element={<ListToGo />} />
       </Routes>
-    </Router>
+    </>  
   );
 }
 

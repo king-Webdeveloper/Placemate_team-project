@@ -20,7 +20,7 @@ const ListToGo = () => {
   // ดึงข้อมูลสถานที่จาก Backend
   const fetchPlaces = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/listtogo", {
+      const response = await fetch("http://localhost:5000/api/list-to-go/places", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -83,43 +83,31 @@ const ListToGo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="flex items-center justify-between p-4 bg-white">
-        <div className="text-2xl font-bold">โลโก้</div>
-        <div className="space-x-8">
-          <a href="/listtogo" className="text-black">LIST TO GO</a>
-          <a href="#" className="text-gray-500">PLANNER</a>
-          <a href="#" className="text-gray-500">ABOUT US</a>
-        </div>
-        <a href="/profile" className="text-blue-500">User Profile</a>
-      </nav>
-
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center">
+  
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 w-full max-w-4xl">
         <h1 className="text-3xl font-bold text-center mb-8">LIST TO GO</h1>
-
+  
         {/* Search Bar */}
-        <div className="flex justify-center mb-8">
-          <div className="relative w-full max-w-2xl">
+          <div className="listtogo-search-bar">
             <input
               type="text"
-              className="w-full px-4 py-2 rounded-lg bg-gray-200 focus:outline-none"
+              className="listtogo-search-input"
               placeholder="ค้นหา"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button
               onClick={handleSearch}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1 bg-gray-600 text-white rounded"
+              className="listtogo-search-button"
             >
-              ค้นหาสถานที่
+              ค้นหา
             </button>
           </div>
-        </div>
-
+  
         {/* Places Grid */}
-        <div className="grid gap-6">
+        <div className="grid gap-6 w-full max-w-3xl">
           {places.map((place) => (
             <div key={place.id} className="relative h-48 rounded-lg overflow-hidden group">
               <img src={place.image} alt={place.name} className="w-full h-full object-cover" />
@@ -148,10 +136,10 @@ const ListToGo = () => {
             </div>
           ))}
         </div>
-
+  
       </div>
     </div>
   );
-};
+}
 
 export default ListToGo;
