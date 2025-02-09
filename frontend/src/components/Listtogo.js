@@ -56,7 +56,7 @@ const ListToGo = () => {
       }
 
       const newPlace = await response.json();
-      setPlaces([...places, newPlace]);
+      setPlaces([ places, newPlace]);
     } catch (error) {
       console.error("Error adding place:", error);
     }

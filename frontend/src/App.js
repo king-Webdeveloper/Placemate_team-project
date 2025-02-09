@@ -6,6 +6,7 @@ import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
+import Listtogo from "./components/Listtogo";
 import "./App.css";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/listtogo" element={<Listtogo />} />
       </Routes>
     </>  
   );

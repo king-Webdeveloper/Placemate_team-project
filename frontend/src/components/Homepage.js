@@ -12,7 +12,7 @@ function Homepage() {
       <header className="navbar">
         <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav className="navbar-nav">
-          <Link to="/list-to-go">LIST TO GO</Link>
+          <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
           <Link to="/about">ABOUT US</Link>
           {/* <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link> */}
