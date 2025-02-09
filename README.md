@@ -59,6 +59,9 @@ npm install axios
 # 3. ติดตั้ง web vitals (library ของ react เพื่อบันทึกประสบการณ์ของผู้ใช้ในเว็บเพจ)
 npm i web-vitals --save-dev
 
-# 4.เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
+# 4
+npm install react-router-dom
+
+# เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
 npm start
 
