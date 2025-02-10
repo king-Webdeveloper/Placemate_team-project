@@ -61,6 +61,9 @@ app.use('/api', registerUserRoutes);
 const getplaceinlisttogoRoutes = require('./routes/listtogoRoutes'); // Adjust the path as necessary
 app.use('/api', getplaceinlisttogoRoutes);
 
+const getseaechresultRoutes = require('./routes/searchresultRoutes'); // Adjust the path as necessary
+app.use('/api', getseaechresultRoutes);
+
 // Start Server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

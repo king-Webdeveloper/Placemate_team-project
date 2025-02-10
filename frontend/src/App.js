@@ -7,11 +7,12 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Listtogo from "./components/Listtogo";
+import Searchresult from "./components/Searchresult";
 import "./App.css";
 
 function App() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/searchresult"].includes(location.pathname);
 
   return (
     <>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/listtogo" element={<Listtogo />} />
+        <Route path="/searchresult" element={<Searchresult />} />
       </Routes>
     </>  
   );

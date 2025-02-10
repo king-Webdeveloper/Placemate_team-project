@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Listtogo.css";
+import "./Searchresult.css";
 
-const ListToGo = () => {
+const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [places, setPlaces] = useState([]); // รายการที่บันทึกไว้
   const [searchResults, setSearchResults] = useState([]); // ผลลัพธ์การค้นหา
@@ -21,7 +21,7 @@ const ListToGo = () => {
     setSearched(true); // ระบุว่ามีการค้นหาแล้ว
 
     try {
-      const response = await fetch(`http://localhost:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, {
+      const response = await fetch(`http://localhost:5000/api/search/places?query=${encodeURIComponent(searchTerm)}`, { 
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ const ListToGo = () => {
 
   const handleAddPlace = async (place) => {
     try {
-      const response = await fetch("http://localhost:5000/api/list-to-go/add", {
+      const response = await fetch("http://localhost:5000/api/search/addtolisttogo", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,27 +58,10 @@ const ListToGo = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/list-to-go/remove", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete place");
-
-      setPlaces(places.filter((place) => place.id !== id));
-    } catch (error) {
-      console.error("Error deleting place:", error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
       <div className="container mx-auto px-4 py-8 w-full max-w-4xl">
-        <h1 className="text-3xl font-bold text-center mb-8">LIST TO GO</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">ผลการค้นหา</h1>
 
         {/* Search Bar */}
         <div className="listtogo-search-bar">
@@ -110,51 +93,18 @@ const ListToGo = () => {
                     onClick={() => handleAddPlace(place)} 
                     className="bg-blue-500 text-white px-2 py-1 rounded-lg"
                   >
-                    ➕ เพิ่ม
+                    ➕ เพิ่มไปยัง List to go
                   </button>
                 </li>
               ))}
             </ul>
           </div>
         )}
-
-        {/* Places List */}
-        {places.length > 0 && (
-          <div className="grid gap-6 w-full max-w-3xl mt-6">
-            {places.map((place) => (
-              <div key={place.id} className="relative h-48 rounded-lg overflow-hidden group">
-                <img src={place.image} alt={place.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-between p-4">
-                  <div>
-                    <h3 className="text-xl text-white font-bold">{place.name}</h3>
-                    <div className="flex gap-2">
-                      {place.tags?.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-white bg-opacity-90 rounded-full text-sm">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="text-white">{place.rating} ★</div>
-                    <button 
-                      onClick={() => handleDelete(place.id)} 
-                      className="text-red-500 bg-white px-2 py-1 rounded-lg font-bold"
-                    >
-                      ❌ ลบ
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
       </div>
     </div>
   );
 };
 
-export default ListToGo;
+export default Searchresult;
 
 

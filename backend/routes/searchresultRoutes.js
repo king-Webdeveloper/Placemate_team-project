@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /api/list-to-go/places:
+ * /api/search/places:
  *   get:
  *     summary: ดึงข้อมูลสถานที่ทั้งหมดหรือค้นหาสถานที่จากตาราง place
- *     tags: [ListToGo]
+ *     tags: [Searchresult]
  *     parameters:
  *       - in: query
  *         name: query
@@ -33,7 +33,7 @@ const prisma = new PrismaClient();
  *                   name:
  *                     type: character varying(500)
  */
-router.get("/list-to-go/places", async (req, res) => {
+router.get("/search/places", async (req, res) => {
     try {
         const { query } = req.query; // รับค่าค้นหาจาก query parameter
 
@@ -82,7 +82,7 @@ router.get("/list-to-go/places", async (req, res) => {
  *       500:
  *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
  */
-router.post("/list-to-go/add", async (req, res) => {
+router.post("/search/addtolisttogo", async (req, res) => {
     const { user_id, name } = req.body;
 
     if (!user_id || !name) {
@@ -120,70 +120,6 @@ router.post("/list-to-go/add", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to add place to list" });
-    }
-});
-
-/**
- * @swagger
- * /api/list-to-go/remove:
- *   delete:
- *     summary: ลบสถานที่ออกจาก list_to_go
- *     tags: [ListToGo]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               user_id:
- *                 type: integer
- *               name:
- *                 type: string
- *     responses:
- *       200:
- *         description: ลบสำเร็จ
- *       400:
- *         description: ข้อมูลไม่ถูกต้อง
- *       404:
- *         description: ไม่พบข้อมูลใน list_to_go
- */
-
-router.delete("/list-to-go/remove", async (req, res) => {
-    const { user_id, name } = req.body;
-
-    if (!user_id || !name) {
-        return res.status(400).json({ error: "user_id and name are required" });
-    }
-
-    try {
-        // ค้นหา place_id จาก name
-        const place = await prisma.place.findFirst({
-            where: { name }
-        });
-
-        if (!place) {
-            return res.status(404).json({ error: "Place not found" });
-        }
-
-        // ตรวจสอบว่ามีรายการนี้อยู่ใน list_to_go หรือไม่
-        const listEntry = await prisma.list_to_go.findFirst({
-            where: { user_id, place_id: place.place_id }
-        });
-
-        if (!listEntry) {
-            return res.status(404).json({ error: "This place is not in the list" });
-        }
-
-        // ลบรายการออกจาก list_to_go
-        await prisma.list_to_go.delete({
-            where: { list_to_go_id: listEntry.list_to_go_id }
-        });
-
-        res.json({ message: "Place removed from list" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to remove place from list" });
     }
 });
 

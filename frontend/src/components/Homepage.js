@@ -1,11 +1,21 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
 // import "./Homepage.css";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Homepage.css";
 
 function Homepage() {
+  const [query, setQuery] = useState(""); // เก็บค่าค้นหา
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    if (query.trim()) {
+      navigate(`/searchresult?query=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
   return (
     <div className="homepage">
       {/* ✅ Navbar & Search Bar */}
@@ -15,29 +25,36 @@ function Homepage() {
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
           <Link to="/about">ABOUT US</Link>
-          {/* <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link> */}
         </nav>
-        {/* ✅ ปุ่มเข้าสู่ระบบไปขวา */}
         <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
       </header>
 
       <section className="search-bar">
         <h2>ค้นหากิจกรรมที่อยากทำ</h2>
         <div className="search-tags">
-          {["Food & Drink", "Shopping", "Entertainment "].map((tag, index) => (
-            <button key={index} className="tag">{tag}</button>
+          {["Food & Drink", "Shopping", "Entertainment"].map((tag, index) => (
+            <button key={index} className="tag" onClick={() => setQuery(tag)}>
+              {tag}
+            </button>
           ))}
         </div>
         <div className="search-input">
-          <input type="text" placeholder="ค้นหาสถานที่..." className="search-field" />
-          <button className="search-btn">ค้นหา</button>
+          <input
+            type="text"
+            placeholder="ค้นหาสถานที่..."
+            className="search-field"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+          <button className="search-btn" onClick={handleSearch}>ค้นหา</button>
         </div>
       </section>
 
-      {/* ✅ Hero Section (Carousel) */}
+      {/* ✅ Hero Section */}
       <section className="hero">
         <div className="carousel">
-          {[ 
+          {[
             { img: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg", title: "อาหารรสเลิศ" },
             { img: "https://images.pexels.com/photos/416717/pexels-photo-416717.jpeg", title: "ออกกำลังกาย" }
           ].map((slide, index) => (
@@ -47,14 +64,13 @@ function Homepage() {
             </div>
           ))}
         </div>
-      </section> 
+      </section>
 
-
-      {/* ✅ Recommended Places (การ์ดสถานที่) */}
+      {/* ✅ Recommended Places */}
       <section className="recommended">
         <h2>แนะนำสำหรับคุณ</h2>
         <div className="place-grid">
-          {[ 
+          {[
             { name: "ห้องสมุดเพื่อการเรียนรู้ทุ่งครุ", category: "เสริมสร้างความรู้", rating: 4.7, image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg" },
             { name: "สวนธนบุรีรมย์", category: "ออกกำลังกาย", rating: 4.5, image: "https://images.pexels.com/photos/414102/pexels-photo-414102.jpeg" },
             { name: "ศูนย์กีฬาฉลิมพระเกียรติ (บางมด)", category: "ออกกำลังกาย", rating: 4.9, image: "https://images.pexels.com/photos/280222/pexels-photo-280222.jpeg" },
@@ -72,8 +88,7 @@ function Homepage() {
         </div>
       </section>
       
-
-      {/* ✅ FAQ Section (Accordion) */}
+      {/* ✅ FAQ Section */}
       <section className="faq">
         <h2>คำถามที่พบบ่อย</h2>
         <div className="faq-item">
@@ -94,6 +109,7 @@ function Homepage() {
 }
 
 export default Homepage;
+
 
 
 // function Homepage() {
