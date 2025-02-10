@@ -7,24 +7,35 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
 import ListToGo from "./components/Listtogo";
+import HomepageAfterLogin from "./components/HomepageAfterLogin";
 import "./App.css";
 
 function App() {
+  return (
+    <Router>
+      <Content />
+    </Router>
+  );
+}
+
+function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/main"].includes(location.pathname);
 
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/main" element={<HomepageAfterLogin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/listtogo" element={<ListToGo />} />
       </Routes>
-    </>  
+    </>
   );
 }
 
 export default App;
+

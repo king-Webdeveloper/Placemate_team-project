@@ -30,6 +30,11 @@ app.get("/business_hour", async (req, res) => {
   res.json(business_hours);
 });
 
+// app.get("/search_place", async (req, res) => {
+//   const place = await prisma.place.findMany();
+//   res.json(place);
+// });
+
 // Options for the swagger docs
 const options = {
   swaggerDefinition,
@@ -60,6 +65,9 @@ app.use('/api', registerUserRoutes);
 
 const listToGoRoutes = require('./routes/listtogoRoutes');
 app.use('/api', listToGoRoutes);
+
+// const searchPlaceRoutes = require('./routes/searchPlaceRoutes');
+// app.use('/api', searchPlaceRoutes);
 
 // Start Server
 const PORT = 5000;

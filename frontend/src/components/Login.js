@@ -27,7 +27,7 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/listtogo"; // Redirect ไปหน้า Profile
+        window.location.href = "/main"; 
       } else {
         alert(data.message || "Login failed!");
       }
