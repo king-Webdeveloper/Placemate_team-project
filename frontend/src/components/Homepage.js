@@ -8,7 +8,9 @@ import "./Homepage.css";
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
+
+  // , setSearchTerm
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -22,9 +24,9 @@ function Homepage() {
       <header className="navbar">
         <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav className="navbar-nav">
-          <Link to="/listtogo">LIST TO GO</Link>
-          <Link to="/planner">PLANNER</Link>
-          <Link to="/about">ABOUT US</Link>
+          <Link to="/Login">LIST TO GO</Link>
+          <Link to="/Login">PLANNER</Link>
+          <Link to="/Login">ABOUT US</Link>
         </nav>
         <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
       </header>
