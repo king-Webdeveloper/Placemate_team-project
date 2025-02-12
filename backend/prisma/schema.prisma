@@ -115,3 +115,11 @@ model user {
   preference preference[]
   review     review[]
 }
+
+model tag_map {
+  tag_map_id Int       @id @default(autoincrement())
+  tag_name   String    @db.VarChar(100)
+  tag_map    String    @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+}

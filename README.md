@@ -36,17 +36,17 @@ npx prisma generate
     "dev": "nodemon index.js"
   },
 
-# 9. ตรวจสอบการใช้งาน
-npm run dev
-
-# 10. Install Swagger
+# 9. Install Swagger
 npm install swagger-ui-express swagger-jsdoc
 
-# 11. Install bcrypt
+# 10. Install bcrypt
 npm install bcrypt
 
-# 12. Install jwtToken
+# 11. Install jwtToken
 npm install jsonwebtoken
+
+# 12. ตรวจสอบการใช้งาน
+npm run dev
 
 # create and setting frontend (25/01/2025)
 
@@ -59,6 +59,9 @@ npm install axios
 # 3. ติดตั้ง web vitals (library ของ react เพื่อบันทึกประสบการณ์ของผู้ใช้ในเว็บเพจ)
 npm i web-vitals --save-dev
 
-# 4.เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
+# 4
+npm install react-router-dom
+
+# เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
 npm start
 

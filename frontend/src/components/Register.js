@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Register.css"; // Import CSS
-
+// import { Link } from "react-router-dom"; 
+ 
 function Register() {
   const [username, setUsername] = useState(""); // ✅ เปลี่ยนจาก name เป็น username
   const [email, setEmail] = useState("");

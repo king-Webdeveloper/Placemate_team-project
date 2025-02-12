@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Login.css"; // Import CSS
-
+// import { Link } from "react-router-dom"; 
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -27,7 +27,7 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/profile"; // Redirect ไปหน้า Profile
+        window.location.href = "/"; 
       } else {
         alert(data.message || "Login failed!");
       }

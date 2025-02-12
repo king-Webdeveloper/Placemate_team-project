@@ -8,13 +8,17 @@ import "./Homepage.css";
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
   const navigate = useNavigate();
-  const [searchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
 
-  // , setSearchTerm
+  // const handleSearch = () => {
+  //   if (query.trim()) {
+  //     navigate(`/searchresult?query=${encodeURIComponent(searchTerm)}`);
+  //   }
+  // };
 
   const handleSearch = () => {
     if (query.trim()) {
-      navigate(`/searchresult?query=${encodeURIComponent(searchTerm)}`);
+      navigate(`/searchresult?query=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -24,9 +28,10 @@ function Homepage() {
       <header className="navbar">
         <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav className="navbar-nav">
-          <Link to="/Login">LIST TO GO</Link>
-          <Link to="/Login">PLANNER</Link>
-          <Link to="/Login">ABOUT US</Link>
+          <Link to="/">HOME</Link>
+          <Link to="/listtogo">LIST TO GO</Link>
+          <Link to="/planner">PLANNER</Link>
+          <Link to="/about">ABOUT US</Link>
         </nav>
         <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
       </header>
@@ -49,7 +54,9 @@ function Homepage() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
-          <button className="search-btn" onClick={handleSearch}>ค้นหา</button>
+          <button className="search-btn" onClick={handleSearch}>
+            ค้นหา
+          </button>
         </div>
       </section>
 
