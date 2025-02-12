@@ -7,6 +7,7 @@ const Navbar = () => {
         <header className="navbar">
             <img src="/PM1.1.png" alt="Logo" className="navbar-logo" />
             <nav-center>
+                <Link to="/">HOME</Link>
                 <Link to="/listtogo">List to Go</Link>
                 <Link to="/planner">Planner</Link>
                 <Link to="/aboutus">About us</Link>

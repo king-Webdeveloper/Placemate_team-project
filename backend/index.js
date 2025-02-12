@@ -63,11 +63,11 @@ app.use('/api', exampleRoutes);
 const registerUserRoutes = require('./routes/authRoute'); // Adjust the path as necessary
 app.use('/api', registerUserRoutes);
 
-const listToGoRoutes = require('./routes/listtogoRoutes');
-app.use('/api', listToGoRoutes);
+const getplaceinlisttogoRoutes = require('./routes/listtogoRoutes'); // Adjust the path as necessary
+app.use('/api', getplaceinlisttogoRoutes);
 
-// const searchPlaceRoutes = require('./routes/searchPlaceRoutes');
-// app.use('/api', searchPlaceRoutes);
+const getseaechresultRoutes = require('./routes/searchresultRoutes'); // Adjust the path as necessary
+app.use('/api', getseaechresultRoutes);
 
 // Start Server
 const PORT = 5000;

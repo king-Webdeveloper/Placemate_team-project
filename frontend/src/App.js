@@ -6,8 +6,8 @@ import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
-import ListToGo from "./components/Listtogo";
-import HomepageAfterLogin from "./components/HomepageAfterLogin";
+import Listtogo from "./components/Listtogo";
+import Searchresult from "./components/Searchresult";
 import "./App.css";
 
 function App() {
@@ -20,18 +20,18 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo", "/main"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/searchresult"].includes(location.pathname);
 
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/main" element={<HomepageAfterLogin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/listtogo" element={<ListToGo />} />
+        <Route path="/main" element={<Listtogo />} />
+        <Route path="/searchresult" element={<Searchresult />} />
       </Routes>
     </>
   );

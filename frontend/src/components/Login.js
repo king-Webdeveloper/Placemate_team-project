@@ -27,7 +27,7 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/main"; 
+        window.location.href = "/"; 
       } else {
         alert(data.message || "Login failed!");
       }
