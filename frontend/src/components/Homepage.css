@@ -78,6 +78,23 @@
   box-shadow: 0px 4px 10px rgba(255, 87, 51, 0.3); /* เพิ่มเงานุ่ม ๆ */
 }
 
+.homepage .nav-profile {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  transition: all 0.3s ease-in-out;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.homepage .nav-profile:hover {
+  background-color: #ff7043;
+  color: #000;
+  text-decoration: underline;
+  transform: scale(1.05);
+}
+
 /* ✅ ปรับ Search Section */
 .homepage .search-bar {
   text-align: center;

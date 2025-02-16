@@ -1,13 +1,21 @@
 // import React from "react";
 // import { Link } from "react-router-dom";
 // import "./Homepage.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Homepage.css";
 
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log(token);
+    if (token) setIsLoggedIn(true);
+  }, []);
+
   // const [searchTerm, setSearchTerm] = useState("");
 
   // const handleSearch = () => {
@@ -28,12 +36,15 @@ function Homepage() {
       <header className="navbar">
         <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav className="navbar-nav">
-          <Link to="/">HOME</Link>
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
           <Link to="/about">ABOUT US</Link>
         </nav>
-        <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
+        {isLoggedIn ? (
+            <Link to="/profile" className="nav-profile">Profile</Link>
+          ) : (
+            <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
+          )}
       </header>
 
       <section className="search-bar">

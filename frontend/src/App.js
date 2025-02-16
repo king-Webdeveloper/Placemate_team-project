@@ -20,17 +20,17 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo", "/searchresult"].includes(location.pathname);
+  const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
 
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route path="/" element={<Homepage /> } />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/main" element={<Listtogo />} />
+        <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
       </Routes>
     </>

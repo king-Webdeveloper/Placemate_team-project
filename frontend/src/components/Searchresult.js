@@ -78,15 +78,15 @@ const Searchresult = () => {
         <h1 className="text-3xl font-bold text-center mb-8">ผลการค้นหา</h1>
 
         {/* Search Bar */}
-        <div className="listtogo-search-bar">
+        <div className="searchbar-search-bar">
           <input
             type="text"
-            className="listtogo-search-input"
+            className="searchbar-search-input"
             placeholder="ค้นหา"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button onClick={() => handleSearch(searchTerm)} className="listtogo-search-button">
+          <button onClick={() => handleSearch(searchTerm)} className="searchbar-search-button">
             ค้นหา
           </button>
         </div>
@@ -99,7 +99,7 @@ const Searchresult = () => {
         {searchResults.length > 0 && (
           <div className="mt-4 w-full">
             <h2 className="text-lg font-semibold">ผลลัพธ์การค้นหา</h2>
-            <ul className="listtogo-resultbox">
+            <ul className="searchbar-resultbox">
               {searchResults.map((place) => (
                 <li key={place.id} className="result-listtogo">
                   <span>{place.name}</span>

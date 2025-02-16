@@ -12,7 +12,7 @@
     width: 100%;
   }
 
-  .listtogo-search-bar {
+  .searchbar-search-bar {
     display: flex;
     align-items: center;
     width: 100%;
@@ -23,7 +23,7 @@
     position: relative;
   }
   
-  .listtogo-search-input {
+  .searchbar-search-input {
     flex: 1; 
     border: none;
     outline: none;
@@ -33,7 +33,7 @@
     border-radius: 25px; 
   }
   
-  .listtogo-search-button {
+  .searchbar-search-button {
     background-color: #666; 
     color: white;
     border: none;
@@ -44,11 +44,11 @@
     margin-left: 5px;
   }
   
-  .listtogo-search-button:hover {
+  .searchbar-search-button:hover {
     background-color: #555; 
   }
 
-  .listtogo-resultbox {
+  .searchbar-resultbox {
     gap:20px;
     font-size: 20px;
   }
