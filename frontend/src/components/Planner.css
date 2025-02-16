@@ -1,0 +1,70 @@
+/* Planner.css */
+.planner-container {
+    width: 100%;
+    max-width: 500px; /* ปรับขนาดให้ฟอร์มมีความกว้างพอดี */
+    margin: 50px auto; /* ระยะห่างจากด้านบน */
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .planner-container h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .planner-container label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .planner-container input[type="number"],
+  .planner-container input[type="text"],
+  .planner-container input[type="datetime-local"] {
+    width: 100%; /* กำหนดให้มีขนาดเต็ม */
+    padding: 12px;
+    margin: 5px 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .planner-container button {
+    width: 100%; /* ปรับขนาดปุ่มให้เต็ม */
+    padding: 12px;
+    background-color: #ff7043;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .planner-container button:hover {
+    background-color: #ff5722; /* สีของปุ่มเมื่อ hover */
+  }
+  
+  .planner-container p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #28a745;
+    margin-top: 20px;
+  }
+  
+  /* ปรับสไตล์เมื่อหน้าจอเล็ก */
+  @media (max-width: 768px) {
+    .planner-container {
+      max-width: 100%; /* ให้ขนาดฟอร์มเต็มหน้าจอ */
+      padding: 15px;
+    }
+    .planner-container h1 {
+      font-size: 1.8rem; /* ขนาดฟอนต์ในมือถือเล็กลง */
+    }
+  }
+  
