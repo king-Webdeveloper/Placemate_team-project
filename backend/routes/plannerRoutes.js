@@ -25,10 +25,11 @@ const prisma = new PrismaClient();
  *                   user_id:
  *                     type: integer
  *                   title:
- *                     type: string
+ *                     type: character varying(255)
  *                   created_at:
- *                     type: string
- *                     format: date-time
+ *                     type: Timestamp without time zone(6)   
+ *                   updated_at:
+ *                     type: Timestamp without time zone(6)                       
  */
 router.get("/planner", async (req, res) => {
     try {
@@ -38,6 +39,7 @@ router.get("/planner", async (req, res) => {
                 user_id: true,
                 title: true,
                 created_at: true,
+                updated_at: true,
             },
         });
         res.json(plans);
