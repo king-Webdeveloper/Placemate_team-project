@@ -14,7 +14,13 @@ app.use(cors()); // อนุญาตให้ Frontend เชื่อมต�
 app.use(bodyParser.json());
 
 // ใช้ Routes ของ Auth
+const authRoutes = require('./routes/auth'); // นำเข้า authRoutes
 app.use("/api", authRoutes);
+
+// ใช้ Routes ของ Planner
+const plannerRoutes = require('./routes/plannerRoutes'); // ให้แน่ใจว่า path ถูกต้อง
+app.use("/api", plannerRoutes);
+
 
 // เริ่มต้น Server
 app.listen(PORT, () => {
@@ -101,5 +107,77 @@ app.delete('/api/list-to-go/remove', async (req, res) => {
     res.send('Place removed from List to Go');
   } catch (err) {
     res.status(500).send(err.message);
+  }
+});
+
+// ดึงข้อมูลแผนการเดินทางทั้งหมด
+router.get("/planner", async (req, res) => {
+  try {
+    const plans = await prisma.plan.findMany({
+      select: {
+        plan_id: true,
+        user_id: true,
+        title: true,
+        created_at: true,
+      },
+    });
+    res.json(plans);
+  } catch (error) {
+    console.error("Error fetching plans:", error);
+    res.status(500).json({ error: "Failed to fetch plans" });
+  }
+});
+
+// เพิ่มแผนการเดินทางใหม่
+router.post("/planner/add", async (req, res) => {
+  const { user_id, title, start_time } = req.body;
+
+  if (!user_id || !title || !start_time) {
+    return res.status(400).json({ error: "user_id, title, and start_time are required" });
+  }
+
+  try {
+    // เพิ่มแผนการเดินทางใหม่
+    const newPlan = await prisma.plan.create({
+      data: {
+        user_id: user_id,
+        title: title,
+        created_at: new Date(),
+        updated_at: new Date(),
+      }
+    });
+
+    res.status(201).json(newPlan);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add new plan" });
+  }
+});
+
+// ลบแผนการเดินทาง
+router.delete("/planner/remove", async (req, res) => {
+  const { plan_id } = req.body;
+
+  if (!plan_id) {
+    return res.status(400).json({ error: "plan_id is required" });
+  }
+
+  try {
+    const plan = await prisma.plan.findUnique({
+      where: { plan_id: plan_id },
+    });
+
+    if (!plan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+
+    await prisma.plan.delete({
+      where: { plan_id: plan_id },
+    });
+
+    res.json({ message: "Plan removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to remove plan" });
   }
 });

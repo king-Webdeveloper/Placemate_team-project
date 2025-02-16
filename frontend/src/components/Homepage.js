@@ -26,11 +26,13 @@ function Homepage() {
     <div className="homepage">
       {/* ✅ Navbar & Search Bar */}
       <header className="navbar">
-        <img src="/PM1.1.png" alt="Logo" className="logo" />
+      <Link to="/">
+                <img src="/PM1.1.png" alt="Logo" className="logo" />
+            </Link>
         <nav className="navbar-nav">
-          <Link to="/">HOME</Link>
-          <Link to="/main">LIST TO GO</Link>
-          <Link to="/planner">PLANNER</Link>
+          {/* <Link to="/">HOME</Link> */}
+          <Link to="/listtogo">LIST TO GO</Link>
+          <Link to="/planer">PLANNER</Link>
           <Link to="/about">ABOUT US</Link>
         </nav>
         <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>

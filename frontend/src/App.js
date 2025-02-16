@@ -6,6 +6,7 @@ import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
+import Planer from "./components/Planer";
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
 import "./App.css";
@@ -20,7 +21,7 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo", "/searchresult"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer"].includes(location.pathname);
 
   return (
     <>
@@ -30,8 +31,9 @@ function Content() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/main" element={<Listtogo />} />
+        <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
+        <Route path="/planer" element={<Planer />} />
       </Routes>
     </>
   );
