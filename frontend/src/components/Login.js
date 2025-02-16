@@ -26,7 +26,8 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.jwt_token);
+        console.log(data.jwt_token);
         window.location.href = "/"; 
       } else {
         alert(data.message || "Login failed!");

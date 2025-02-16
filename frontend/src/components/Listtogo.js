@@ -4,83 +4,49 @@ import "./Listtogo.css";
 
 const ListToGo = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [places, setPlaces] = useState([]); // รายการที่บันทึกไว้
-  const [searchResults, setSearchResults] = useState([]); // ผลลัพธ์การค้นหา
-  const [searched, setSearched] = useState(false); // เช็คว่ามีการกดค้นหาหรือยัง
+  const [places, setPlaces] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searched, setSearched] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     }
-  }, [token, navigate]);
+  }, [navigate]);
 
-  const handleSearch = async () => {
-    if (searchTerm.trim() === "") return;
-    setSearched(true); // ระบุว่ามีการค้นหาแล้ว
-
+  const fetchData = async (url, method) => {
+    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(url, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
-
-      if (!response.ok) throw new Error("Failed to search places");
-
-      const data = await response.json();
-      setSearchResults(data);
+      if (!response.ok) throw new Error("Access denied");
+      return await response.json();
     } catch (error) {
-      console.error("Error searching places:", error);
+      console.error("Error:", error);
+      return null;
     }
   };
 
-  const handleAddPlace = async (place) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/list-to-go/add", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: place.name }),
-      });
-
-      if (!response.ok) throw new Error("Failed to add place");
-
-      const newPlace = await response.json();
-      setPlaces([...places, newPlace]); // อัปเดตรายการสถานที่ที่บันทึกไว้
-    } catch (error) {
-      console.error("Error adding place:", error);
-    }
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+    setSearched(true);
+    const data = await fetchData(`http://localhost:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, "GET");
+    if (data) setSearchResults(data);
   };
 
   const handleDelete = async (id) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/list-to-go/remove", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete place");
-
-      setPlaces(places.filter((place) => place.id !== id));
-    } catch (error) {
-      console.error("Error deleting place:", error);
-    }
+    const success = await fetchData("http://localhost:5000/api/list-to-go/remove", "DELETE");
+    if (success) setPlaces(places.filter((place) => place.id !== id));
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
       <div className="container mx-auto px-4 py-8 w-full max-w-4xl">
         <h1 className="text-3xl font-bold text-center mb-8">LIST TO GO</h1>
-
-        {/* Search Bar */}
         <div className="listtogo-search-bar">
           <input
             type="text"
@@ -93,68 +59,9 @@ const ListToGo = () => {
             ค้นหา
           </button>
         </div>
-
-        {/* Search Results */}
-        {searched && searchResults.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
-        )}
-
-        {searchResults.length > 0 && (
-          <div className="mt-4 w-full">
-            <h2 className="text-lg font-semibold">ผลลัพธ์การค้นหา</h2>
-            <ul className="listtogo-resultbox">
-              {searchResults.map((place) => (
-                <li key={place.id} className="result-listtogo">
-                  <span>{place.name}</span>
-                  <button 
-                    onClick={() => handleAddPlace(place)} 
-                    className="bg-blue-500 text-white px-2 py-1 rounded-lg"
-                  >
-                    ➕ เพิ่ม
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Places List */}
-        {places.length > 0 && (
-          <div className="grid gap-6 w-full max-w-3xl mt-6">
-            {places.map((place) => (
-              <div key={place.id} className="relative h-48 rounded-lg overflow-hidden group">
-                <img src={place.image} alt={place.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-between p-4">
-                  <div>
-                    <h3 className="text-xl text-white font-bold">{place.name}</h3>
-                    <div className="flex gap-2">
-                      {place.tags?.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-white bg-opacity-90 rounded-full text-sm">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="text-white">{place.rating} ★</div>
-                    <button 
-                      onClick={() => handleDelete(place.id)} 
-                      className="text-red-500 bg-white px-2 py-1 rounded-lg font-bold"
-                    >
-                      ❌ ลบ
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
       </div>
     </div>
   );
 };
 
 export default ListToGo;
-
-

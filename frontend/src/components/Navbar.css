@@ -5,8 +5,8 @@
   font-family: "Arial", sans-serif;
   padding: 20px;
 }
-
   
+  /* ✅ ปรับ Header ให้ดูบาลานซ์ขึ้น */
 .Navbarspace .navbar{
   display: flex;
   justify-content: space-between;
@@ -15,7 +15,7 @@
   background-color: white;
   color: black;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-   /* margin-bottom: 20px;  */
+  /* margin-bottom: 20px; */
   border-radius: 12px;
 }
 
@@ -23,21 +23,21 @@
 .Navbarspace .navbar-center {
   display: flex;
   flex-grow: 1;
-  justify-content: center; 
+  justify-content: center; /* จัดให้อยู่ตรงกลาง */
   gap: 30px;
- }
+}
 
 
 .Navbarspace .navbar-logo {
   height: 50px;
   margin-right: 20px;
- }
+}
 
-
+/* ✅ ปรับ Navigation */
 .Navbarspace .navbar nav {
   display: flex;
   gap: 20px;
- }
+}
 
 .Navbarspace .navbar nav a {
   color: black;
