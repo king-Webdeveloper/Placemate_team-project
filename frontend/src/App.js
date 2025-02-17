@@ -9,6 +9,7 @@ import Profile from "./components/Profile";
 import Planer from "./components/Planer";
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
+import Aboutme from "./components/Aboutme";
 import "./App.css";
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer", "/Aboutme"].includes(location.pathname);
 
   return (
     <>
