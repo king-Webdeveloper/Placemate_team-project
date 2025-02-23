@@ -45,6 +45,8 @@ router.get("/search/places", async (req, res) => {
                 id: true,
                 place_id: true,
                 name: true,
+                lat: true,
+                lng: true,
             },
         });
 
