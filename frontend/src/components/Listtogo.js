@@ -34,12 +34,14 @@ const ListToGo = () => {
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     setSearched(true);
-    const data = await fetchData(`http://localhost:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, "GET");
+    // const data = await fetchData(`http://localhost:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, "GET");
+    const data = await fetchData(`${process.env.REACT_APP_API_URL}:5000/api/list-to-go/places?query=${encodeURIComponent(searchTerm)}`, "GET");
     if (data) setSearchResults(data);
   };
 
   const handleDelete = async (id) => {
-    const success = await fetchData("http://localhost:5000/api/list-to-go/remove", "DELETE");
+    // const success = await fetchData("http://localhost:5000/api/list-to-go/remove", "DELETE");
+    const success = await fetchData(`${process.env.REACT_APP_API_URL}:5000/api/list-to-go/remove`, "DELETE");
     if (success) setPlaces(places.filter((place) => place.id !== id));
   };
 
