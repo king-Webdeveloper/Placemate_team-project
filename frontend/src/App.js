@@ -22,7 +22,7 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer", "/Aboutme"].includes(location.pathname);
+  const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer", "/aboutme"].includes(location.pathname);
 
   return (
     <>
@@ -35,6 +35,7 @@ function Content() {
         <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
         <Route path="/planer" element={<Planer />} />
+        <Route path="/aboutme" element={<Aboutme />} />
       </Routes>
     </>
   );

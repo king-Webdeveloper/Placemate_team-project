@@ -40,7 +40,7 @@ function Homepage() {
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planer">PLANNER</Link>
-          <Link to="/about">ABOUT US</Link>
+          <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
             <Link to="/profile" className="nav-profile">Profile</Link>
