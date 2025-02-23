@@ -48,8 +48,4 @@ function Content() {
   }
 }
 
-<<<<<<< HEAD
 export default App;
-=======
-export default App;
->>>>>>> b918d72d863dadaacff7576365a73ad5102e98aa
