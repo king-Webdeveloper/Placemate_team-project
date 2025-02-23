@@ -1,19 +1,36 @@
 import React, { useState } from 'react';
-import './Planner.css';  // นำเข้า CSS ที่เฉพาะเจาะจงกับ Planner
+import './Planner.css'; // นำเข้า CSS ที่เฉพาะเจาะจงกับ Planner
 
 const Planner = () => {
     const [userId, setUserId] = useState('');
     const [title, setTitle] = useState('');
     const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
     const [message, setMessage] = useState('');
 
+    // ฟังก์ชันในการเริ่มต้นการเดินทาง
+    const handleStartTrip = () => {
+        setMessage("เริ่มต้นการเดินทาง");
+    };
+
+    // ฟังก์ชันในการลบแผนการเดินทาง
+    const handleDeletePlan = () => {
+        setUserId('');
+        setTitle('');
+        setStartTime('');
+        setEndTime('');
+        setMessage("ลบแผนการเดินทางเรียบร้อยแล้ว");
+    };
+
+    // ฟังก์ชันในการส่งข้อมูลแผนการเดินทาง
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newPlan = {
-            user_id: userId,
+            user_id: parseInt(userId),
             title: title,
             start_time: startTime,
+            end_time: endTime,
         };
 
         try {
@@ -28,22 +45,23 @@ const Planner = () => {
             const result = await response.json();
 
             if (response.ok) {
-                setMessage('Plan added successfully!');
+                setMessage('แผนการเดินทางเพิ่มสำเร็จ!');
                 setUserId('');
                 setTitle('');
                 setStartTime('');
+                setEndTime('');
             } else {
-                setMessage(result.error || 'Failed to add plan');
+                setMessage(result.error || 'เกิดข้อผิดพลาดในการเพิ่มแผน');
             }
         } catch (err) {
             console.error('Error:', err);
-            setMessage('Something went wrong!');
+            setMessage('เกิดข้อผิดพลาด!');
         }
     };
 
     return (
         <div className="planner-container">
-            <h1>Create New Plan</h1>
+            <h1>สร้างแผนการเดินทางใหม่</h1>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>User ID:</label>
@@ -51,6 +69,7 @@ const Planner = () => {
                         type="number"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
+                        placeholder="กรุณากรอก User ID"
                         required
                     />
                 </div>
@@ -60,6 +79,7 @@ const Planner = () => {
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        placeholder="กรุณากรอกชื่อแผนการเดินทาง"
                         required
                     />
                 </div>
@@ -72,10 +92,24 @@ const Planner = () => {
                         required
                     />
                 </div>
-                <button type="submit">Create Plan</button>
+                <div>
+                    <label>End Time:</label>
+                    <input
+                        type="datetime-local"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit">สร้างแผนการเดินทาง</button>
             </form>
 
             {message && <p>{message}</p>}
+
+            <div className="planner-actions">
+                <button onClick={handleStartTrip}>เริ่มต้นการเดินทาง</button>
+                <button onClick={handleDeletePlan}>ลบแผนการเดินทาง</button>
+            </div>
         </div>
     );
 };
