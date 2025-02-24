@@ -9,6 +9,7 @@ import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
 import { getUserLocation } from "./components/getGeo";
 import "./App.css";
+import ProtectedLogin from "./components/ProtectedLogin";
 
 function App() {
   return (
@@ -37,10 +38,7 @@ function Content() {
     </>
   );
 
-  function ProtectedLogin() {
-    const token = localStorage.getItem("token");
-    return token ? <Navigate to="/" replace /> : <Login />;
-  }
+  
 }
 
 export default App;
