@@ -69,3 +69,18 @@ npm start
 
 # 1.ติดตั้ง cookie-parser ใน Express (backend)
 npm install cookie-parser
+
+# To make web app can access location on mobile
+
+# 1. install Chocolatey:
+open cmd as administrator and run:
+"
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+"
+
+# 2. install mkcert
+choco install mkcert -y
+
+# 3. create certificate
+mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
+

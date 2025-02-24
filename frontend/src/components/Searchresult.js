@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./Searchresult.css";
+import { getUserLocation } from "./getGeo";
+import { haversine } from "./haversine"; // Import the haversine function
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา
@@ -14,40 +15,67 @@ const Searchresult = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryFromUrl = params.get("query") || "";
-  
+
     if (queryFromUrl.trim()) {
       setSearchTerm(queryFromUrl); // อัปเดตค่า searchTerm
       handleSearch(queryFromUrl);  // เรียกค้นหาทันที
     }
-  }, [location.search]);  
+
+    getUserLocation(setUserLocation); // Get the user location when the component mounts
+  }, [location.search]);
+
+  useEffect(() => {
+    if (userLocation.lat && userLocation.lng) {
+      setLocationReady(true); // Set the location as ready once lat and lng are available
+    }
+  }, [userLocation]);
+
+  // Trigger search automatically when the location is ready and search term is available
+  useEffect(() => {
+    if (locationReady && searchTerm.trim()) {
+      handleSearch(searchTerm); // Automatically perform the search after location is ready
+    }
+  }, [locationReady, searchTerm]);
 
   const handleSearch = async (query) => {
-    if (!query.trim()) return;
+    if (!query.trim() || !locationReady) return; // Only perform the search if location is ready
+
     setSearched(true);
     navigate(`/searchresult?query=${encodeURIComponent(query)}`);
-  
+
     try {
-      const response = await fetch(`http://localhost:5000/api/search/places?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/places?query=${encodeURIComponent(query)}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) throw new Error("Failed to search places");
-  
+
       const data = await response.json();
-      setSearchResults(data);
+
+      console.log("Search response:", data);
+
+      // Calculate distance for each place and sort by distance
+      const updatedPlaces = data.map((place) => {
+        const distance = haversine(userLocation.lat, userLocation.lng, place.lat, place.lng);
+        return { ...place, distance };
+      });
+
+      // Sort the places by distance in ascending order
+      const sortedPlaces = updatedPlaces.sort((a, b) => a.distance - b.distance);
+
+      setSearchResults(sortedPlaces); // Update the search results with sorted places
     } catch (error) {
       console.error("Error searching places:", error);
     }
   };
-  
 
   const handleAddPlace = async (place) => {
     try {
-      const response = await fetch("http://localhost:5000/api/search/addtolisttogo", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/addtolisttogo`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,10 +93,28 @@ const Searchresult = () => {
     }
   };
 
+  const handleGoGoogleMap = (placeId) => {
+    // Construct the Google Maps URL with the latitude and longitude
+    const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
+    // Open the URL in a new tab
+    window.open(googleMapsUrl, "_blank");
+  };
+  
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
       <div className="container mx-auto px-4 py-8 w-full max-w-4xl">
         <h1 className="text-3xl font-bold text-center mb-8">ผลการค้นหา</h1>
+
+        {/* User Location */}
+        <div>
+          <h2>User Location:</h2>
+          {userLocation.lat && userLocation.lng ? (
+            <p>Latitude: {userLocation.lat}, Longitude: {userLocation.lng}</p>
+          ) : (
+            <p>Loading location...</p>
+          )}
+        </div>
 
         {/* Search Bar */}
         <div className="searchbar-search-bar">
@@ -96,11 +142,18 @@ const Searchresult = () => {
               {searchResults.map((place) => (
                 <li key={place.id} className="result-listtogo">
                   <span>{place.name}</span>
+                  <span> - {place.distance.toFixed(2)} km</span> {/* Display distance */}
                   <button 
                     onClick={() => handleAddPlace(place)} 
                     className="bg-blue-500 text-white px-2 py-1 rounded-lg"
                   >
                     ➕ เพิ่มไปยัง List to go
+                  </button>
+                  <button 
+                    onClick={() => handleGoGoogleMap(place.place_id)} 
+                    className="bg-blue-500 text-white px-2 py-1 rounded-lg"
+                  >
+                    GO
                   </button>
                 </li>
               ))}
@@ -113,5 +166,3 @@ const Searchresult = () => {
 };
 
 export default Searchresult;
-
-
