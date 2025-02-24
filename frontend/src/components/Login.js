@@ -1,7 +1,8 @@
+// Login.js [frontend]
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./Login.css"; // Import CSS
-// import { Link } from "react-router-dom"; 
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -15,30 +16,20 @@ function Login() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const response = await axios.post("http://localhost:5000/api/login", 
+          { username, password },
+          { withCredentials: true } // ต้องใช้เพื่อให้ axios ส่งคุกกี้ไปกับ request
+      );
+      
+      // console.log("Login Successful:", response.data);
+      // alert("Login Successful!");
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.jwt_token);
-        console.log(data.jwt_token);
-        window.location.href = "/"; 
-      } else {
-        alert(data.message || "Login failed!");
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      // Redirect ไปหน้า Dashboard หรือหน้าอื่นที่ต้องการ
+      window.location.href = "/";
+  } catch (err) {
+      setError(err.response?.data?.error || "Login failed");
+  }
+};
 
   return (
     <div className="login-page">

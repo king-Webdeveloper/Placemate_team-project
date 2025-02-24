@@ -9,13 +9,6 @@ const Searchresult = () => {
   const [searched, setSearched] = useState(false); // เช็คว่ามีการกดค้นหาหรือยัง
   const navigate = useNavigate();
   const location = useLocation(); // ใช้สำหรับดึงค่า query จาก URL
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
 
   // ✅ ดึงค่า query จาก URL เมื่อโหลดหน้า
   useEffect(() => {

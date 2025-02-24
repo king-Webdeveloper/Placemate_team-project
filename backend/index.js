@@ -8,6 +8,23 @@ const swaggerJsdoc = require('swagger-jsdoc');
 
 const app = express();
 const prisma = new PrismaClient();
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());  // ใช้ middleware นี้ก่อนที่จะมีการจัดการ route อื่นๆ
+
+const allowedOrigins = ['http://localhost:3000']; // ใส่ URL ของ frontend ที่อนุญาต
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // อนุญาตให้ส่งคุกกี้ข้ามโดเมน
+  optionsSuccessStatus: 200
+}));
 
 // Swagger definition
 const swaggerDefinition = {
@@ -25,16 +42,6 @@ const swaggerDefinition = {
   ],
 };
 
-app.get("/business_hour", async (req, res) => {
-  const business_hours = await prisma.business_hour.findMany();
-  res.json(business_hours);
-});
-
-// app.get("/search_place", async (req, res) => {
-//   const place = await prisma.place.findMany();
-//   res.json(place);
-// });
-
 // Options for the swagger docs
 const options = {
   swaggerDefinition,
@@ -48,7 +55,6 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 
 const businessHourRoutes = require('./routes/businessHourRoute'); // Adjust the path as necessary
