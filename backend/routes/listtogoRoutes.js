@@ -187,4 +187,63 @@ router.delete("/list-to-go/remove", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/list-to-go/user/{userId}:
+ *   get:
+ *     summary: ดึงข้อมูลรายการสถานที่ใน list_to_go ของผู้ใช้ตาม user_id
+ *     tags: [ListToGo]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: user_id ของผู้ใช้
+ *     responses:
+ *       200:
+ *         description: รายการสถานที่ใน List to Go ของผู้ใช้
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   place_id:
+ *                     type: integer
+ *                   place_name:
+ *                     type: string
+ *                   list_to_go_id:
+ *                     type: integer
+ */
+router.get("/list-to-go/user/:userId", async (req, res) => {
+    const { userId } = req.params; // รับ user_id จาก path parameters
+
+    try {
+        // ค้นหาสถานที่ใน list_to_go โดยใช้ user_id
+        const list = await prisma.list_to_go.findMany({
+            where: { user_id: parseInt(userId) }, // ใช้ user_id ที่รับมาจาก URL
+            select: {
+                place: { select: { place_id: true, name: true } }, // ดึงข้อมูลจากตาราง place
+                list_to_go_id: true,
+            },
+        });
+
+        if (!list || list.length === 0) {
+            return res.status(404).json({ error: "No places found for this user" });
+        }
+
+        // ส่งข้อมูลรายการสถานที่ใน list_to_go ของผู้ใช้
+        res.json(list.map(entry => ({
+            list_to_go_id: entry.list_to_go_id,
+            place_id: entry.place.place_id,
+            place_name: entry.place.name
+        })));
+    } catch (error) {
+        console.error("Error fetching user's list to go:", error);
+        res.status(500).json({ error: "Failed to fetch user's list to go" });
+    }
+});
+
 module.exports = router;

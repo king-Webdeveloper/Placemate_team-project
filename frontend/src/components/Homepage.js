@@ -1,27 +1,39 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-// import "./Homepage.css";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Homepage.css";
 
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
-  const navigate = useNavigate();  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(""); // เก็บชื่อผู้ใช้เมื่อเข้าสู่ระบบแล้ว
+  const navigate = useNavigate();  
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) setIsLoggedIn(true);
+    // ฟังก์ชันตรวจสอบสถานะการล็อกอิน
+    const checkLoginStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/cookies-check", {
+          method: "GET",
+          credentials: "include", // ส่งคุกกี้
+        });
+
+        const responseText = await response.text();
+        const data = JSON.parse(responseText);
+
+        if (response.ok) {
+          setIsLoggedIn(true);
+          setUsername(data.username); // ตั้งค่า username จากข้อมูลที่ได้
+        } else {
+          setIsLoggedIn(false); // ถ้าไม่ได้รับข้อมูลผู้ใช้
+        }
+      } catch (error) {
+        console.error("Error checking login status:", error);
+        setIsLoggedIn(false); // ถ้ามีข้อผิดพลาด
+      }
+    };
+
+    checkLoginStatus();
   }, []);
-
-  // const [searchTerm, setSearchTerm] = useState("");
-
-  // const handleSearch = () => {
-  //   if (query.trim()) {
-  //     navigate(`/searchresult?query=${encodeURIComponent(searchTerm)}`);
-  //   }
-  // };
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -40,10 +52,10 @@ function Homepage() {
           <Link to="/about">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
-            <Link to="/profile" className="nav-profile">Profile</Link>
-          ) : (
-            <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
-          )}
+          <Link to="/profile" className="nav-profile">{username}</Link> // แสดงชื่อผู้ใช้
+        ) : (
+          <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
+        )}
       </header>
 
       <section className="search-bar">
@@ -128,6 +140,7 @@ function Homepage() {
 }
 
 export default Homepage;
+
 
 
 
