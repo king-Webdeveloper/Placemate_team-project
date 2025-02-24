@@ -73,6 +73,8 @@ app.use('/api', getseaechresultRoutes);
 const getplannerRoutes = require('./routes/plannerRoutes.js'); // Adjust the path as necessary
 app.use('/api', getplannerRoutes);
 
+
+
 // Start Server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
