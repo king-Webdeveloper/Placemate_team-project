@@ -19,8 +19,8 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      // url: 'http://localhost:5000',
-      url: process.env.REACT_APP_API_URL || 5000,
+      url: 'http://localhost:5000',
+      // url: process.env.REACT_APP_API_URL || 5000,
       description: 'Development server',
     },
   ],
@@ -75,5 +75,5 @@ app.use('/api', getplannerRoutes);
 
 // Start Server
 const PORT = 5000;
-// app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-app.listen(PORT, () => console.log(`Server running on ${process.env.REACT_APP_API_URL}:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// app.listen(PORT, () => console.log(`Server running on ${process.env.REACT_APP_API_URL}:${PORT}`));

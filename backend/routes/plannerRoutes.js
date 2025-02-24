@@ -80,6 +80,8 @@ router.get("/planner", async (req, res) => {
 router.post("/planner/add", async (req, res) => {
     const { user_id, title, start_time } = req.body;
 
+    console.log("Received Data:", req.body);
+
     if (!user_id || !title || !start_time) {
         return res.status(400).json({ error: "user_id, title, and start_time are required" });
     }
