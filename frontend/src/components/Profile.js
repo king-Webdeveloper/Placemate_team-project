@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ใช้ useNavigate สำหรับการเปลี่ยนเส้นทาง
 
 function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // ใช้ useNavigate เพื่อเปลี่ยนเส้นทาง
 
+  // ดึงข้อมูลโปรไฟล์ของผู้ใช้จาก /api/cookies-check
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("token"); // ดึง JWT Token จาก localStorage
-        const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/profile`, {
+        const response = await fetch("http://localhost:5000/api/cookies-check", {
           method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`, // ส่ง Token ไปใน Authorization Header
-          },
+          credentials: "include", // สำคัญ: ให้ส่งคุกกี้ไปด้วย
         });
 
         if (response.ok) {
           const data = await response.json();
           setUser(data);
         } else {
-          console.error("Failed to fetch profile");
+          setUser(null);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -31,38 +32,38 @@ function Profile() {
     fetchProfile();
   }, []);
 
+  // ฟังก์ชันสำหรับการออกจากระบบ
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/logout", {
+        method: "POST",
+        credentials: "include", // สำคัญ: ให้ส่งคุกกี้ไปด้วย
+      });
+
+      if (response.ok) {
+        console.log("Logout successful");
+        navigate("/login"); // เปลี่ยนเส้นทางไปยังหน้า Login
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>Error: Unable to load profile.</div>;
 
   return (
     <div style={{ maxWidth: "600px", margin: "50px auto", textAlign: "center" }}>
       <h2>Profile</h2>
-      <p><strong>Name:</strong> {user.name}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+      <p><strong>Name:</strong> {user.username}</p>
+      
+      <button onClick={handleLogout} style={{ marginTop: "20px" }}>
+        Logout
+      </button>
     </div>
   );
 }
 
 export default Profile;
-
-// import React from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const Profile = () => {
-//   const navigate = useNavigate();
-
-//   const handleLogout = () => {
-//     localStorage.removeItem("token"); // ลบ token ออกจาก localStorage
-//     navigate("/login"); // ส่งไปยังหน้า Login
-//   };
-
-//   return (
-//     <div className="profile-container">
-//       <h1>Profile Page</h1>
-//       <button onClick={handleLogout} className="text-red-500">ออกจากระบบ</button>
-//     </div>
-//   );
-// };
-
-// export default Profile;

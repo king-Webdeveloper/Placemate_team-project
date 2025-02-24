@@ -65,6 +65,10 @@ npm install react-router-dom
 # เริ่มต้น react frontend (เข้า cd frontend ก่อนการทำงาน)
 npm start
 
+# Create Authentication System
+
+# 1.ติดตั้ง cookie-parser ใน Express (backend)
+npm install cookie-parser
 
 # To make web app can access location on mobile
 
