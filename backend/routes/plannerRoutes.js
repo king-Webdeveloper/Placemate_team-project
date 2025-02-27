@@ -6,42 +6,45 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /api/planner:
+ * /api/planner/user/{userId}:
  *   get:
- *     summary: ดึงข้อมูลแผนการเดินทางทั้งหมด
+ *     summary: ดึงแผนการเดินทางของผู้ใช้
  *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: user_id ของผู้ใช้
  *     responses:
  *       200:
- *         description: รายการแผนการเดินทางทั้งหมด
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   plan_id:
- *                     type: integer
- *                   user_id:
- *                     type: integer
- *                   title:
- *                     type: character varying(255)
- *                   created_at:
- *                     type: Timestamp without time zone(6)   
- *                   updated_at:
- *                     type: Timestamp without time zone(6)                       
+ *         description: รายการแผนการเดินทาง
+ *       404:
+ *         description: ไม่พบแผนการเดินทาง
+ *       500:
+ *         description: Server error
  */
-router.get("/planner", async (req, res) => {
+router.get("/planner/user/:userId", async (req, res) => {
+    const { userId } = req.params;
+
     try {
         const plans = await prisma.plan.findMany({
+            where: { user_id: parseInt(userId) }, 
             select: {
                 plan_id: true,
-                user_id: true,
                 title: true,
+                start_time: true,
+                end_time: true,
                 created_at: true,
                 updated_at: true,
             },
         });
+
+        if (!plans || plans.length === 0) {
+            return res.status(404).json({ error: "No plans found for this user" });
+        }
+
         res.json(plans);
     } catch (error) {
         console.error("Error fetching plans:", error);
@@ -69,38 +72,31 @@ router.get("/planner", async (req, res) => {
  *               start_time:
  *                 type: string
  *                 format: date-time
+ *               end_time:
+ *                 type: string
+ *                 format: date-time
  *     responses:
  *       201:
- *         description: เพิ่มแผนการเดินทางสำเร็จ
+ *         description: เพิ่มแผนสำเร็จ
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
  *       500:
- *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
+ *         description: Server error
  */
 router.post("/planner/add", async (req, res) => {
-    const { user_id, title, start_time } = req.body;
+    const { user_id, title, start_time, end_time } = req.body;
 
-    console.log("Received Data:", req.body);
-
-    if (!user_id || !title || !start_time) {
-        return res.status(400).json({ error: "user_id, title, and start_time are required" });
+    if (!user_id || !title || !start_time || !end_time) {
+        return res.status(400).json({ error: "user_id, title, start_time, and end_time are required" });
     }
 
     try {
-        // ตรวจสอบว่า user_id มีอยู่ในตาราง user หรือไม่
-        const userExists = await prisma.user.findUnique({
-            where: { user_id: user_id }
-        });
-
-        if (!userExists) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // เพิ่มแผนการเดินทางใหม่
         const newPlan = await prisma.plan.create({
             data: {
-                user_id: user_id,
+                user_id: parseInt(user_id),
                 title: title,
+                start_time: new Date(start_time),
+                end_time: new Date(end_time),
                 created_at: new Date(),
                 updated_at: new Date(),
             }
@@ -108,8 +104,8 @@ router.post("/planner/add", async (req, res) => {
 
         res.status(201).json(newPlan);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to add new plan" });
+        console.error("Error creating plan:", error);
+        res.status(500).json({ error: "Failed to create plan" });
     }
 });
 
@@ -130,13 +126,13 @@ router.post("/planner/add", async (req, res) => {
  *                 type: integer
  *     responses:
  *       200:
- *         description: ลบแผนการเดินทางสำเร็จ
+ *         description: ลบสำเร็จ
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
  *       404:
  *         description: ไม่พบแผนการเดินทาง
  *       500:
- *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
+ *         description: Server error
  */
 router.delete("/planner/remove", async (req, res) => {
     const { plan_id } = req.body;
@@ -146,23 +142,21 @@ router.delete("/planner/remove", async (req, res) => {
     }
 
     try {
-        // ค้นหาแผนการเดินทางในฐานข้อมูล
-        const plan = await prisma.plan.findUnique({
-            where: { plan_id: plan_id },
+        const existingPlan = await prisma.plan.findUnique({
+            where: { plan_id: parseInt(plan_id) }
         });
 
-        if (!plan) {
+        if (!existingPlan) {
             return res.status(404).json({ error: "Plan not found" });
         }
 
-        // ลบแผนการเดินทาง
         await prisma.plan.delete({
-            where: { plan_id: plan_id },
+            where: { plan_id: parseInt(plan_id) }
         });
 
         res.json({ message: "Plan removed successfully" });
     } catch (error) {
-        console.error(error);
+        console.error("Error removing plan:", error);
         res.status(500).json({ error: "Failed to remove plan" });
     }
 });
