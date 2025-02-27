@@ -1,44 +1,50 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /api/planner/user/{userId}:
+ * /api/planner/user:
  *   get:
- *     summary: ดึงแผนการเดินทางของผู้ใช้
+ *     summary: ดึงแผนการเดินทางของผู้ใช้จาก Cookie
  *     tags: [Planner]
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: integer
- *         description: user_id ของผู้ใช้
  *     responses:
  *       200:
- *         description: รายการแผนการเดินทาง
- *       404:
- *         description: ไม่พบแผนการเดินทาง
+ *         description: รายการแผนการเดินทางของผู้ใช้
+ *       401:
+ *         description: Unauthorized - No valid authentication
  *       500:
  *         description: Server error
  */
-router.get("/planner/user/:userId", async (req, res) => {
-    const { userId } = req.params;
-
+router.get("/planner/user", async (req, res) => {
     try {
+        const token = req.cookies.auth_token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+        }
+
+        let user_id;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            user_id = decoded.user_id; 
+        } catch (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+        }
+
         const plans = await prisma.plan.findMany({
-            where: { user_id: parseInt(userId) }, 
-            select: {
-                plan_id: true,
-                title: true,
-                start_time: true,
-                end_time: true,
-                created_at: true,
-                updated_at: true,
-            },
+            where: { user_id: parseInt(user_id) },
+            include: {
+                user: {   
+                    select: {
+                        user_id: true,
+                        username: true,
+                        email: true
+                    }
+                }
+            }
         });
 
         if (!plans || plans.length === 0) {
@@ -56,7 +62,7 @@ router.get("/planner/user/:userId", async (req, res) => {
  * @swagger
  * /api/planner/add:
  *   post:
- *     summary: เพิ่มแผนการเดินทางใหม่
+ *     summary: เพิ่มแผนการเดินทางใหม่ (ใช้ Cookie Authentication)
  *     tags: [Planner]
  *     requestBody:
  *       required: true
@@ -65,8 +71,6 @@ router.get("/planner/user/:userId", async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
  *               title:
  *                 type: string
  *               start_time:
@@ -80,17 +84,32 @@ router.get("/planner/user/:userId", async (req, res) => {
  *         description: เพิ่มแผนสำเร็จ
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized - User not logged in
  *       500:
  *         description: Server error
  */
 router.post("/planner/add", async (req, res) => {
-    const { user_id, title, start_time, end_time } = req.body;
-
-    if (!user_id || !title || !start_time || !end_time) {
-        return res.status(400).json({ error: "user_id, title, start_time, and end_time are required" });
-    }
-
     try {
+        const token = req.cookies.auth_token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+        }
+
+        let user_id;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            user_id = decoded.user_id;
+        } catch (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+        }
+
+        const { title, start_time, end_time } = req.body;
+
+        if (!title || !start_time || !end_time) {
+            return res.status(400).json({ error: "title, start_time, and end_time are required" });
+        }
+
         const newPlan = await prisma.plan.create({
             data: {
                 user_id: parseInt(user_id),
@@ -131,23 +150,42 @@ router.post("/planner/add", async (req, res) => {
  *         description: ข้อมูลไม่ถูกต้อง
  *       404:
  *         description: ไม่พบแผนการเดินทาง
+ *       403:
+ *         description: ไม่มีสิทธิ์ลบแผนนี้
  *       500:
  *         description: Server error
  */
 router.delete("/planner/remove", async (req, res) => {
-    const { plan_id } = req.body;
-
-    if (!plan_id) {
-        return res.status(400).json({ error: "plan_id is required" });
-    }
-
     try {
+        const token = req.cookies.auth_token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+        }
+
+        let user_id;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            user_id = decoded.user_id;
+        } catch (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+        }
+
+        const { plan_id } = req.body;
+
+        if (!plan_id) {
+            return res.status(400).json({ error: "plan_id is required" });
+        }
+
         const existingPlan = await prisma.plan.findUnique({
             where: { plan_id: parseInt(plan_id) }
         });
 
         if (!existingPlan) {
             return res.status(404).json({ error: "Plan not found" });
+        }
+
+        if (existingPlan.user_id !== parseInt(user_id)) {
+            return res.status(403).json({ error: "You do not have permission to delete this plan" });
         }
 
         await prisma.plan.delete({
