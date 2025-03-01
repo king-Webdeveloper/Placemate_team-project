@@ -199,4 +199,87 @@ router.delete("/planner/remove", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/planner/{planId}/add-place:
+ *   post:
+ *     summary: เพิ่มสถานที่ในแผนการเดินทาง
+ *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               place_id:
+ *                 type: string
+ *               start_time:
+ *                 type: string
+ *                 format: date-time
+ *               end_time:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: เพิ่มสถานที่สำเร็จ
+ *       400:
+ *         description: ข้อมูลไม่ถูกต้อง
+ *       404:
+ *         description: ไม่พบแผนการเดินทาง
+ *       500:
+ *         description: Server error
+ */
+router.post("/planner/:planId/add-place", async (req, res) => {
+    const { planId } = req.params;
+    const { place_id, start_time, end_time } = req.body;
+
+    const token = req.cookies.auth_token;
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+    }
+
+    let user_id;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user_id = decoded.user_id;
+    } catch (err) {
+        return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+    }
+
+    const plan = await prisma.plan.findUnique({ where: { plan_id: parseInt(planId) } });
+
+    if (!plan) {
+        return res.status(404).json({ error: "Plan not found" });
+    }
+
+    if (plan.user_id !== parseInt(user_id)) {
+        return res.status(403).json({ error: "You do not have permission to add places to this plan" });
+    }
+
+    try {
+        const newPlaceList = await prisma.place_list.create({
+            data: {
+                plan_id: parseInt(planId),
+                place_id: place_id,
+                start_time: new Date(start_time),
+                end_time: new Date(end_time),
+                created_at: new Date(),
+                updated_at: new Date(),
+            }
+        });
+
+        res.status(201).json(newPlaceList);
+    } catch (error) {
+        console.error("Error adding place:", error);
+        res.status(500).json({ error: "Failed to add place" });
+    }
+});
+
 module.exports = router;

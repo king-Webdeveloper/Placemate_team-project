@@ -12,7 +12,12 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());  // ใช้ middleware นี้ก่อนที่จะมีการจัดการ route อื่นๆ
 
-const allowedOrigins = ['http://localhost:3000']; // ใส่ URL ของ frontend ที่อนุญาต
+// const allowedOrigins = ['http://localhost:3000']; // ใส่ URL ของ frontend ที่อนุญาต
+
+const allowedOrigins = [
+  "http://localhost:3000",  // ✅ อนุญาต Frontend ของคุณ
+  "http://localhost:5000",  // ✅ อนุญาต Swagger UI (API Docs)
+];
 
 app.use(cors({
   origin: function (origin, callback) {
