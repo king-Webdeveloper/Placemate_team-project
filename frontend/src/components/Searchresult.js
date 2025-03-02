@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUserLocation } from "./getGeo";
 import { haversine } from "./haversine"; // Import the haversine function
+import "./Searchresult.css";
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา
@@ -107,19 +108,19 @@ const Searchresult = () => {
   
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center">
-      <div className="container mx-auto px-4 py-8 w-full max-w-4xl">
-        <h1 className="text-3xl font-bold text-center mb-8">ผลการค้นหา</h1>
+    <div >
+        <div className="center-box">
+        <h1 >ผลการค้นหา</h1>
 
         {/* User Location */}
-        <div>
+        
           <h2>User Location:</h2>
           {userLocation.lat && userLocation.lng ? (
             <p>Latitude: {userLocation.lat}, Longitude: {userLocation.lng}</p>
           ) : (
             <p>Loading location...</p>
           )}
-        </div>
+        
 
         {/* Search Bar */}
         <div className="searchbar-search-bar">
@@ -139,34 +140,51 @@ const Searchresult = () => {
         {searched && searchResults.length === 0 && (
           <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
         )}
+        <h2>ผลลัพธ์การค้นหา</h2>
+        </div>
 
         {searchResults.length > 0 && (
-          <div className="mt-4 w-full">
-            <h2 className="text-lg font-semibold">ผลลัพธ์การค้นหา</h2>
-            <ul className="searchbar-resultbox">
+          <div>
+            
+            {/* <ul className="searchbar-resultbox"> */}
+            <ul className="container-list">
+
               {searchResults.map((place) => (
-                <li key={place.id} className="result-listtogo">
-                  <span>{place.name}</span>
-                  <span> - {place.distance.toFixed(2)} km</span> {/* Display distance */}
-                  <button 
-                    onClick={() => handleAddPlace(place)} 
-                    className="bg-blue-500 text-white px-2 py-1 rounded-lg"
-                  >
-                    ➕ เพิ่มไปยัง List to go
-                  </button>
-                  <button 
-                    onClick={() => handleGoGoogleMap(place.place_id)} 
-                    className="bg-blue-500 text-white px-2 py-1 rounded-lg"
-                  >
-                    GO
-                  </button>
+
+                <li key={place.id} className="result-search">
+                  <div className="div-searchResult">
+                    <img 
+                      src={`/place_images/${place.place_id}.jpg`} 
+                      alt={`Place ${place.id}`} 
+                      className="place-image"
+                    />
+                    {/* <img src={`/place_images/${place.id}.jpg`} /> */}
+                    <span>{place.name}</span>
+                    {/* <span>{place}</span> */}
+                    <span> - {place.distance.toFixed(2)} km</span> {/* Display distance */}
+                  </div>
+                  
+                    <button 
+                      onClick={() => handleAddPlace(place)} 
+                      className="go-button"
+                    >
+                      ➕ เพิ่มไปยัง List to go
+                    </button>
+                    <button 
+                      onClick={() => handleGoGoogleMap(place.place_id)} 
+                      className="go-button"
+                    >
+                      GO
+                    </button>
+                  
                 </li>
+                
               ))}
             </ul>
           </div>
         )}
       </div>
-    </div>
+
   );
 };
 

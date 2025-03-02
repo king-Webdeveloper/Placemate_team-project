@@ -1,4 +1,4 @@
-.container {
+  .container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -50,5 +50,140 @@
 
   .searchbar-resultbox {
     gap:20px;
-    font-size: 20px;
+    font-size: 3rem;
+    font-weight: bold;
   }
+
+  .container-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 15px;
+    justify-content: center;
+  }
+  
+  .container-search {
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    transition: transform 0.2s ease-in-out;
+    overflow: hidden;
+  }
+  
+  .container-search:hover {
+    transform: scale(1.05);
+  }
+  
+  .container-search span {
+    display: block;
+    font-size: 16px;
+    color: white;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+  
+  .center-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+.result-search {
+  display: flex;
+  flex-direction: column;
+  width: 280px; /* Similar to YouTube video thumbnails */
+  background: #ffffff; /* Dark theme like YouTube */
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 8px;
+  margin: 10px;
+  box-shadow: 0 4px 8px rgba(49, 49, 49, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.result-search:hover {
+  transform: scale(1.01);
+}
+
+.go-buttom {
+  display: block;
+}
+
+/* Grid layout for YouTube-style alignment */
+.result-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.result-search {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* จัดให้ปุ่มอยู่ล่างสุดเสมอ */
+  width: 280px; /* กำหนดขนาดให้คงที่ */
+  height: 350px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.result-search:hover {
+  transform: scale(1.05);
+}
+
+/* ภาพ */
+.place-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* กล่องข้อมูล */
+.div-searchResult {
+  flex-grow: 1; /* ทำให้กล่องนี้ขยายเต็มพื้นที่ที่เหลืออยู่ */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* ดันเนื้อหาไปด้านบน */
+  padding: 10px;
+  color: black;
+  font-size: 14px;
+}
+
+/* กล่องปุ่ม */
+.go-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* เพิ่มช่องว่างระหว่างปุ่ม */
+  padding: 10px;
+}
+
+/* ปุ่ม */
+.go-button {
+  background-color: #ff0000; /* สีแดงสไตล์ YouTube */
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.go-button:hover {
+  background-color: #cc0000; /* สีแดงเข้มเมื่อ hover */
+}
