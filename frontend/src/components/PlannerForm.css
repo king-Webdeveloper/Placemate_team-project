@@ -1,0 +1,49 @@
+/* ปรับแต่งกล่องแบบฟอร์ม */
+.planner-form-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* ปรับแต่ง input */
+.planner-form-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* ปรับแต่งปุ่ม */
+.planner-form-container button {
+  background: #ff7f50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.planner-form-container button:hover {
+  background: #ff5733;
+}
+
+/* ข้อความแจ้งเตือน */
+.planner-form-container .message {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #28a745;
+}
+
+/* ข้อความแจ้งเตือนข้อผิดพลาด */
+.planner-form-container .error-message {
+  color: red;
+  font-weight: bold;
+}

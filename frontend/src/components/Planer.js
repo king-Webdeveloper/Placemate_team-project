@@ -1,114 +1,70 @@
-import React, { useState } from 'react';
-import './Planner.css'; // นำเข้า CSS ที่เฉพาะเจาะจงกับ Planner
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PlannerForm from './PlannerForm';
+import './Planner.css';
 
 const Planner = () => {
-    const [userId, setUserId] = useState('');
-    const [title, setTitle] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    const [plans, setPlans] = useState([]);
     const [message, setMessage] = useState('');
 
-    // ฟังก์ชันในการเริ่มต้นการเดินทาง
-    const handleStartTrip = () => {
-        setMessage("เริ่มต้นการเดินทาง");
-    };
-
-    // ฟังก์ชันในการลบแผนการเดินทาง
-    const handleDeletePlan = () => {
-        setUserId('');
-        setTitle('');
-        setStartTime('');
-        setEndTime('');
-        setMessage("ลบแผนการเดินทางเรียบร้อยแล้ว");
-    };
-
-    // ฟังก์ชันในการส่งข้อมูลแผนการเดินทาง
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const newPlan = {
-            user_id: parseInt(userId),
-            title: title,
-            start_time: startTime,
-            end_time: endTime,
-        };
-
-        try {
-            const response = await fetch('http://localhost:5000/api/planner/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newPlan),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                setMessage('แผนการเดินทางเพิ่มสำเร็จ!');
-                setUserId('');
-                setTitle('');
-                setStartTime('');
-                setEndTime('');
-            } else {
-                setMessage(result.error || 'เกิดข้อผิดพลาดในการเพิ่มแผน');
+    useEffect(() => {
+        const fetchPlans = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/planner/user', {
+                    withCredentials: true,
+                });
+                setPlans(response.data);
+            } catch (err) {
+                console.error("Error fetching plans:", err.response ? err.response.data : err);
+                setMessage('เกิดข้อผิดพลาดในการดึงข้อมูลแผน');
             }
+        };
+        fetchPlans();
+    }, []);
+
+    const handleDelete = async (planId) => {
+        try {
+            await axios.delete('http://localhost:5000/api/planner/remove', {
+                withCredentials: true,
+                data: { plan_id: planId }
+            });
+            setPlans(plans.filter(plan => plan.plan_id !== planId));
         } catch (err) {
-            console.error('Error:', err);
-            setMessage('เกิดข้อผิดพลาด!');
+            console.error("Error deleting plan:", err.response ? err.response.data : err);
         }
     };
 
     return (
-        <div className="planner-container">
-            <h1>สร้างแผนการเดินทางใหม่</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>User ID:</label>
-                    <input
-                        type="number"
-                        value={userId}
-                        onChange={(e) => setUserId(e.target.value)}
-                        placeholder="กรุณากรอก User ID"
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Title:</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="กรุณากรอกชื่อแผนการเดินทาง"
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Start Time:</label>
-                    <input
-                        type="datetime-local"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>End Time:</label>
-                    <input
-                        type="datetime-local"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">สร้างแผนการเดินทาง</button>
-            </form>
+        <div className="planner-page"> {/* เพิ่ม class สำหรับหน้านี้ */}
+            <div className="planner-container">
+                <h2>Your Travel Plans</h2>
+                {message && <p className="message">{message}</p>}
 
-            {message && <p>{message}</p>}
+                <PlannerForm setPlans={setPlans} />
 
-            <div className="planner-actions">
-                <button onClick={handleStartTrip}>เริ่มต้นการเดินทาง</button>
-                <button onClick={handleDeletePlan}>ลบแผนการเดินทาง</button>
+                <div className="plans-list">
+                    {plans.map((plan) => (
+                        <div key={plan.plan_id} className="plan-card">
+                            <div className="plan-header">
+                                <span className="plan-title">{plan.title}</span>
+                                <button className="start-trip-button">เริ่มต้นการเดินทาง</button>
+                            </div>
+                            <p className="plan-info">เริ่มเดินทาง: {new Date(plan.created_at).toLocaleDateString()}</p>
+
+                            <div className="plan-actions">
+                                <span className="action-button" onClick={() => handleDelete(plan.plan_id)}>
+                                    <i className="fas fa-trash"></i> ลบแผนการเดินทาง
+                                </span>
+                                <span className="action-button">
+                                    <i className="fas fa-link"></i> แชร์การเดินทาง
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* ปุ่มเพิ่มแผน */}
+                    <div className="add-plan-button">+</div>
+                </div>
             </div>
         </div>
     );
