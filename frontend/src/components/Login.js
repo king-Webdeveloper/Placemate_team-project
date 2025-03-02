@@ -21,6 +21,8 @@ function Login() {
           { withCredentials: true } // ต้องใช้เพื่อให้ axios ส่งคุกกี้ไปกับ request
       );
       
+
+      // localStorage.setItem("auth_token", response.data.token);
       // console.log("Login Successful:", response.data);
       // alert("Login Successful!");
 

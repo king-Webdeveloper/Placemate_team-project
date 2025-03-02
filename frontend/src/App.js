@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+// import React, { useEffect } from "react";
+// import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
@@ -26,11 +28,23 @@ function Content() {
   const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planer", "/aboutme"].includes(location.pathname);
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
+
+ // เช็คว่ามี `auth_token` ใน LocalStorage หรือไม่
+  // useEffect(() => {
+  //   const token = localStorage.getItem("auth_token");
+  //   console.log("🔍 Checking auth_token in LocalStorage:", token);
+
+  //   if (!token) {
+  //     console.warn("⚠ ไม่มี Token ใน LocalStorage, กรุณาล็อกอินใหม่");
+  //   }
+  // }, []);
+
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Homepage userLocation={userLocation} />} />
+        {/* <Route path="/" element={<Homepage />} /> */}
         <Route path="/login" element={<ProtectedLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
@@ -43,6 +57,7 @@ function Content() {
   );
 
   function ProtectedLogin() {
+    // const token = localStorage.getItem("auth_token");
     const token = localStorage.getItem("token");
     return token ? <Navigate to="/" replace /> : <Login />;
   }
