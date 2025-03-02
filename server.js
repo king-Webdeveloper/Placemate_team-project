@@ -24,8 +24,8 @@ app.use("/api", plannerRoutes);
 
 // เริ่มต้น Server
 app.listen(PORT, () => {
-  // console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Server is running on ${process.env.REACT_APP_API_URL}:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
+  // console.log(`Server is running on ${process.env.REACT_APP_API_URL}:${PORT}`);
 });
 
 
