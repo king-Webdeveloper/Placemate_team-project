@@ -14,7 +14,7 @@ function Homepage() {
       try {
         const response = await fetch("http://localhost:5000/api/cookies-check", {
           method: "GET",
-          credentials: "include", // ส่งคุกกี้
+          credentials: "include", 
         });
 
         const responseText = await response.text();

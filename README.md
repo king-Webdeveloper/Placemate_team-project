@@ -70,6 +70,9 @@ npm start
 # 1.ติดตั้ง cookie-parser ใน Express (backend)
 npm install cookie-parser
 
+# 2.ติดตั้ง js-cookies
+npm install js-cookie
+
 # To make web app can access location on mobile
 
 # 1. install Chocolatey:

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUserLocation } from "./getGeo";
 import { haversine } from "./haversine"; // Import the haversine function
+import "./Searchresult.css";
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา

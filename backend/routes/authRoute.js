@@ -205,7 +205,6 @@ router.post("/login", async (req, res) => {
 router.get("/cookies-check", (req, res) => {
     // ดึงค่า auth_token จากคุกกี้ที่ส่งมาจากฝั่ง frontend
     const token = req.cookies.auth_token;
-    console.log('Tokenfrom208', token)
 
     if (!token) {
         return res.status(401).json({ error: "Not authenticated" });
@@ -214,7 +213,6 @@ router.get("/cookies-check", (req, res) => {
     try {
         // ตรวจสอบ token และดึงข้อมูลจาก payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decode217', decoded)
         // ส่งเฉพาะ user_id และ username ที่ได้จาก token
         res.json({
             user_id: decoded.user_id,
