@@ -12,6 +12,11 @@ const Searchresult = () => {
   const navigate = useNavigate();
   const location = useLocation(); // ใช้สำหรับดึงค่า query จาก URL
 
+  const [userLocation, setUserLocation] = useState({ lat: null, lng: null }); // เก็บค่าพิกัด
+  const [locationReady, setLocationReady] = useState(false); // ตรวจสอบว่าโหลดค่าพิกัดเสร็จแล้วหรือยัง
+
+  const token = localStorage.getItem("token"); // ดึง token จาก localStorage หรือแก้ไขตามวิธีที่คุณใช้
+
   // ✅ ดึงค่า query จาก URL เมื่อโหลดหน้า
   useEffect(() => {
     const params = new URLSearchParams(location.search);

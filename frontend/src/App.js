@@ -13,6 +13,7 @@ import Searchresult from "./components/Searchresult";
 import Aboutme from "./components/Aboutme";
 import { getUserLocation } from "./components/getGeo";
 import "./App.css";
+import ProtectedLogin from "./components/ProtectedLogin";
 
 function App() {
   return (
@@ -56,11 +57,7 @@ function Content() {
     </>
   );
 
-  function ProtectedLogin() {
-    // const token = localStorage.getItem("auth_token");
-    const token = localStorage.getItem("token");
-    return token ? <Navigate to="/" replace /> : <Login />;
-  }
+  
 }
 
 export default App;
