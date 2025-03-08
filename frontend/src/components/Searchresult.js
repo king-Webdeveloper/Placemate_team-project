@@ -17,6 +17,12 @@ const Searchresult = () => {
 
   const token = localStorage.getItem("token"); // ดึง token จาก localStorage หรือแก้ไขตามวิธีที่คุณใช้
 
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // Store search text
+
+
   // ✅ ดึงค่า query จาก URL เมื่อโหลดหน้า
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -43,6 +49,41 @@ const Searchresult = () => {
     }
   }, [locationReady, searchTerm]);
 
+  // Lazy load
+  const fetchPlaces = async () => {
+    if (!hasMore || loading) return;
+  
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/search/places?query=${searchQuery}&page=${page}&limit=10`);
+      const data = await res.json();
+  
+      if (data.places.length === 0) {
+        setHasMore(false); // Stop loading if no more places
+      } else {
+        setSearchResults((prev) => [...prev, ...data.places]);
+        setPage(page + 1);
+      }
+    } catch (error) {
+      console.error("Error fetching places:", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 100
+      ) {
+        fetchPlaces();
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [searchQuery, page, hasMore]); // Fetch again if query changes
+
   const handleSearch = async (query) => {
     if (!query.trim() || !locationReady) return; // Only perform the search if location is ready
 
@@ -50,7 +91,8 @@ const Searchresult = () => {
     navigate(`/searchresult?query=${encodeURIComponent(query)}`);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/places?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`http://localhost:5000/api/search/places?query=${encodeURIComponent(query)}`, {
+      // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/places?query=${encodeURIComponent(query)}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,7 +123,8 @@ const Searchresult = () => {
 
   const handleAddPlace = async (place) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/addtolisttogo`, {
+      const response = await fetch(`http://localhost:5000/api/search/addtolisttogo`, {
+      // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/addtolisttogo`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -110,11 +153,11 @@ const Searchresult = () => {
   return (
     <div >
         <div className="center-box">
-        <h1 >ผลการค้นหา</h1>
+        {/* <h1 >ผลการค้นหา</h1> */}
 
         {/* User Location */}
         
-          <h2>User Location:</h2>
+          {/* <h2>User Location:</h2> */}
           {userLocation.lat && userLocation.lng ? (
             <p>Latitude: {userLocation.lat}, Longitude: {userLocation.lng}</p>
           ) : (
@@ -148,39 +191,40 @@ const Searchresult = () => {
             
             {/* <ul className="searchbar-resultbox"> */}
             <ul className="container-list">
-
               {searchResults.map((place) => (
-
                 <li key={place.id} className="result-search">
                   <div className="div-searchResult">
-                    <img 
-                      src={`/place_images/${place.place_id}.jpg`} 
-                      alt={`Place ${place.id}`} 
+                    <img
+                      src={`/place_images/${place.place_id}.jpg`}
+                      alt={`Place ${place.id}`}
                       className="place-image"
                     />
-                    {/* <img src={`/place_images/${place.id}.jpg`} /> */}
-                    <span>{place.name}</span>
-                    {/* <span>{place}</span> */}
-                    <span> - {place.distance.toFixed(2)} km</span> {/* Display distance */}
+                    <span>{place.name} {isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐"+ place.rating}</span>
+                    <span>
+                      {place.tag.map((tagObj, index) => (
+                        <span key={index}>
+                          <button className="tag-button">
+                            {tagObj.tag_name}{index !== place.tag.length - 1 ? ', ' : ''}
+                          </button>
+                        </span>
+                      ))}
+                    </span>
+
+                  <span> - {place.distance.toFixed(2)} km</span>
                   </div>
-                  
-                    <button 
-                      onClick={() => handleAddPlace(place)} 
-                      className="go-button"
-                    >
-                      ➕ เพิ่มไปยัง List to go
-                    </button>
-                    <button 
-                      onClick={() => handleGoGoogleMap(place.place_id)} 
-                      className="go-button"
-                    >
-                      GO
-                    </button>
-                  
+                  <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
+                    ดูสถานที่
+                  </button>
+                  <button onClick={() => handleAddPlace(place)} className="go-button">
+                    เพิ่มไปยัง List to go
+                  </button>
                 </li>
-                
               ))}
             </ul>
+
+            {/* Show "Loading..." if fetching more data */}
+            {loading && <p>Loading...</p>}
+
           </div>
         )}
       </div>

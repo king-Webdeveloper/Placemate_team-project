@@ -90,22 +90,7 @@
     justify-content: center;
   }
 
-.result-search {
-  display: flex;
-  flex-direction: column;
-  width: 280px; /* Similar to YouTube video thumbnails */
-  background: #ffffff; /* Dark theme like YouTube */
-  border-radius: 10px;
-  overflow: hidden;
-  padding: 8px;
-  margin: 10px;
-  box-shadow: 0 4px 8px rgba(49, 49, 49, 0.2);
-  transition: transform 0.2s ease-in-out;
-}
 
-.result-search:hover {
-  transform: scale(1.01);
-}
 
 .go-buttom {
   display: block;
@@ -124,19 +109,19 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* จัดให้ปุ่มอยู่ล่างสุดเสมอ */
-  width: 280px; /* กำหนดขนาดให้คงที่ */
-  height: 350px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
-  background: white;
+  width: 275px; /* Similar to YouTube video thumbnails */
+  height: 370px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
+  background: #ffffff; /* Dark theme like YouTube */
   border-radius: 10px;
   overflow: hidden;
   padding: 10px;
   margin: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(49, 49, 49, 0.2);
   transition: transform 0.2s ease-in-out;
 }
 
 .result-search:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
 }
 
 /* ภาพ */
@@ -186,4 +171,25 @@
 
 .go-button:hover {
   background-color: #cc0000; /* สีแดงเข้มเมื่อ hover */
+}
+
+.tag-button {
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  padding: 3px 5px;
+  margin: 2px;
+  border: none;
+  border-radius: 15px; 
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: inline-block; 
+}
+
+.tag-button:hover {
+  background-color: #ddd; 
+}
+
+.tag-button:active {
+  background-color: #bbb;
 }

@@ -18,15 +18,16 @@ app.use("/api", authRoutes);
 
 // เริ่มต้น Server
 app.listen(PORT, () => {
-  // console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Server is running on ${process.env.REACT_APP_API_URL}:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
+  // console.log(`Server is running on ${process.env.REACT_APP_API_URL}:${PORT}`);
 });
 
 
 const pool = new Pool({
   user: 'your_user',
   // host: 'localhost',
-  host: process.env.REACT_APP_API_URL,
+  host: 'http://localhost:5000',
+  // host: process.env.REACT_APP_API_URL,
   database: 'user_auth',
   password: 'your_password',
   port: 5432,

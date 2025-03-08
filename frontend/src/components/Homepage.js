@@ -8,6 +8,11 @@ function Homepage() {
   const [username, setUsername] = useState(""); // เก็บชื่อผู้ใช้เมื่อเข้าสู่ระบบแล้ว
   const navigate = useNavigate();  
 
+  const [places, setPlaces] = useState([]); // Store places
+  const [page, setPage] = useState(1); // Track current page
+  const [loading, setLoading] = useState(false); // Track loading state
+  const [hasMore, setHasMore] = useState(true); // Check if more data is available
+
   useEffect(() => {
     // ฟังก์ชันตรวจสอบสถานะการล็อกอิน
     const checkLoginStatus = async () => {
@@ -40,6 +45,58 @@ function Homepage() {
       navigate(`/searchresult?query=${encodeURIComponent(query.trim())}`);
     }
   };
+
+  const handleGoGoogleMap = (placeId) => {
+    // Construct the Google Maps URL with the latitude and longitude
+    const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
+    // Open the URL in a new tab
+    window.open(googleMapsUrl, "_blank");
+  };
+
+  const fetchPlaces = async () => {
+    if (!hasMore || loading) return;
+  
+    setLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/getplaces?page=${page}&limit=3`); // Use port 5000
+  
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned non-JSON response");
+      }
+  
+      const data = await res.json();
+      console.log(data);
+  
+      if (data.places.length === 0) {
+        setHasMore(false);
+      } else {
+        setPlaces((prev) => [...prev, ...data.places]);
+        setPage(page + 1);
+      }
+    } catch (error) {
+      console.error("Error fetching places:", error);
+    }
+    setLoading(false);
+  };
+ 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        !loading
+      ) {
+        fetchPlaces();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading]);
+
+  useEffect(() => {
+    fetchPlaces();
+  }, []);
 
   return (
     <div className="homepage">
@@ -81,87 +138,64 @@ function Homepage() {
           </button>
         </div>
       </section>
-
-      {/* ✅ Hero Section */}
-      <section className="hero">
-        <div className="carousel">
-          {[
-            { img: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg", title: "อาหารรสเลิศ" },
-            { img: "https://images.pexels.com/photos/416717/pexels-photo-416717.jpeg", title: "ออกกำลังกาย" }
-          ].map((slide, index) => (
-            <div key={index} className="slide">
-              <img src={slide.img} alt={slide.title} className="carousel-image" />
-              <h1 className="hero-title">{slide.title}</h1>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ✅ Recommended Places */}
-      <section className="recommended">
-        <h2>แนะนำสำหรับคุณ</h2>
-        <div className="place-grid">
-          {[
-            { name: "ห้องสมุดเพื่อการเรียนรู้ทุ่งครุ", category: "เสริมสร้างความรู้", rating: 4.7, image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg" },
-            { name: "สวนธนบุรีรมย์", category: "ออกกำลังกาย", rating: 4.5, image: "https://images.pexels.com/photos/414102/pexels-photo-414102.jpeg" },
-            { name: "ศูนย์กีฬาฉลิมพระเกียรติ (บางมด)", category: "ออกกำลังกาย", rating: 4.9, image: "https://images.pexels.com/photos/280222/pexels-photo-280222.jpeg" },
-            { name: "ตลาดใหญ่ทุ่งครุ", category: "อาหารรสเลิศ", rating: 4.2, image: "https://images.pexels.com/photos/248444/pexels-photo-248444.jpeg" }
-          ].map((place, index) => (
-            <div key={index} className="place-card">
-              <img src={place.image} alt={place.name} className="place-image" />
-              <div className="place-info">
-                <span className="place-category">{place.category}</span>
-                <h3>{place.name}</h3>
-                <span className="place-rating">⭐ {place.rating}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
       
-      {/* ✅ FAQ Section */}
-      <section className="faq">
-        <h2>คำถามที่พบบ่อย</h2>
-        <div className="faq-item">
-          <button className="faq-question">จะสร้าง PLANNER ได้อย่างไร ? <span>▼</span></button>
-          <div className="faq-answer">คุณสามารถสร้าง PLANNER ได้โดย...</div>
+      <h2>แนะนำสำหรับคุณ</h2>
+      <section className="recommended">
+        <div className="set-center">
+          <button>เพิ่มเติม</button>
         </div>
-        <div className="faq-item">
-          <button className="faq-question">จะสมัครบัญชีได้อย่างไร ? <span>▼</span></button>
-          <div className="faq-answer">คุณสามารถสมัครบัญชีโดย...</div>
+      </section>
+
+      <h2>ยอดนิยม</h2>
+      <section className="recommended">
+        <div className="set-center">
+          <button>เพิ่มเติม</button>
         </div>
-        <div className="faq-item">
-          <button className="faq-question">จะหาสถานที่ทำกิจกรรมได้อย่างไร ? <span>▼</span></button>
-          <div className="faq-answer">คุณสามารถค้นหาสถานที่ได้จาก...</div>
-        </div>
+      </section>
+
+      <h2>คุณอาจชอบ</h2>
+      <section className="recommended">
+      <div className="place-grid">
+        {places?.map((place, index) => (  // ใช้ ?.map() เพื่อหลีกเลี่ยง error
+          <div key={index} className="place-card">
+            <a href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`} target="_blank" rel="noopener noreferrer">
+              <img
+                src={`/place_images/${place.place_id}.jpg`}  
+                alt={`Place ${place.id}`} 
+                className="place-image"
+              />
+            </a>
+            
+
+            <div className="place-info">
+              <span className="place-category">
+                {place.tags?.map((tag, index) => (
+                  <span key={index}>
+                    <button className="tag-button">
+                      {tag}{index !== place.tags.length - 1 ? ', ' : ''}
+                    </button>
+                  </span>
+                )) || "ไม่ระบุ"}
+              </span>
+              
+              <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐"+ place.rating}</span>
+              {/* <span className="place-rating">⭐ {place.rating || "N/A"}</span> */}
+              <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
+                ดูสถานที่
+              </button>
+              <button className="go-button">
+                เพิ่มไปยัง List to go
+              </button>
+            </div>
+
+          </div>
+        )) || <p>ไม่มีข้อมูลสถานที่</p>}  {/* แสดงข้อความถ้าไม่มีข้อมูล */}
+      </div>
+
+      {loading && <p>กำลังโหลด...</p>}
       </section>
     </div>
   );
 }
 
 export default Homepage;
-
-
-
-
-// function Homepage() {
-//   return (
-//     <div className="homepage">
-//       <header>
-//         <img src="/PM1.1.png" alt="Logo" className="logo" />
-//         <nav>
-//           <Link to="/login">Login</Link>
-//           <Link to="/register">Register</Link>
-//         </nav>
-//       </header>
-
-//       <section className="hero">
-//         <h1>Welcome to My Website</h1>
-//         <p>Your one-stop solution for everything.</p>
-//         <Link to="/register" className="btn">Get Started</Link>
-//       </section>
-//     </div>
-//   );
-// }
-
-// export default Homepage;
