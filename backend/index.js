@@ -25,6 +25,8 @@ const allowedOrigins = [
   "http://localhost:5000", // Allow Swagger UI
 ];
 
+
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -37,17 +39,17 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// ✅ Middleware Order
-app.use(cookieParser()); // ต้องมาก่อน request อื่นๆ
-app.use(express.json()); // รองรับ JSON Body
-app.use(bodyParser.json());
+// // ✅ Middleware Order
+// app.use(cookieParser()); // ต้องมาก่อน request อื่นๆ
+// app.use(express.json()); // รองรับ JSON Body
+// app.use(bodyParser.json());
 
-// ✅ Debugging Middleware
-app.use((req, res, next) => {
-  console.log("🌍 Incoming Request:", req.method, req.url);
-  console.log("🍪 Cookies Received:", req.cookies);
-  next();
-});
+// // ✅ Debugging Middleware
+// app.use((req, res, next) => {
+//   console.log("🌍 Incoming Request:", req.method, req.url);
+//   console.log("🍪 Cookies Received:", req.cookies);
+//   next();
+// });
 
 
 

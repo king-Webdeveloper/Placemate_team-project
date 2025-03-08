@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+const cookieParser = require("cookie-parser");
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +13,8 @@ const port = 5000;
 // Middleware
 app.use(cors()); // อนุญาตให้ Frontend เชื่อมต่อได้
 app.use(bodyParser.json());
+app.use(cookieParser());
+
 
 // ใช้ Routes ของ Auth
 const authRoutes = require('./routes/auth'); // นำเข้า authRoutes
@@ -38,8 +41,8 @@ const pool = new Pool({
   port: 5432,
 });
 
-app.use(cors());
-app.use(bodyParser.json());
+// app.use(cors());
+// app.use(bodyParser.json());
 
 // Register
 app.post('/register', async (req, res) => {
