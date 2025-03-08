@@ -34,7 +34,8 @@ app.listen(PORT, () => {
 
 const pool = new Pool({
   user: 'your_user',
-  host: 'localhost',
+  // host: 'localhost',
+  host: 'http://localhost:5000',
   // host: process.env.REACT_APP_API_URL,
   database: 'user_auth',
   password: 'your_password',

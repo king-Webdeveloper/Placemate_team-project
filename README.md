@@ -70,6 +70,9 @@ npm start
 # 1.ติดตั้ง cookie-parser ใน Express (backend)
 npm install cookie-parser
 
+# 2.ติดตั้ง js-cookies
+npm install js-cookie
+
 # To make web app can access location on mobile
 
 # 1. install Chocolatey:
@@ -83,10 +86,6 @@ choco install mkcert -y
 
 # 3. create certificate
 mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
-
-
-
-
 
 # เพิ่มข้อมูลลงใน schema prisma (backend) ส่วนของ plan
 
@@ -104,3 +103,8 @@ mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
 # 3.หลังจากขึ้นแล้วให้ใช้คำสั่ง npx prisma migrate resolve --applied "ชื่อที่ migration" (แจ้งให้ prisma รู้ว่า migration ถูกใช้งานแล้ว)
 
 # 4.ใช้คำสั่ง npx prisma db push เพื่ออัปเดตโครงสร้าง Database หลังจากนั้นให้รัสตาร์ทโปรแกรมและเปิดใหม่
+# For making A beautiful responsive for website(download in frontend)
+
+# 1.Download sweetalert2
+npm install sweetalert2
+

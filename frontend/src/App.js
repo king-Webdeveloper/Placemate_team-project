@@ -12,22 +12,24 @@ import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
 import Aboutme from "./components/Aboutme";
 import { getUserLocation } from "./components/getGeo";
-import "./App.css";
 import ProtectedLogin from "./components/ProtectedLogin";
+import { AuthProvider } from "./context/Pathmanagement"; // นำเข้า AuthProvider
+import "./App.css";
 
 function App() {
   return (
-    <Router>
-      <Content />
-    </Router>
+    <AuthProvider> 
+      <Router>
+        <Content />
+      </Router>
+    </AuthProvider>
   );
 }
 
 function Content() {
   const location = useLocation();
-  // const showNavbar = ["/profile", "/listtogo", "/searchresult", "/planer", "/aboutme"].includes(location.pathname);
-  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planer", "/aboutme"].includes(location.pathname);
-  const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
+  const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
+  // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
 
  // เช็คว่ามี `auth_token` ใน LocalStorage หรือไม่
@@ -56,8 +58,6 @@ function Content() {
       </Routes>
     </>
   );
-
-  
 }
 
 export default App;
