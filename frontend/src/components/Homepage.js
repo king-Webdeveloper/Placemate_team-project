@@ -1,37 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
 import "./Homepage.css";
 
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState(""); // เก็บชื่อผู้ใช้เมื่อเข้าสู่ระบบแล้ว
-  const navigate = useNavigate();  
+  const { isLoggedIn, setIsLoggedIn, username, setUsername } = useAuth(); // ดึงข้อมูลจาก context
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    // ฟังก์ชันตรวจสอบสถานะการล็อกอิน
     const checkLoginStatus = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/cookies-check", {
           method: "GET",
-          credentials: "include", 
+          credentials: "include",
         });
-
+  
         const responseText = await response.text();
         const data = JSON.parse(responseText);
-
+  
         if (response.ok) {
           setIsLoggedIn(true);
-          setUsername(data.username); // ตั้งค่า username จากข้อมูลที่ได้
+          setUsername(data.username);
         } else {
-          setIsLoggedIn(false); // ถ้าไม่ได้รับข้อมูลผู้ใช้
+          setIsLoggedIn(false);
         }
       } catch (error) {
         console.error("Error checking login status:", error);
-        setIsLoggedIn(false); // ถ้ามีข้อผิดพลาด
+        setIsLoggedIn(false);
       }
     };
-
+  
     checkLoginStatus();
   }, []);
 
@@ -43,7 +42,6 @@ function Homepage() {
 
   return (
     <div className="homepage">
-      {/* ✅ Navbar & Search Bar */}
       <header className="navbar">
         <img src="/PM1.1.png" alt="Logo" className="logo" />
         <nav className="navbar-nav">
@@ -52,7 +50,7 @@ function Homepage() {
           <Link to="/about">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
-          <Link to="/profile" className="nav-profile">{username}</Link> // แสดงชื่อผู้ใช้
+          <Link to="/profile" className="nav-profile">{username}</Link>
         ) : (
           <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
         )}

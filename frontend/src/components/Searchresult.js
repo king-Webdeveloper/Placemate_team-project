@@ -1,3 +1,4 @@
+//Searchresult.js [frontend]
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUserLocation } from "./getGeo";
@@ -81,23 +82,43 @@ const Searchresult = () => {
 
   const handleAddPlace = async (place) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/addtolisttogo`, {
+      // ดึง userId จาก cookies ด้วยการเรียก API /cookies-check
+      const response = await fetch("http://localhost:5000/api/cookies-check", {
+        method: "GET",
+        credentials: "include",  // ส่งคุกกี้ไปด้วย
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch user ID from cookies");
+      }
+  
+      const data = await response.json();
+      const userId = data.user_id; // รับ user_id จาก response
+  
+      // ส่ง request เพื่อเพิ่มสถานที่ไปยัง list_to_go
+      const addPlaceResponse = await fetch("http://localhost:5000/api/list-to-go/add", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // token สำหรับ authorization
         },
-        body: JSON.stringify({ name: place.name }),
+        body: JSON.stringify({
+          user_id: userId,  // ส่ง user_id ที่ได้รับจาก cookies
+          name: place.name, // ชื่อสถานที่ที่จะเพิ่ม
+        }),
       });
-
-      if (!response.ok) throw new Error("Failed to add place");
-
-      const newPlace = await response.json();
-      setPlaces([...places, newPlace]); // อัปเดตรายการสถานที่ที่บันทึกไว้
+  
+      if (!addPlaceResponse.ok) {
+        throw new Error("Failed to add place");
+      }
+  
+      const newPlace = await addPlaceResponse.json();
+      setPlaces([...places, newPlace]); // เพิ่มสถานที่ใหม่ในรายการที่เก็บไว้
     } catch (error) {
       console.error("Error adding place:", error);
     }
   };
+  
 
   const handleGoGoogleMap = (placeId) => {
     // Construct the Google Maps URL with the latitude and longitude

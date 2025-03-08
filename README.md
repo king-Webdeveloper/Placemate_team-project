@@ -87,3 +87,8 @@ choco install mkcert -y
 # 3. create certificate
 mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
 
+# For making A beautiful responsive for website(download in frontend)
+
+# 1.Download sweetalert2
+npm install sweetalert2
+

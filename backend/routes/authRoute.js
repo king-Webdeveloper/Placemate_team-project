@@ -187,7 +187,6 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// authRoute.js [backend]
 /**
  * @swagger
  * /api/cookies-check:
