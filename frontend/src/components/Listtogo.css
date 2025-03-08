@@ -1,54 +1,132 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
+/* listtogo.css [frontend] */
+/* Main container styling */
+.listtogo-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5; /* Light background color */
+  border-radius: 20px; /* Soft corners */
+}
 
-  .listtogo-search-bar {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 600px; /* ปรับขนาดสูงสุดของช่องค้นหา */
-    background-color: #ddd; /* สีเทาอ่อน */
-    border-radius: 25px; /* มุมโค้ง */
-    padding: 5px;
-    position: relative;
-  }
-  
-  .listtogo-search-input {
-    flex: 1; 
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 25px; /* ทำให้ขอบโค้ง */
-  }
-  
-  .listtogo-search-button {
-    background-color: #666; /* สีเทาเข้ม */
-    color: white;
-    border: none;
-    border-radius: 20px; /* ทำให้ปุ่มโค้ง */
-    padding: 8px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-left: 5px;
-  }
-  
-  .listtogo-search-button:hover {
-    background-color: #555; /* สีเข้มขึ้นเมื่อ hover */
-  }
+/* Search Bar */
+.searchbar-search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  border-radius: 25px;
+  background-color: #e2e2e2;
+}
 
-  .listtogo-resultbox {
-    gap:20px;
-    font-size: 20px;
-  }
+.searchbar-search-input {
+  width: 80%;
+  border: none;
+  border-radius: 25px;
+  background-color: #fff;
+  font-size: 16px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.searchbar-search-button {
+  background-color: #4CAF50; /* A green button */
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Title styling */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Search Result Box */
+.listtogo-searchbar-resultbox {
+  width: 100%;
+  max-width: 1280px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.result-listtogo {
+  background-color: white;
+  width: 100%; /* Set to 100% of the parent container */
+  max-width: 1020px; /* You can adjust this as needed */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin: 10px;
+}
+
+.result-listtogo:hover {
+  transform: scale(1.05);
+}
+
+/* Image Styling */
+.place-image-container {
+  align-items: center;
+  width: 100%;  /* Set the container width to 100% */
+  height: 160px; /* Adjust this value to increase the block size */
+  overflow: hidden;
+  position: relative;
+}
+
+.place-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Make the image stretch to fill the container, ignoring the aspect ratio */
+}
+
+/* Add a dark overlay on top of the image */
+.place-image-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 1; /* Place it above the image, but below the text */
+}
+
+/* Text styling */
+.place-name {
+  position: absolute;
+  bottom: 10px; /* Position the text 10px from the bottom */
+  left: 10px; /* Position the text 10px from the left */
+  color: white;
+  font-weight: bold;
+  font-size: 22px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Keep text shadow for readability */
+  z-index: 2; /* Ensure the text is above the image */
+}
+
+/* Remove Button */
+.remove-button {
+  position: absolute;
+  bottom: 10px;  /* Position the button at the bottom */
+  left: 90%;  /* Center the button horizontally */
+  transform: translateX(-50%); /* Adjust to perfectly center the button */
+  padding: 8px 15px;
+  background-color: #d33;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 2; /* Ensure the button appears above the image */
+  transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+  background-color: #c13a3a; /* Slightly darker red on hover */
+}

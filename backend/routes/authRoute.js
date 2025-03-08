@@ -187,7 +187,6 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// authRoute.js [backend]
 /**
  * @swagger
  * /api/cookies-check:
@@ -200,12 +199,29 @@ router.post("/login", async (req, res) => {
  *       401:
  *         description: Unauthorized
  */
+router.get("/get-cookie", (req, res) => {
+    const token = req.cookies.auth_token;
+
+    try {
+        // ตรวจสอบ token และดึงข้อมูลจาก payload
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // ส่งเฉพาะ user_id และ username ที่ได้จาก token
+        res.json({
+            user_id: decoded.user_id,
+            token: token
+        });
+        
+    } catch (error) {
+        // กรณี token หมดอายุหรือไม่ถูกต้อง
+        res.status(401).json({ error: "Invalid or expired token" });
+    }
+});
+
 
 // authRoute.js [backend]
 router.get("/cookies-check", (req, res) => {
     // ดึงค่า auth_token จากคุกกี้ที่ส่งมาจากฝั่ง frontend
     const token = req.cookies.auth_token;
-    console.log('Tokenfrom208', token)
 
     if (!token) {
         return res.status(401).json({ error: "Not authenticated" });
@@ -214,7 +230,6 @@ router.get("/cookies-check", (req, res) => {
     try {
         // ตรวจสอบ token และดึงข้อมูลจาก payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decode217', decoded)
         // ส่งเฉพาะ user_id และ username ที่ได้จาก token
         res.json({
             user_id: decoded.user_id,

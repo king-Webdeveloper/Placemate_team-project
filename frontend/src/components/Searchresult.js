@@ -1,12 +1,13 @@
+//Searchresult.js [frontend]
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUserLocation } from "./getGeo";
 import { haversine } from "./haversine"; // Import the haversine function
 import "./Searchresult.css";
+import handleAddPlace from "./handleAddPlace";
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา
-  const [places, setPlaces] = useState([]); // รายการที่บันทึกไว้
   const [searchResults, setSearchResults] = useState([]); // ผลลัพธ์การค้นหา
   const [searched, setSearched] = useState(false); // เช็คว่ามีการกดค้นหาหรือยัง
   const navigate = useNavigate();
@@ -15,12 +16,10 @@ const Searchresult = () => {
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null }); // เก็บค่าพิกัด
   const [locationReady, setLocationReady] = useState(false); // ตรวจสอบว่าโหลดค่าพิกัดเสร็จแล้วหรือยัง
 
-  const token = localStorage.getItem("token"); // ดึง token จาก localStorage หรือแก้ไขตามวิธีที่คุณใช้
-
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Store search text
+  const [searchQuery] = useState(""); // Store search text
 
 
   // ✅ ดึงค่า query จาก URL เมื่อโหลดหน้า
@@ -95,7 +94,7 @@ const Searchresult = () => {
       // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/places?query=${encodeURIComponent(query)}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -120,28 +119,7 @@ const Searchresult = () => {
       console.error("Error searching places:", error);
     }
   };
-
-  const handleAddPlace = async (place) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/search/addtolisttogo`, {
-      // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/addtolisttogo`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: place.name }),
-      });
-
-      if (!response.ok) throw new Error("Failed to add place");
-
-      const newPlace = await response.json();
-      setPlaces([...places, newPlace]); // อัปเดตรายการสถานที่ที่บันทึกไว้
-    } catch (error) {
-      console.error("Error adding place:", error);
-    }
-  };
-
+  
   const handleGoGoogleMap = (placeId) => {
     // Construct the Google Maps URL with the latitude and longitude
     const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
@@ -215,7 +193,7 @@ const Searchresult = () => {
                   <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
                     ดูสถานที่
                   </button>
-                  <button onClick={() => handleAddPlace(place)} className="go-button">
+                  <button onClick={() => handleAddPlace(place, navigate)} className="go-button">
                     เพิ่มไปยัง List to go
                   </button>
                 </li>
