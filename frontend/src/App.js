@@ -28,7 +28,7 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
+  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planer"].includes(location.pathname);
   // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
 
@@ -46,8 +46,8 @@ function Content() {
     <>
       {showNavbar && <Navbar />}
       <Routes>
-        <Route path="/" element={<Homepage userLocation={userLocation} />} />
-        {/* <Route path="/" element={<Homepage />} /> */}
+        {/* <Route path="/" element={<Homepage userLocation={userLocation} />} /> */}
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<ProtectedLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />

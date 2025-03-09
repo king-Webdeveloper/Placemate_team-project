@@ -7,6 +7,35 @@ const Planner = () => {
     const [plans, setPlans] = useState([]);
     const [message, setMessage] = useState('');
 
+    // ฟังก์ชันดึงข้อมูล Token (ต้องเป็น async)
+    const fetchToken = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/get-cookie", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch user token from cookies");
+            }
+
+            const data = await response.json();
+            if (!data.token) {
+                console.error("No token found, redirecting...");
+                return;
+            }
+
+            console.log("User ID:", data.user_id, "Token:", data.token);
+        } catch (error) {
+            console.error("Error fetching token:", error);
+        }
+    };
+
+    // เรียกใช้ฟังก์ชัน fetchToken เมื่อ component โหลด
+    useEffect(() => {
+        fetchToken();
+    }, []);
+
     useEffect(() => {
         const fetchPlans = async () => {
             try {
@@ -35,7 +64,7 @@ const Planner = () => {
     };
 
     return (
-        <div className="planner-page"> {/* เพิ่ม class สำหรับหน้านี้ */}
+        <div className="planner-page">
             <div className="planner-container">
                 <h2>Your Travel Plans</h2>
                 {message && <p className="message">{message}</p>}
@@ -62,7 +91,6 @@ const Planner = () => {
                         </div>
                     ))}
 
-                    {/* ปุ่มเพิ่มแผน */}
                     <div className="add-plan-button">+</div>
                 </div>
             </div>
