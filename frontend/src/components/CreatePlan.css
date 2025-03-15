@@ -1,0 +1,67 @@
+/* ปรับแต่งหน้าสำหรับหน้า Create Plan */
+.create-plan-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+    padding: 20px;
+    flex-direction: column;
+  }
+  
+  /* ปรับแต่งหัวข้อหน้า */
+  .create-plan-page h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* กรอบของฟอร์ม */
+  .create-plan-page .planner-form-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* เพิ่มระยะห่างระหว่างฟอร์ม */
+  .create-plan-page .planner-form-container input,
+  .create-plan-page .planner-form-container button {
+    margin-bottom: 15px;
+  }
+  
+  .create-plan-page .planner-form-container .cancel-button {
+    background: #f0f0f0;
+    color: #333;
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .create-plan-page .planner-form-container .cancel-button:hover {
+    background: #ddd;
+  }
+  
+  /* ปรับขนาดข้อความ */
+  .create-plan-page .planner-form-container .message {
+    font-size: 1rem;
+    color: #28a745;
+    margin-top: 10px;
+  }
+  
+  /* ข้อความข้อผิดพลาด */
+  .create-plan-page .planner-form-container .error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
