@@ -120,7 +120,7 @@ function Homepage() {
             </Link>
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
-          <Link to="/planer">PLANNER</Link>
+          <Link to="/planner">PLANNER</Link>
           <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (

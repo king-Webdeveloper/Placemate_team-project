@@ -7,9 +7,12 @@ import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
-import Planer from "./components/Planer";
+import Planner from "./components/Planner";
+import PlanDetails from './components/PlanDetails';
+import CreatePlan from './components/CreatePlan';
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
+import SearchPlace from "./components/SearchPlace";
 import Aboutme from "./components/Aboutme";
 import { getUserLocation } from "./components/getGeo";
 import ProtectedLogin from "./components/ProtectedLogin";
@@ -28,7 +31,10 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planer"].includes(location.pathname);
+  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place"].includes(location.pathname);
+  // const showNavbar = location.pathname.includes("/plan-details");
+
+  console.log("Current Path:", location.pathname);  // ตรวจสอบเส้นทางที่กำลังใช้อยู่
   // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
 
@@ -53,7 +59,10 @@ function Content() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
-        <Route path="/planer" element={<Planer />} />
+        <Route path="/planner" element={<Planner />} />
+        <Route path="/plan-details/:planId" element={<PlanDetails />} />
+        <Route path="/create-plan" element={<CreatePlan />} />
+        <Route path="/search-place" element={<SearchPlace />} />
         <Route path="/aboutme" element={<Aboutme />} />
       </Routes>
     </>

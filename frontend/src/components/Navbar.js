@@ -40,7 +40,7 @@ const Navbar = () => {
         </Link>
         <nav className="navbar-center">
           <Link to="/listtogo">List to Go</Link>
-          <Link to="/planer">Planner</Link>
+          <Link to="/planner">Planner</Link>
           <Link to="/aboutus">About us</Link>
         </nav>
         {/* แสดงปุ่มตามสถานะการล็อกอิน */}

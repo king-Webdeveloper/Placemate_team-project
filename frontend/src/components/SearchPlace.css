@@ -1,0 +1,153 @@
+/* Container */
+.searchplace-search-place-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;  /* เพิ่มความสูงขั้นต่ำเพื่อให้แน่ใจว่าเนื้อหาครอบคลุมหน้าจอ */
+}
+
+/* Search Bar */
+.searchplace-search-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    background-color: #ddd;
+    border-radius: 25px;
+    padding: 5px;
+    position: relative;
+}
+
+.searchplace-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 25px;
+}
+
+.searchplace-search-button {
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.searchplace-search-button:hover {
+    background-color: #555;
+}
+
+/* Grid Layout for Search Results */
+.searchplace-search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* ลดขนาดของคอลัมน์ลงเล็กน้อย */
+    gap: 16px;
+    padding: 15px;
+    justify-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Individual Place Item */
+.searchplace-place-item {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    transition: transform 0.2s ease-in-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;  /* ทำให้เนื้อหาภายในไอเทมจัดให้ห่างจากปุ่ม */
+    height: 100%;
+}
+
+.searchplace-place-item:hover {
+    transform: scale(1.05);
+}
+
+.searchplace-place-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* จัดให้ปุ่มอยู่ข้างล่างสุด */
+    height: 100%;
+}
+
+/* Image Styling */
+.searchplace-place-item img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Information Box */
+.searchplace-place-item div {
+    padding: 10px;
+}
+
+.searchplace-place-item p {
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Button Styling */
+.searchplace-place-item button {
+    background-color: #ff0000;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;  /* ทำให้ปุ่มเต็มความกว้างของไอเทม */
+    height: 40px;  /* กำหนดความสูงของปุ่ม */
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.searchplace-place-item button:last-of-type {
+    margin-top: 15px;  /* เพิ่มระยะห่างสำหรับปุ่มสุดท้าย */
+}
+
+.searchplace-place-item button:hover {
+    background-color: #cc0000;
+}
+
+.div-searchResult{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.searchplace-search-results .result-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* จัดให้ปุ่มอยู่ล่างสุดเสมอ */
+    width: 275px; /* Similar to YouTube video thumbnails */
+    height: 450px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
+    background: #ffffff; /* Dark theme like YouTube */
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(49, 49, 49, 0.2);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .searchplace-search-results .result-search:hover {
+    transform: scale(1.01);
+  }

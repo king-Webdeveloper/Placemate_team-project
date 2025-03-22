@@ -77,6 +77,11 @@ const Planner = () => {
         });
     };
 
+    const handleStartTrip = (planId) => {
+        // เมื่อคลิกปุ่มเริ่มต้นการเดินทาง, จะพาไปยังหน้ารายละเอียดของแผนการเดินทาง
+        navigate(`/plan-details/${planId}`);
+    };
+
     return (
         <div className="planner-page">
             <div className="planner-container">
@@ -91,7 +96,12 @@ const Planner = () => {
                         <div key={plan.plan_id} className="plan-card">
                             <div className="plan-header">
                                 <span className="plan-title">{plan.title}</span>
-                                <button className="start-trip-button">เริ่มต้นการเดินทาง</button>
+                                <button 
+                                className="start-trip-button" 
+                                onClick={() => handleStartTrip(plan.plan_id)} // เพิ่มการคลิกเพื่อไปหน้า PlanDetails
+                            >
+                                เริ่มต้นการเดินทาง
+                            </button>
                             </div>
                             <p className="plan-info">เริ่มเดินทาง: {new Date(plan.created_at).toLocaleDateString()}</p>
                             <div className="plan-actions">

@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 500px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 30px;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -13,10 +13,12 @@
 /* ปรับแต่ง input */
 .planner-form-container input {
   width: 100%;
-  padding: 10px;
-  margin: 8px 0;
+  padding: 12px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 /* ปรับแต่งปุ่ม */
@@ -27,12 +29,24 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: background 0.3s ease;
+  margin-top: 15px;
 }
 
 .planner-form-container button:hover {
   background: #ff5733;
+}
+
+/* ปรับแต่งปุ่มยกเลิก */
+.planner-form-container .cancel-button {
+  background: #f0f0f0;
+  color: #333;
+  margin-top: 10px;
+}
+
+.planner-form-container .cancel-button:hover {
+  background: #ddd;
 }
 
 /* ข้อความแจ้งเตือน */
@@ -46,4 +60,27 @@
 .planner-form-container .error-message {
   color: red;
   font-weight: bold;
+  margin-top: 10px;
+}
+
+
+.selected-place-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.remove-place-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 3px 7px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.remove-place-btn:hover {
+  background: darkred;
 }

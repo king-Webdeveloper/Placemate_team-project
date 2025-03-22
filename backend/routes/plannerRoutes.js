@@ -274,6 +274,7 @@ router.delete("/planner/remove", async (req, res) => {
 router.post("/planner/:planId/add-place", async (req, res) => {
     const { planId } = req.params;
     const { place_id, start_time, end_time } = req.body;
+    // const { places } = req.body; // รับหลายสถานที่เป็น array
 
     const token = req.cookies.auth_token;
     if (!token) {
@@ -316,5 +317,140 @@ router.post("/planner/:planId/add-place", async (req, res) => {
         res.status(500).json({ error: "Failed to add place" });
     }
 });
+
+/**
+ * @swagger
+ * /api/planner/{planId}:
+ *   get:
+ *     summary: ดึงข้อมูลแผนการเดินทางตาม planId
+ *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: รายละเอียดแผนการเดินทาง
+ *       400:
+ *         description: Invalid planId
+ *       404:
+ *         description: ไม่พบแผนการเดินทาง
+ *       500:
+ *         description: Server error
+ */
+router.get("/planner/:planId", async (req, res) => {
+    const { planId } = req.params;
+
+    // ตรวจสอบว่า planId เป็นตัวเลขที่ถูกต้องหรือไม่
+    const parsedPlanId = parseInt(planId);
+    if (isNaN(parsedPlanId)) {
+        return res.status(400).json({ error: "Invalid planId" });
+    }
+
+    try {
+        // ค้นหาแผนการเดินทางจากฐานข้อมูล
+        const plan = await prisma.plan.findUnique({
+            where: { plan_id: parsedPlanId },
+            include: {
+                place_list: true,  // รวมข้อมูลจาก place_list
+            },
+        });
+
+        // ถ้าไม่พบแผนการเดินทาง
+        if (!plan) {
+            return res.status(404).json({ error: "Plan not found" });
+        }
+
+        // ส่งข้อมูลแผนการเดินทางที่รวมข้อมูลสถานที่กลับไป
+        res.json(plan);
+    } catch (error) {
+        console.error("Error fetching plan details:", error);
+        res.status(500).json({ error: "Failed to fetch plan details" });
+    }
+});
+
+
+// ลบสถานที่จากแผนการเดินทาง
+router.delete("/planner/:planId/remove-place", async (req, res) => {
+    const { planId } = req.params;
+    const { place_id } = req.body;
+
+    try {
+        const plan = await prisma.plan.findUnique({
+            where: { plan_id: parseInt(planId) },
+            include: { place_list: true },
+        });
+
+        if (!plan) {
+            return res.status(404).json({ error: "Plan not found" });
+        }
+
+        // ลบสถานที่ที่ต้องการจาก place_list
+        const placeList = await prisma.place_list.delete({
+            where: { place_list_id: parseInt(place_id) },
+        });
+
+        res.status(200).json(placeList);
+    } catch (error) {
+        console.error("Error removing place from plan:", error);
+        res.status(500).json({ error: "Failed to remove place" });
+    }
+});
+
+/**
+ * @swagger
+ * /api/places/search:
+ *   get:
+ *     summary: ค้นหาสถานที่ตามชื่อ
+ *     tags: [Places]
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: รายการสถานที่ที่ค้นพบ
+ *       400:
+ *         description: ไม่มีพารามิเตอร์ query
+ *       500:
+ *         description: Server error
+ */
+router.get("/places/search", async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        if (!query) {
+            return res.status(400).json({ error: "Missing query parameter" });
+        }
+
+        const places = await prisma.place.findMany({
+            where: {
+                name: {  // เปลี่ยนจาก place_name → name
+                    contains: query,
+                    mode: "insensitive",
+                },
+            },
+            select: {
+                place_id: true,
+                name: true,  // เปลี่ยนจาก place_name → name
+                category: true,
+                rating: true,
+                lat: true,
+                lng: true,
+                photo: true,  
+            },
+        });
+
+        res.json(places);
+    } catch (error) {
+        console.error("Error searching places:", error);
+        res.status(500).json({ error: "Failed to fetch search results" });
+    }
+});
+
 
 module.exports = router;

@@ -1,46 +1,58 @@
 import React, { useState, useEffect } from "react";
-import "./PlannerForm.css";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import "./PlannerForm.css";
 
-const PlannerForm = ({ setPlans }) => {
+const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
     const [title, setTitle] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [message, setMessage] = useState("");
     const [userId, setUserId] = useState(null);
-
-    // ✅ ฟังก์ชันดึง Token จาก localStorage
-    const getToken = () => {
-        return localStorage.getItem("auth_token") || null;
-    };
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = getToken();
+        const checkLoginStatus = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/cookies-check", {
+                    method: "GET",
+                    credentials: "include",
+                });
 
-        if (!token) {
-            console.warn("⚠ ไม่มี auth_token ใน LocalStorage");
-            setUserId(null);
-            return;
-        }
+                if (response.status === 401) {
+                    Swal.fire({
+                        title: "กรุณาเข้าสู่ระบบ",
+                        text: "คุณต้องล็อกอินก่อนที่จะสร้างแผนการเดินทาง",
+                        icon: "warning"
+                    }).then(() => {
+                        navigate("/login");
+                    });
+                } else {
+                    const data = await response.json();
+                    setUserId(data.user_id);
+                }
+            } catch (err) {
+                console.error("Error checking login status:", err);
+                setMessage("เกิดข้อผิดพลาดในการตรวจสอบการเข้าสู่ระบบ");
+            }
+        };
 
-        try {
-            console.log("🔍 Token ที่ได้รับ:", token);
-            const decodedToken = jwtDecode(token);
-            console.log("✅ Token Decode สำเร็จ:", decodedToken);
-            setUserId(decodedToken?.user_id || null);
-        } catch (error) {
-            console.error("❌ เกิดข้อผิดพลาดในการ Decode Token:", error);
-            setUserId(null);
-        }
-    }, []);
+        checkLoginStatus();
+    }, [navigate]);
 
+    // 🛠 ฟังก์ชันลบสถานที่
+    const handleRemovePlace = (placeId) => {
+        setSelectedPlaces(prevPlaces => prevPlaces.filter(p => p.place_id !== placeId));
+    };
+
+    // 🛠 ฟังก์ชันส่งข้อมูลไปยัง Backend
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage(""); // ✅ Reset Message ก่อน Submit
+        setMessage("");
 
         if (!userId) {
-            setMessage("⚠ กรุณาเข้าสู่ระบบก่อนสร้างแผนการเดินทาง");
+            setMessage("กรุณาเข้าสู่ระบบก่อนสร้างแผนการเดินทาง");
             return;
         }
 
@@ -49,81 +61,105 @@ const PlannerForm = ({ setPlans }) => {
             title,
             start_time: startTime,
             end_time: endTime,
+            places: selectedPlaces.map(p => p.place_id),
         };
 
-        const token = getToken();
-        if (!token) {
-            console.error("❌ ไม่มี Token ใน LocalStorage, ไม่สามารถส่ง API ได้");
-            setMessage("❌ กรุณาเข้าสู่ระบบใหม่");
-            return;
-        }
-
         try {
-            console.log("🚀 กำลังส่งคำขอ API:", newPlan);
             const response = await axios.post("http://localhost:5000/api/planner/add", newPlan, {
                 withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
             });
 
-            console.log("🟢 API Response:", response.data);
+            console.log("Response from API:", response.data);
 
-            if (response.status === 201) {
-                setMessage("✅ แผนการเดินทางเพิ่มสำเร็จ!");
+            if (response.status === 201 && response.data && response.data.plan_id) {
+                Swal.fire({
+                    title: "สร้างแผนการเดินทางสำเร็จ!",
+                    text: "แผนของคุณถูกบันทึกเรียบร้อยแล้ว",
+                    icon: "success"
+                });
+
                 setTitle("");
                 setStartTime("");
                 setEndTime("");
-                setPlans((prevPlans) => [...prevPlans, response.data]);
+                setSelectedPlaces([]); // 🛠 รีเซ็ตสถานที่ที่เลือกหลังจากสร้างแผนสำเร็จ
+
+                if (setPlans) {
+                    setPlans((prevPlans) => [...prevPlans, response.data]);
+                }
+
+                navigate('/planner');
             } else {
-                setMessage("❌ เกิดข้อผิดพลาดในการเพิ่มแผน");
+                console.error("API did not return expected data format.");
+                setMessage("เกิดข้อผิดพลาดในการเพิ่มแผน");
             }
         } catch (err) {
-            console.error("❌ API Error:", err.response?.data || err.message);
-            setMessage("❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์");
+            console.error("Error while adding plan:", err);
+            setMessage("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์");
         }
+    };
+
+    const handleCancel = () => {
+        navigate('/planner');
     };
 
     return (
         <div className="planner-form-container">
             <h2>สร้างแผนการเดินทางใหม่</h2>
-            {!userId ? (
-                <p className="error-message">⚠ กรุณาเข้าสู่ระบบก่อนสร้างแผนการเดินทาง</p>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>📍 ชื่อแผน:</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="กรุณากรอกชื่อแผนการเดินทาง"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>📅 วันเริ่มเดินทาง:</label>
-                        <input
-                            type="datetime-local"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>📅 วันสิ้นสุดเดินทาง:</label>
-                        <input
-                            type="datetime-local"
-                            value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button type="submit">🚀 สร้างแผนการเดินทาง</button>
-                </form>
-            )}
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label>ชื่อแผน:</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="กรุณากรอกชื่อแผนการเดินทาง"
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>วันเริ่มเดินทาง:</label>
+                    <input
+                        type="datetime-local"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>วันสิ้นสุดเดินทาง:</label>
+                    <input
+                        type="datetime-local"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        required
+                    />
+                </div>
 
+                <div className="selected-places">
+                    <h3>สถานที่ที่เลือก:</h3>
+                    {selectedPlaces.length > 0 ? (
+                        selectedPlaces.map(place => (
+                            <div key={place.place_id} className="selected-place-item">
+                                <span>{place.place_name || place.name}</span> {/* ✅ ใช้ place.place_name || place.name */}
+                                <button 
+                                    className="remove-place-btn"
+                                    onClick={() => handleRemovePlace(place.place_id)}
+                                >
+                                    ❌
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>ยังไม่มีสถานที่ถูกเลือก</p>
+                    )}
+                </div>
+
+                <div className="form-buttons">
+                    <button type="submit" className="create-plan-button">สร้างแผนการเดินทาง</button>
+                    <button type="button" onClick={handleCancel} className="cancel-button">ยกเลิก</button>
+                </div>
+            </form>
             {message && <p className="message">{message}</p>}
         </div>
     );

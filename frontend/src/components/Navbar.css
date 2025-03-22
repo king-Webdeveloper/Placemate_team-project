@@ -73,6 +73,12 @@
   transform: scale(1.05);
 }
 
+.Navbarspace .navbar {
+  position: relative;
+  z-index: 999;
+}
+
+
 /* ✅ Responsive สำหรับหน้าจอเล็ก */
 @media (max-width: 768px) {
   /* ปรับ layout ของ Navbar สำหรับหน้าจอเล็ก */

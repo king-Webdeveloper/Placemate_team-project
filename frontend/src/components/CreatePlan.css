@@ -1,7 +1,7 @@
 /* ปรับแต่งหน้าสำหรับหน้า Create Plan */
 .create-plan-page {
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     height: 100vh;
     background-color: #f7f7f7;
@@ -65,3 +65,18 @@
     margin-top: 10px;
   }
   
+  .search-place-btn {
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-bottom: 15px;
+}
+
+.search-place-btn:hover {
+    background-color: #ff6347;
+}

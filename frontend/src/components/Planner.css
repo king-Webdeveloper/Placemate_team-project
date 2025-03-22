@@ -3,9 +3,11 @@
   width: 100%;
   max-width: 750px;
   margin: 0 auto;
-  padding: 30px 0;
+  padding: 30px;
   background-color: #ffffff;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้ container */
+  border-radius: 10px;
 }
 
 /* จัดให้ตรงกลาง */
@@ -13,7 +15,7 @@
   font-size: 2rem;
   color: #333;
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 /* ปุ่มสร้างแผนการเดินทาง */
@@ -25,6 +27,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 20px; /* เพิ่มระยะห่างจากฟอร์ม */
 }
 
 .planner-page .create-plan-button:hover {
@@ -117,3 +120,40 @@
 .planner-page .action-button i {
   font-size: 1rem;
 }
+
+/* ฟอร์มสร้างแผน */
+.planner-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  margin-top: 30px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ปรับ input ให้มีขนาดใหญ่ขึ้นและเรียบร้อย */
+.planner-page input[type="text"], .planner-page input[type="datetime-local"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* ปรับปุ่มสร้างแผนการเดินทางให้ชัดเจน */
+.planner-page .create-plan-button {
+  background-color: #ff7f50;
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.planner-page .create-plan-button:hover {
+  background-color: #ff5722;
+}
+
