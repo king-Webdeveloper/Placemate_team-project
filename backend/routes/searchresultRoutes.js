@@ -249,58 +249,59 @@ router.get("/popular-places", async (req, res) => {
  *                       business_day:
  *                         type: string
  */
+// router.get("/getrandomplaces", async (req, res) => {
+//   try {
+//       // ดึงจำนวนสถานที่ทั้งหมด
+//       const totalPlaces = await prisma.place.count();
+//       const randomSkip = Math.max(0, Math.floor(Math.random() * totalPlaces) - 5); // เลือกตำแหน่งเริ่มต้นแบบสุ่ม
+      
+//       const places = await prisma.place.findMany({
+//           take: 10, // กำหนดจำนวนสถานที่ที่ต้องการสุ่ม
+//           skip: randomSkip,
+//           include: {
+//               tag: true, // ดึงข้อมูล tags ที่เกี่ยวข้อง
+//               business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
+//           },
+//       });
+      
+//       res.json(places);
+//   } catch (error) {
+//       console.error("Error fetching random places:", error);
+//       res.status(500).json({ error: "Failed to fetch random places" });
+//   }
+// });
 router.get("/getrandomplaces", async (req, res) => {
   try {
-      let { page, limit, day } = req.query;
+      const { page = 1, limit = 10 } = req.query; // รับค่า page และ limit จาก query parameter
+      const parsedPage = Math.max(1, parseInt(page));
+      const parsedLimit = Math.max(1, parseInt(limit));
 
-      // Convert query params to integers with defaults
-      page = parseInt(page) || 1;
-      limit = parseInt(limit) || 10;
-
-      // Validate day if it's provided
-      const validDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      if (day && !validDays.includes(day)) {
-          return res.status(400).json({ error: "Invalid day parameter. Day should be one of: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday." });
-      }
-
-      const skip = (page - 1) * limit;
-
-      // Fetch total count of places
-      const total = await prisma.place.count();
-
-      // Fetch random places with associated tags and business hours using Prisma's `include`
+      // ดึงจำนวนสถานที่ทั้งหมด
+      const totalPlaces = await prisma.place.count();
+      const randomSkip = Math.max(0, Math.floor(Math.random() * totalPlaces) - parsedLimit);
+      
       const places = await prisma.place.findMany({
-        where: {
-          // Filter places by business hour day if provided
-          business_hour: {
-            some: {
-              day: day ? day : undefined, // Filter by day if provided
-            },
+          take: parsedLimit, // กำหนดจำนวนสถานที่ที่ต้องการโหลดต่อครั้ง
+          skip: randomSkip,
+          include: {
+              tag: true, // ดึงข้อมูล tags ที่เกี่ยวข้อง
+              business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
           },
-        },
-        include: {
-          tag: true,  // Include related tags
-          business_hour: true,  // Include related business hours
-        },
-        orderBy: {
-          // Randomize the order of places
-          place_id: 'asc',
-        },
-        skip: skip,
-        take: limit,
       });
-
+      
       res.json({
-          total,
-          page,
-          limit,
+          page: parsedPage,
+          limit: parsedLimit,
+          total: totalPlaces,
           places,
       });
   } catch (error) {
-      console.error("Error fetching places:", error);
-      res.status(500).json({ error: "Failed to fetch places" });
+      console.error("Error fetching random places:", error);
+      res.status(500).json({ error: "Failed to fetch random places" });
   }
 });
+
+
 
 /**
  * @swagger

@@ -190,7 +190,7 @@ function Homepage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3&day=${dayName}`
+        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3`
       ); // Include dayName in query
 
       const contentType = response.headers.get("content-type");
