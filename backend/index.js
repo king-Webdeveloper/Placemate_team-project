@@ -79,6 +79,10 @@ app.use('/api', getseaechresultRoutes);
 const getplacereviewRoutes = require('./routes/placereviewRoutes'); // Adjust the path as necessary
 app.use('/api', getplacereviewRoutes);
 
+const createPreferenceRoutes = require('./routes/createPreferenceRoute');
+app.use('/api', createPreferenceRoutes);
+
+
 // Start Server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

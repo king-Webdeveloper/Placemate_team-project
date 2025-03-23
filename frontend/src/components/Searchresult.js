@@ -5,6 +5,8 @@ import { getUserLocation } from "./getGeo";
 import { haversine } from "./haversine"; // Import the haversine function
 import "./Searchresult.css";
 import handleAddPlace from "./handleAddPlace";
+import getDateInfo from "./getDateInfo"; 
+import getPreference from "./getPreference"
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา
@@ -21,8 +23,19 @@ const Searchresult = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery] = useState(""); // Store search text
 
+  const [userId, setUserId] = useState(null); // เพิ่ม state สำหรับ user_id
 
-  // ✅ ดึงค่า query จาก URL เมื่อโหลดหน้า
+  const [dateInfo, setDateInfo] = useState(getDateInfo());
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setDateInfo(getDateInfo()); // อัปเดตเวลาทุก 1 วินาที
+    }, 1000);
+
+    return () => clearInterval(interval); // ล้าง interval เมื่อ component ถูก unmount
+  }, []); 
+  const { dayName, time } = dateInfo;
+
+  // ดึงค่า query จาก URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryFromUrl = params.get("query") || "";
@@ -32,7 +45,15 @@ const Searchresult = () => {
       handleSearch(queryFromUrl);  // เรียกค้นหาทันที
     }
 
-    getUserLocation(setUserLocation); // Get the user location when the component mounts
+    // เช็คว่า localStorage มีข้อมูลพิกัดหรือไม่
+    const savedLocation = JSON.parse(localStorage.getItem('userLocation'));
+    if (savedLocation) {
+      setUserLocation(savedLocation);
+      setLocationReady(true); // ถ้ามีข้อมูล ให้ set ค่าพิกัดและบอกว่า location พร้อมแล้ว
+    } else {
+      // ถ้าไม่มีข้อมูลใน localStorage, ให้เรียกใช้ฟังก์ชัน getUserLocation
+      getUserLocation(setUserLocation);
+    }
   }, [location.search]);
 
   useEffect(() => {
@@ -48,13 +69,32 @@ const Searchresult = () => {
     }
   }, [locationReady, searchTerm]);
 
+  useEffect(() => {
+      // ตรวจสอบสถานะการล็อกอิน
+      const checkLoginStatus = async () => {
+        const response = await fetch("http://localhost:5000/api/cookies-check", {
+          method: "GET",
+          credentials: "include", // ส่งคุกกี้
+        });
+  
+        if (response.status === 401) {
+          // navigate("/login"); // หากไม่มีการล็อกอิน, นำผู้ใช้ไปยังหน้า login
+        } else {
+          const data = await response.json(); // รับข้อมูลจาก response
+          setUserId(data.user_id); // ตั้งค่า user_id ที่ได้จาก response
+        }
+      };
+  
+      checkLoginStatus(); // เรียกฟังก์ชันตรวจสอบเมื่อคอมโพเนนต์โหลด
+  }, [navigate]);
+
   // Lazy load
   const fetchPlaces = async () => {
     if (!hasMore || loading) return;
   
     setLoading(true);
     try {
-      const res = await fetch(`/api/search/places?query=${searchQuery}&page=${page}&limit=10`);
+      const res = await fetch(`/api/search/places?query=${searchQuery}&dayName=${dayName}&page=${page}&limit=10`);
       const data = await res.json();
   
       if (data.places.length === 0) {
@@ -90,11 +130,9 @@ const Searchresult = () => {
     navigate(`/searchresult?query=${encodeURIComponent(query)}`);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/search/places?query=${encodeURIComponent(query)}`, {
-      // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/search/places?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`http://localhost:5000/api/search/places?query=${encodeURIComponent(query)}&dayName=${dayName}`, {
         method: "GET",
         headers: {
-          // Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -120,54 +158,45 @@ const Searchresult = () => {
     }
   };
   
-  const handleGoGoogleMap = (placeId) => {
+  const handleGoGoogleMap = (userId, placeId) => {
     // Construct the Google Maps URL with the latitude and longitude
+    getPreference(userId, placeId)
     const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
     // Open the URL in a new tab
     window.open(googleMapsUrl, "_blank");
   };
-  
 
   return (
-    <div >
+    <div>
         <div className="center-box">
-        {/* <h1 >ผลการค้นหา</h1> */}
-
-        {/* User Location */}
-        
-          {/* <h2>User Location:</h2> */}
-          {userLocation.lat && userLocation.lng ? (
+          {/* {userLocation.lat && userLocation.lng ? (
             <p>Latitude: {userLocation.lat}, Longitude: {userLocation.lng}</p>
           ) : (
             <p>Loading location...</p>
+          )} */}
+          
+          {/* <h1>{dayName}{time}</h1> */}
+          <div className="searchbar-search-bar">
+            <input
+              type="text"
+              className="searchbar-search-input"
+              placeholder="ค้นหา"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={() => handleSearch(searchTerm)} className="searchbar-search-button">
+              ค้นหา
+            </button>
+          </div>
+
+          {searched && searchResults.length === 0 && (
+            <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
           )}
-        
-
-        {/* Search Bar */}
-        <div className="searchbar-search-bar">
-          <input
-            type="text"
-            className="searchbar-search-input"
-            placeholder="ค้นหา"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button onClick={() => handleSearch(searchTerm)} className="searchbar-search-button">
-            ค้นหา
-          </button>
-        </div>
-
-        {/* Search Results */}
-        {searched && searchResults.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
-        )}
-        <h2>ผลลัพธ์การค้นหา</h2>
+          <h2>ผลลัพธ์การค้นหา</h2>
         </div>
 
         {searchResults.length > 0 && (
           <div>
-            
-            {/* <ul className="searchbar-resultbox"> */}
             <ul className="container-list">
               {searchResults.map((place) => (
                 <li key={place.id} className="result-search">
@@ -177,20 +206,27 @@ const Searchresult = () => {
                       alt={`Place ${place.id}`}
                       className="place-image"
                     />
-                    <span>{place.name} {isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐"+ place.rating}</span>
+                    <strong>
+                      {place.business_hour && place.business_hour.length > 0
+                        ? place.business_hour
+                            .map(item => item.business_hour)
+                            .filter(hour => hour && hour !== "NaN" && hour !== "null" && hour !== "undefined")
+                            .join(", ")
+                        : "ไม่ระบุเวลา"}
+                    </strong>
+
+                    {/* <span>{place.name} {place.rating && `⭐${place.rating}`}</span> */}
+                    <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐" + place.rating}</span>
                     <span>
                       {place.tag.map((tagObj, index) => (
-                        <span key={index}>
-                          <button className="tag-button">
-                            {tagObj.tag_name}{index !== place.tag.length - 1 ? ', ' : ''}
-                          </button>
-                        </span>
+                        <button key={index} className="tag-button">
+                          {tagObj.tag_name}
+                        </button>
                       ))}
                     </span>
-
-                  <span> - {place.distance.toFixed(2)} km</span>
+                    <span> - {place.distance.toFixed(2)} km</span>
                   </div>
-                  <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
+                  <button onClick={() => handleGoGoogleMap(userId, place.place_id)} className="go-button">
                     ดูสถานที่
                   </button>
                   <button onClick={() => handleAddPlace(place, navigate)} className="go-button">
@@ -199,14 +235,10 @@ const Searchresult = () => {
                 </li>
               ))}
             </ul>
-
-            {/* Show "Loading..." if fetching more data */}
             {loading && <p>Loading...</p>}
-
           </div>
         )}
-      </div>
-
+    </div>
   );
 };
 
