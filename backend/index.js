@@ -106,6 +106,9 @@ app.use('/api', getseaechresultRoutes);
 const getplannerRoutes = require('./routes/plannerRoutes.js'); // Adjust the path as necessary
 app.use('/api', getplannerRoutes);
 
+const createPreferenceRoutes = require('./routes/createPreferenceRoute');
+app.use('/api', createPreferenceRoutes);
+
 
 // Start Server
 const PORT = 5000;

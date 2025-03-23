@@ -110,7 +110,7 @@
   flex-direction: column;
   justify-content: space-between; /* จัดให้ปุ่มอยู่ล่างสุดเสมอ */
   width: 275px; /* Similar to YouTube video thumbnails */
-  height: 370px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
+  height: 380px; /* กำหนดความสูงให้เท่ากันทุกการ์ด */
   background: #ffffff; /* Dark theme like YouTube */
   border-radius: 10px;
   overflow: hidden;

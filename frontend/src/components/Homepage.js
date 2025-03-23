@@ -3,55 +3,111 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
 import "./Homepage.css";
 import handleAddPlace from "./handleAddPlace";
+import getDateInfo from "./getDateInfo";
+import getPreference from "./getPreference";
+import { getUserLocation } from "./getLocation";
 
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
   const { isLoggedIn, setIsLoggedIn, username, setUsername } = useAuth(); // ดึงข้อมูลจาก context
-  const navigate = useNavigate(); 
+  const [userId, setUserId] = useState("");
+  const navigate = useNavigate();
 
   const [places, setPlaces] = useState([]); // Store places
   const [page, setPage] = useState(1); // Track current page
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
 
-  // const token = localStorage.getItem("token"); // ดึง token จาก localStorage หรือแก้ไขตามวิธีที่คุณใช้
+  const [recommendationData, setRecommendationData] = useState([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] =useState(true);
+  const [recommendationError, setRecommendationError] = useState(null);
 
-  // const addNewPlace = async (place) => {
-  //   const response = await fetch("http://localhost:5000/api/cookies-check", {
-  //     method: "GET",
-  //     credentials: "include",
-  //   });
-  //   const responseText = await response.text();
-  //   const data = JSON.parse(responseText);
-  //   console.log("cookie's here", response)
+  const [recommendedPlaces, setRecommendedPlaces] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
-  //   await handleAddPlace(place, setPlaces, responseText, navigate);
-  // };
+  const [popularPreferences, setPopularPreferences] = useState([]);
+
+  const [location, setLocation] = useState(null);
+
+  const [dateInfo, setDateInfo] = useState(getDateInfo());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateInfo(getDateInfo()); // อัปเดตเวลาทุก 1 วินาที
+    }, 1000);
+
+    return () => clearInterval(interval); // ล้าง interval เมื่อ component ถูก unmount
+  }, []);
+  const { dayName, time } = dateInfo;
+
+  useEffect(() => {
+    // เรียกใช้ฟังก์ชัน getUserLocation เพื่อดึงข้อมูล location
+    const locationData = getUserLocation();
+    
+    setLocation(locationData);  // เก็บข้อมูลลงใน state
+  }, []);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/cookies-check", {
-          method: "GET",
-          credentials: "include",
-        });
-  
-        const responseText = await response.text();
-        const data = JSON.parse(responseText);
-  
-        if (response.ok) {
-          setIsLoggedIn(true);
-          setUsername(data.username);
-        } else {
+        const response = await fetch(
+          "http://localhost:5000/api/cookies-check",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
           setIsLoggedIn(false);
+          return;
         }
+
+        const responseText = await response.text();
+        let userdata;
+
+        try {
+          userdata = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error("Invalid JSON response:", jsonError);
+          setIsLoggedIn(false);
+          return;
+        }
+
+        setIsLoggedIn(true);
+        setUsername(userdata.username);
+        setUserId(userdata.user_id);
       } catch (error) {
         console.error("Error checking login status:", error);
         setIsLoggedIn(false);
       }
     };
-  
+
     checkLoginStatus();
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/get-cookie", {
+      method: "GET",
+      credentials: "include", // อนุญาตให้ส่ง cookies
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unauthorized");
+        }
+        return response.json();
+      })
+      .then((cookies) => {
+        // console.log("User cookies:", cookies);
+        setIsLoggedIn(true); // ถ้ามีคุกกี้ แสดงว่าผู้ใช้ล็อกอินแล้ว
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setIsLoggedIn(false); // ถ้าไม่ได้ล็อกอิน ซ่อน UI
+      });
   }, []);
 
   const handleSearch = () => {
@@ -60,28 +116,95 @@ function Homepage() {
     }
   };
 
-  const handleGoGoogleMap = (placeId) => {
+  const handleGoGoogleMap = (userId, placeId) => {
     // Construct the Google Maps URL with the latitude and longitude
+    getPreference(userId, placeId);
     const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
     // Open the URL in a new tab
     window.open(googleMapsUrl, "_blank");
   };
 
-  const fetchPlaces = async () => {
-    if (!hasMore || loading) return;
+  // แนะนำสำหรับคุณ
+  const fetchRecommendedPlaces = async (pageNumber = 1) => {
+    console.log("Fetching recommendations for page:", pageNumber);
+    try {
+      setIsFetching(true);
+      const response = await fetch(`http://localhost:5000/api/recommendations?limit=6&lat=${location.lat}&lng=${location.lng}&user_id=${userId}&page=${pageNumber}`);
+      if (!response.ok) throw new Error("Failed to fetch recommendations");
   
+      const data = await response.json();
+      
+      // คำนวณการแสดงผลข้อมูลในหน้าแรก
+      if (pageNumber === 1) {
+        setRecommendedPlaces(data.data);
+      } else {
+        setRecommendedPlaces((prevPlaces) => [...prevPlaces, ...data.data]);
+      }
+  
+      // คำนวณว่า มีหน้าถัดไปหรือไม่
+      setHasMorePages(data.total > pageNumber * 6);  // ถ้ามีข้อมูลทั้งหมดมากกว่าหน้าปัจจุบัน * limit ก็แสดงปุ่ม "เพิ่มเติม"
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      setFetchError(error.message);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+  
+
+  // ใช้ useEffect เพื่อดึงข้อมูลเมื่อ userId เปลี่ยนแปลง
+  useEffect(() => {
+    if (userId) {
+      setCurrentPage(1);
+      fetchRecommendedPlaces(1);
+    }
+  }, [userId]);
+
+  // โหลดข้อมูลหน้าถัดไป
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    fetchRecommendedPlaces(nextPage);
+  };
+
+  // ยอดนิยม
+  const fetchTopPreferences = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/popular-places");
+      const data = await response.json();
+      console.log("Here's top prefer\n", data);
+      setPopularPreferences(data.slice(0, 9)); // แสดง 10 อันดับแรก
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTopPreferences();
+  }, []);
+
+  // คุณอาจชอบ
+  const fetchRandomPlaces = async () => {
+    if (!hasMore || loading) return;
+
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/getplaces?page=${page}&limit=3`); // Use port 5000
-  
-      const contentType = res.headers.get("content-type");
+      const response = await fetch(
+        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3&day=${dayName}`
+      ); // Include dayName in query
+
+      const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Server returned non-JSON response");
       }
-  
-      const data = await res.json();
-      console.log(data);
-  
+      
+      const data = await response.json();
+      console.log("คุณอาจชอบ",data);
+
+      console.log(data.places[0].business_hour[0].business_hour); // ตรวจสอบ business_hour ของสถานที่แรก
+      console.log(data.places[0].tag[0].tag_name); // ตรวจสอบ business_hour ของสถานที่แรก
+
+
       if (data.places.length === 0) {
         setHasMore(false);
       } else {
@@ -93,14 +216,15 @@ function Homepage() {
     }
     setLoading(false);
   };
- 
+
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 100 &&
         !loading
       ) {
-        fetchPlaces();
+        fetchRandomPlaces();
       }
     };
 
@@ -109,8 +233,8 @@ function Homepage() {
   }, [loading]);
 
   useEffect(() => {
-    fetchPlaces();
-  }, []);
+    fetchRandomPlaces();
+  }, [dayName]); // Fetch places based on the current day
 
   return (
     <div className="homepage">
@@ -124,9 +248,13 @@ function Homepage() {
           <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
-          <Link to="/profile" className="nav-profile">{username}</Link>
+          <Link to="/profile" className="nav-profile">
+            {username}
+          </Link>
         ) : (
-          <Link to="/login" className="login-btn">เข้าสู่ระบบ</Link>
+          <Link to="/login" className="login-btn">
+            เข้าสู่ระบบ
+          </Link>
         )}
       </header>
 
@@ -153,63 +281,289 @@ function Homepage() {
           </button>
         </div>
       </section>
-      
-      <h2>แนะนำสำหรับคุณ</h2>
-      <section className="recommended">
-        <div className="set-center">
-          <button>เพิ่มเติม</button>
-        </div>
-      </section>
+      <h1>
+        {userId}
+        {dayName} {time}
+      </h1>
 
-      <h2>ยอดนิยม</h2>
-      <section className="recommended">
-        <div className="set-center">
-          <button>เพิ่มเติม</button>
-        </div>
-      </section>
-
-      <h2>คุณอาจชอบ</h2>
-      <section className="recommended">
-      <div className="place-grid">
-        {places?.map((place, index) => (  // ใช้ ?.map() เพื่อหลีกเลี่ยง error
-          <div key={index} className="place-card">
-            <a href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`} target="_blank" rel="noopener noreferrer">
-              <img
-                src={`/place_images/${place.place_id}.jpg`}  
-                alt={`Place ${place.id}`} 
-                className="place-image"
-              />
-            </a>
-            
-
-            <div className="place-info">
-              <span className="place-category">
-                {place.tags?.map((tag, index) => (
-                  <span key={index}>
-                    <button className="tag-button">
-                      {tag}{index !== place.tags.length - 1 ? ', ' : ''}
-                    </button>
-                  </span>
-                )) || "ไม่ระบุ"}
-              </span>
+      <div>
+        {isLoggedIn && (
+          <>
+            <h2>แนะนำสำหรับคุณ</h2>
+            <section className="recommended">
               
-              <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐"+ place.rating}</span>
-              {/* <span className="place-rating">⭐ {place.rating || "N/A"}</span> */}
-              <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
-                ดูสถานที่
-              </button>
-              <button onClick={() => handleAddPlace(place, navigate)} className="go-button">
-              {/* <button onClick={() => handleAddPlace(place)} className="go-button"> */}
-                เพิ่มไปยัง List to go
-              </button>
-            </div>
+              <div className="place-grid">
+                {recommendedPlaces.length === 0 ? (
+                  <p>ไม่มีข้อมูลแนะนำในตอนนี้</p>
+                ) : (
+                  recommendedPlaces.map((place, index) => {
+                    const placeTags =
+                      Array.isArray(place.tag) && place.tag !== null
+                        ? place.tag
+                        : [];
+                    const todayBusinessHours = place.business_hour
+                      ? place.business_hour.find(
+                          (bh) =>
+                            bh.day ===
+                            new Date().toLocaleDateString("en-EN", {
+                              weekday: "long",
+                            })
+                        )
+                      : null;
+                    const businessHoursText = todayBusinessHours
+                      ? todayBusinessHours.business_hour
+                      : "";
 
+                    return (
+                      <div key={index} className="place-card">
+                        {/* Google Maps Link */}
+                        <a
+                          href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`/place_images/${place.place_id}.jpg`}
+                            alt={`Place ${place.name}`}
+                            className="place-image"
+                          />
+                        </a>
+
+                        <div className="place-info">
+                          {/* แสดง Tags */}
+                          <span className="place-category">
+                            {placeTags.length > 0
+                              ? placeTags.map((tag, index) => (
+                                  <span key={index}>
+                                    <button className="tag-button">
+                                      {tag.tag_name}
+                                      {index !== placeTags.length - 1
+                                        ? ", "
+                                        : ""}
+                                    </button>
+                                  </span>
+                                ))
+                              : "ไม่ระบุ"}
+                          </span>
+
+                          {/* แสดงเวลาเปิด-ปิด */}
+                          <strong>
+                            {businessHoursText && businessHoursText !== "NaN"
+                              ? businessHoursText
+                              : ""}
+                          </strong>
+                          <br />
+
+                          {/* แสดงชื่อสถานที่ + เรตติ้ง */}
+                          <span>
+                            {place.name}
+                            {!isNaN(place.rating) && place.rating !== "NaN"
+                              ? ` ⭐${place.rating}`
+                              : ""}
+                          </span>
+
+                          {/* ปุ่มดูสถานที่ */}
+                          <button
+                            onClick={() =>
+                              navigate(`/places/${place.place_id}`)
+                            }
+                            className="go-button"
+                          >
+                            ดูสถานที่
+                          </button>
+
+                          {/* ปุ่มเพิ่มไปยัง List to go */}
+                          <button
+                            onClick={() =>
+                              console.log(`Add place ${place.place_id} to list`)
+                            }
+                            className="go-button"
+                          >
+                            เพิ่มไปยัง List to go
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+              {/* ปุ่มโหลดข้อมูลหน้าถัดไป */}
+              {hasMorePages && (
+                <div className="set-center">
+                {hasMorePages && (
+                  <button onClick={handleLoadMore} disabled={isFetching}>
+                    {isFetching ? "กำลังโหลด..." : "เพิ่มเติม"}
+                  </button>
+                )}
+              </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
+      
+
+      <div>
+        <h2>ยอดนิยม</h2>
+        <section className="recommended">
+          <div className="place-grid">
+            {popularPreferences.length > 0 ? (
+              popularPreferences.map((place, index) => {
+                // จัดกลุ่ม Tags สำหรับแต่ละสถานที่
+                const tags = place.tag
+                  ? place.tag.map((tag) => tag.tag_name)
+                  : [];
+
+                // กรอง business hours ตามวันที่ตรงกับ dayName
+                const businessHourForDay = place.business_hour
+                  ? place.business_hour.find((bh) => bh.day === dayName)
+                  : null;
+
+                // แสดง business hour หากมีข้อมูลและตรงกับ dayName
+                const businessHours = businessHourForDay
+                  ? businessHourForDay.business_hour
+                  : "ปิดทำการ";
+
+                return (
+                  <div key={index} className="place-card">
+                    <a
+                      href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`/place_images/${place.place_id}.jpg`}
+                        alt={`Place ${place.id}`}
+                        className="place-image"
+                      />
+                    </a>
+
+                    <div className="place-info">
+                      <span className="place-category">
+                        {/* แสดง Tags */}
+                        {tags.length > 0
+                          ? tags.map((tag, index) => (
+                              // <div key={index} className="place-card">
+                              <span key={index}>
+                                <button className="tag-button">
+                                  {tag}
+                                  {index !== tags.length - 1 ? ", " : ""}
+                                </button>
+                              </span>
+                              // </div>
+                            ))
+                          : "ไม่ระบุ"}
+                      </span>
+
+                      {/* แสดง Business Hour เฉพาะวันที่ตรงกัน */}
+                      <strong>
+                        {businessHours &&
+                        businessHours !== "NaN" &&
+                        businessHours !== "ปิดทำการ"
+                          ? businessHours
+                          : ""}
+                      </strong>
+                      <br />
+
+                      <span>
+                        {place.name}
+                        {isNaN(place.rating) && place.rating === "NaN"
+                          ? ""
+                          : "⭐" + place.rating}
+                      </span>
+
+                      {/* ปุ่มดูสถานที่ */}
+                      <button
+                        onClick={() =>
+                          handleGoGoogleMap(userId, place.place_id)
+                        }
+                        className="go-button"
+                      >
+                        ดูสถานที่
+                      </button>
+
+                      {/* ปุ่มเพิ่มไปยัง List to go */}
+                      <button
+                        onClick={() => handleAddPlace(place, navigate)}
+                        className="go-button"
+                      >
+                        เพิ่มไปยัง List to go
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p>กำลังโหลดข้อมูล...</p> // ข้อความเมื่อไม่มีข้อมูล
+            )}
           </div>
-        )) || <p>ไม่มีข้อมูลสถานที่</p>}  {/* แสดงข้อความถ้าไม่มีข้อมูล */}
+        </section>
       </div>
 
-      {loading && <p>กำลังโหลด...</p>}
-      </section>
+      <div>
+  <h2>คุณอาจชอบ</h2>
+  <section className="recommended">
+    <div className="place-grid">
+      {places?.map((place, index) => (
+        <div key={index} className="place-card">
+          <a
+            href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={`/place_images/${place.place_id}.jpg`}
+              alt={`Place ${place.id}`}
+              className="place-image"
+            />
+          </a>
+
+          <div className="place-info">
+            <span className="place-category">
+              {/* แสดง Tags */}
+              {place.tag?.map((tag, index) => (
+                <span key={index}>
+                  <button className="tag-button">
+                    {tag.tag_name}
+                    {index !== place.tag.length - 1 ? ", " : ""}
+                  </button>
+                </span>
+              )) || "ไม่ระบุ"}
+            </span>
+
+            <strong>
+              {/* แสดง business_hour */}
+              {place.business_hour?.[0]?.business_hour && place.business_hour[0].business_hour !== "NaN" && place.business_hour[0].business_hour !== "ปิดทำการ"
+                ? place.business_hour[0].business_hour
+                : ""}
+            </strong>
+            <br />
+            <span>
+              {place.name}
+              {isNaN(place.rating) || place.rating === "NaN" ? "" : "⭐" + place.rating}
+            </span>
+
+            <button
+              onClick={() => handleGoGoogleMap(userId, place.place_id)}
+              className="go-button"
+            >
+              ดูสถานที่
+            </button>
+            <button
+              onClick={() => handleAddPlace(place, navigate)}
+              className="go-button"
+            >
+              เพิ่มไปยัง List to go
+            </button>
+          </div>
+        </div>
+      )) || <p>ไม่มีข้อมูลสถานที่</p>}
+    </div>
+  </section>
+</div>
+
+
+
     </div>
   );
 }
