@@ -13,6 +13,7 @@ import { AuthProvider } from "./context/Pathmanagement"; // นำเข้า A
 import "./App.css";
 
 function App() {
+  
   return (
     <AuthProvider> 
       <Router>
@@ -25,7 +26,17 @@ function App() {
 function Content() {
   const location = useLocation();
   const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
-  // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
+  const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
+
+  useEffect(() => {
+    // เรียกใช้ getUserLocation เพื่อเริ่มการดึงข้อมูลและอัปเดตทุกๆ 5 วินาที
+    const stopUpdatingLocation = getUserLocation(setUserLocation);
+
+    // ทำความสะอาดเมื่อ component ถูกลบออกจากหน้าจอ
+    return () => {
+      stopUpdatingLocation(); // หยุดการอัปเดตเมื่อ component หายไป
+    };
+  }, []);
 
   return (
     <>
