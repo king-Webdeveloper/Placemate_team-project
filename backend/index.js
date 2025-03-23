@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());  // ใช้ middleware นี้ก่อนที่จะมีการจัดการ route อื่นๆ
 
-const allowedOrigins = ['http://localhost:3000']; // ใส่ URL ของ frontend ที่อนุญาต
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000']; // ใส่ URL ของ frontend ที่อนุญาต
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -75,6 +75,9 @@ app.use('/api', getplaceinlisttogoRoutes);
 
 const getseaechresultRoutes = require('./routes/searchresultRoutes'); // Adjust the path as necessary
 app.use('/api', getseaechresultRoutes);
+
+const getplacereviewRoutes = require('./routes/placereviewRoutes'); // Adjust the path as necessary
+app.use('/api', getplacereviewRoutes);
 
 // Start Server
 const PORT = 5000;

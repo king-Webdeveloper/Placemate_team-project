@@ -7,6 +7,7 @@ import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
+import Placereview from "./components/Placereview";
 import { getUserLocation } from "./components/getGeo";
 import ProtectedLogin from "./components/ProtectedLogin";
 import { AuthProvider } from "./context/Pathmanagement"; // นำเข้า AuthProvider
@@ -24,7 +25,14 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
+  
+  // ตรวจสอบเส้นทางว่าเป็น /placereview/ กับ place_id หรือไม่
+  const showNavbar = [
+    "/profile", 
+    "/searchresult", 
+    "/listtogo", 
+    "/placereview", // แก้ไขเป็นเพียง /placereview
+  ].some(path => location.pathname.startsWith(path));  // ใช้ startsWith เพื่อจับเส้นทาง dynamic
   // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
   return (
@@ -37,6 +45,7 @@ function Content() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
+        <Route path="/placereview/:place_id" element={<Placereview />} />
       </Routes>
     </>
   );

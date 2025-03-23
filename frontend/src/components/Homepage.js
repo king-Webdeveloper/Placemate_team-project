@@ -1,3 +1,4 @@
+// Homepage.js [frontend]
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
@@ -13,20 +14,6 @@ function Homepage() {
   const [page, setPage] = useState(1); // Track current page
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
-
-  // const token = localStorage.getItem("token"); // ดึง token จาก localStorage หรือแก้ไขตามวิธีที่คุณใช้
-
-  // const addNewPlace = async (place) => {
-  //   const response = await fetch("http://localhost:5000/api/cookies-check", {
-  //     method: "GET",
-  //     credentials: "include",
-  //   });
-  //   const responseText = await response.text();
-  //   const data = JSON.parse(responseText);
-  //   console.log("cookie's here", response)
-
-  //   await handleAddPlace(place, setPlaces, responseText, navigate);
-  // };
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -172,14 +159,19 @@ function Homepage() {
         {places?.map((place, index) => (  // ใช้ ?.map() เพื่อหลีกเลี่ยง error
           <div key={index} className="place-card">
             <a href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`} target="_blank" rel="noopener noreferrer">
-              <img
+            <img
+              src={`/place_images/${place.place_id}.jpg`}  
+              alt={`Place ${place.id}`} 
+              className="review-place-image"
+              onClick={() => navigate(`/placereview/${place.place_id}`)} // นำไปหน้ารีวิว
+            />
+              {/* <img
                 src={`/place_images/${place.place_id}.jpg`}  
                 alt={`Place ${place.id}`} 
                 className="place-image"
-              />
+              /> */}
             </a>
             
-
             <div className="place-info">
               <span className="place-category">
                 {place.tags?.map((tag, index) => (
@@ -196,10 +188,20 @@ function Homepage() {
               <button onClick={() => handleGoGoogleMap(place.place_id)} className="go-button">
                 ดูสถานที่
               </button>
-              <button onClick={() => handleAddPlace(place, navigate)} className="go-button">
-              {/* <button onClick={() => handleAddPlace(place)} className="go-button"> */}
-                เพิ่มไปยัง List to go
-              </button>
+              <button
+              type="button" // เพิ่ม type="button" เพื่อป้องกันการ submit ฟอร์ม
+              onClick={async () => {
+                // ตรวจสอบสถานะการล็อกอิน
+                if (!isLoggedIn) {
+                  navigate("/login");
+                } else {
+                  await handleAddPlace(place, navigate);
+                }
+              }}
+              className="go-button"
+            >
+              เพิ่มไปยัง List to go
+            </button>
             </div>
 
           </div>
