@@ -1,0 +1,116 @@
+/* ปรับขนาดตัวอักษรของหัวข้อ */
+h1 {
+    font-size: 2rem; /* ขนาดตัวอักษรของหัวข้อ */
+    font-weight: bold; /* ตัวอักษรหนา */
+    color: #333; /* สีตัวอักษร */
+    text-align: center; /* จัดตำแหน่งข้อความให้อยู่ตรงกลาง */
+    margin-bottom: 20px; /* เว้นระยะห่างด้านล่าง */
+}
+
+/* ปรับขนาดตัวอักษรของคะแนนเฉลี่ย */
+.average-rating p {
+    font-size: 1.2rem; /* ขนาดตัวอักษร */
+    font-weight: normal;
+    color: #0b0b0b; /* สีตัวอักษร */
+    text-align: center; /* จัดตำแหน่งข้อความให้อยู่ตรงกลาง */
+    margin-top: 10px; /* เว้นระยะห่างด้านบน */
+}
+
+/* สไตล์สำหรับข้อความที่แสดงข้อผิดพลาด */
+.error {
+    color: red; /* สีข้อความ */
+    font-size: 1rem; /* ขนาดตัวอักษร */
+    text-align: center; /* จัดตำแหน่งข้อความให้อยู่ตรงกลาง */
+    margin-top: 20px; /* เว้นระยะห่างด้านบน */
+}
+
+.review-place-image {
+    width: 100%; /* ขนาดรูปภาพเต็ม */
+    height: 200px; /* ความสูงของรูปภาพ */
+    object-fit: cover; /* ปรับขนาดรูปภาพให้เต็ม */
+    border-radius: 10px; /* ทำให้มีมุมโค้ง */
+}
+
+/* สไตล์สำหรับรีวิวทั้งหมด */
+.review-list {
+    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+    margin-top: 20px;
+    background-color: #d5e0e4; /* สีพื้นหลัง */
+    padding: 20px;
+}
+
+.review-list h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333; /* สีตัวอักษร */
+    text-align: left; /* จัดข้อความให้ไปทางซ้าย */
+    margin-bottom: 20px; /* เว้นระยะห่างด้านล่าง */
+    margin-left: 600px; /* เยื้องไปทางซ้ายเล็กน้อย */
+}
+
+/* สไตล์สำหรับรีวิวแต่ละรายการ */
+.review-item {
+    text-align: left; /* จัดข้อความให้ไปทางซ้าย */
+    margin-bottom: 15px; /* เว้นระยะห่างระหว่างรีวิว */
+    padding-left: 600px; /* เยื้องข้อความไปทางซ้าย */
+    border-bottom: 1px solid #ccc; /* เส้นขอบใต้แต่ละรีวิว */
+}
+
+/* สไตล์สำหรับข้อมูลของรีวิว */
+.review-item p {
+    font-size: 1rem;
+    margin: 5px 0; /* เว้นระยะห่างด้านบนและล่าง */
+    color: #202020; /* สีข้อความ */
+}
+
+.add-review h2 {
+    margin-top: 20px; /* เว้นระยะห่างด้านบน */
+    text-align: center; /* จัดตำแหน่งข้อความให้อยู่ตรงกลาง */
+}
+
+.add-review .review-list {
+    text-align: center; /* จัดตำแหน่งข้อความให้อยู่ตรงกลาง */
+}
+
+/* สไตล์สำหรับปุ่มเพิ่มรีวิว */
+.add-review button {
+    background-color: #4CAF50; /* สีพื้นหลัง */
+    color: white; /* สีตัวอักษร */
+    padding: 10px 20px; /* การเว้นระยะห่าง */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem; /* ขนาดตัวอักษร */
+    display: block;
+    margin: 20px auto 0; /* จัดตำแหน่งปุ่มให้อยู่กลาง */
+}
+
+/* สไตล์สำหรับฟอร์มรีวิว */
+.add-review form {
+    max-width: 600px; /* กำหนดขนาดสูงสุดของฟอร์ม */
+    margin: 0 auto; /* จัดตำแหน่งให้อยู่กลาง */
+    padding: 20px;
+    background-color: #f9f9f9; /* สีพื้นหลังของฟอร์ม */
+    border-radius: 10px;
+}
+
+.add-review label {
+    font-size: 1rem; /* ขนาดตัวอักษร */
+    font-weight: bold; /* ตัวอักษรหนา */
+    margin-top: 10px; /* เว้นระยะห่างด้านบน */
+    display: block;
+}
+
+.add-review select,
+.add-review textarea {
+    width: 100%; /* ให้ขยายเต็มความกว้าง */
+    margin-top: 5px; /* เว้นระยะห่างด้านบน */
+    border: 1px solid #ccc; /* ขอบของ input */
+    border-radius: 5px;
+    font-size: 1rem; /* ขนาดตัวอักษร */
+}
+
+.add-review textarea {
+    height: 100px; /* ความสูงของ textarea */
+    resize: vertical; /* ให้สามารถขยายได้ตามแนวตั้ง */
+}
