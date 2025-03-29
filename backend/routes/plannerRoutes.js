@@ -283,13 +283,16 @@ router.delete("/planner/remove", async (req, res) => {
  *                   type: object
  *                   properties:
  *                     place_id:
- *                       type: string
+ *                       type: integer
+ *                       description: ID ของสถานที่
  *                     start_time:
  *                       type: string
  *                       format: date-time
+ *                       description: เวลาที่เริ่มต้น
  *                     end_time:
  *                       type: string
  *                       format: date-time
+ *                       description: เวลาที่สิ้นสุด
  *     responses:
  *       201:
  *         description: เพิ่มสถานที่หลายๆ จุดสำเร็จ
@@ -297,10 +300,8 @@ router.delete("/planner/remove", async (req, res) => {
  *         description: ข้อมูลไม่ถูกต้อง
  *       401:
  *         description: Unauthorized - User not logged in
- *       404:
- *         description: แผนการเดินทางไม่พบ
  *       500:
- *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
+ *         description: Server error
  */
 router.post("/planner/:planId/add-place", async (req, res) => {
     const { planId } = req.params;
@@ -597,6 +598,94 @@ router.get("/places/search", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch search results" });
     }
 });
+
+/**
+ * @swagger
+ * /api/planner/{planId}/add-listtogo:
+ *   post:
+ *     summary: เพิ่มสถานที่จาก ListToGo ลงในแผนการเดินทาง
+ *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               places:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     list_to_go_id:
+ *                       type: integer
+ *     responses:
+ *       201:
+ *         description: เพิ่มสถานที่จาก ListToGo ลงในแผนการเดินทางสำเร็จ
+ *       400:
+ *         description: ข้อมูลไม่ถูกต้อง
+ *       404:
+ *         description: แผนการเดินทางไม่พบ
+ *       500:
+ *         description: Server error
+ */
+router.post("/planner/:planId/add-listtogo", async (req, res) => {
+    const { planId } = req.params;
+    const { places } = req.body;  // รับข้อมูลสถานที่จาก ListToGo
+    console.log("📌 ข้อมูลสถานที่ที่ได้รับจาก ListToGo:", req.body);
+
+    if (!Array.isArray(places) || places.length === 0) {
+        return res.status(400).json({ error: "Places must be an array and cannot be empty" });
+    }
+
+    const token = req.cookies.auth_token;
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+    }
+
+    let user_id;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user_id = decoded.user_id;
+    } catch (err) {
+        return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+    }
+
+    const plan = await prisma.plan.findUnique({ where: { plan_id: parseInt(planId) } });
+
+    if (!plan) {
+        return res.status(404).json({ error: "Plan not found" });
+    }
+
+    if (plan.user_id !== parseInt(user_id)) {
+        return res.status(403).json({ error: "You do not have permission to add places to this plan" });
+    }
+
+    try {
+        // เพิ่มสถานที่จาก ListToGo ลงใน place_list ของแผนการเดินทาง
+        const newPlaces = await prisma.place_list.createMany({
+            data: places.map(place => ({
+                plan_id: parseInt(planId),
+                place_id: place.list_to_go_id,  // ใช้ list_to_go_id จาก ListToGo
+                created_at: new Date(),
+                updated_at: new Date(),
+            })),
+        });
+
+        console.log("✅ เพิ่มสถานที่จาก ListToGo ลงในแผนการเดินทางสำเร็จ:", newPlaces);
+        res.status(201).json(newPlaces);
+    } catch (error) {
+        console.error("Error adding places from ListToGo:", error);
+        res.status(500).json({ error: "Failed to add places from ListToGo" });
+    }
+});
+
 
 
 module.exports = router;

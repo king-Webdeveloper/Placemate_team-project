@@ -1,0 +1,105 @@
+/* SelectListToGo.css */
+.select-listtogo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5; /* Light background color */
+    border-radius: 20px;
+  }
+  
+  .select-listtogo-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .select-listtogo-searchbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 25px;
+    background-color: #e2e2e2;
+  }
+  
+  .select-listtogo-search-input {
+    width: 80%;
+    border: none;
+    border-radius: 25px;
+    background-color: #fff;
+    font-size: 16px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .select-listtogo-search-button {
+    background-color: #4CAF50; /* Green button */
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+  .select-listtogo-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  
+  .select-listtogo-places-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 30px;
+  }
+  
+  .select-listtogo-place-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .select-listtogo-place-image-container {
+    display: flex;
+    align-items: center;
+  }
+
+
+  .select-listtogo-place-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+  }
+  
+  .select-listtogo-place-name {
+    font-size: 1.2rem;
+    margin-left: 10px;
+  }
+  
+  .select-listtogo-confirm-button {
+    display: block;
+    width: 200px;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .select-listtogo-confirm-button:hover {
+    background-color: #45a049;
+  }
+  
+  

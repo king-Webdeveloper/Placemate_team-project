@@ -22,7 +22,7 @@ const CreatePlan = () => {
           <button onClick={() => navigate('/search-place')} className="search-place-btn">
           🔍 ค้นหาสถานที่
         </button>
-        <button onClick={() => navigate('/search-place')} className="search-place-btn">
+        <button onClick={() => navigate('/select-listtogo')} className="search-place-btn">
           เพิ่มสถานที่จาก Listtogo
         </button>
       </div>
