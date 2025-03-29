@@ -73,25 +73,14 @@ const PlanDetails = () => {
             {planDetails ? (
                 <>
                     <h2 className="plan-title">{planDetails.title}</h2>
-                    <p className="trip-date">
-                        🚀 เริ่มเดินทาง: {new Date(planDetails.start_time).toLocaleString()}
-                    </p>
-                    <p className="trip-date">
-                        🏁 สิ้นสุดเดินทาง: {new Date(planDetails.end_time).toLocaleString()}
-                    </p>
+                    <p className="trip-date">🚀 เริ่มเดินทาง: {new Date(planDetails.start_time).toLocaleString()}</p>
+                    <p className="trip-date">🏁 สิ้นสุดเดินทาง: {new Date(planDetails.end_time).toLocaleString()}</p>
 
                     <div className="places-list">
                         <h3>📍 สถานที่ท่องเที่ยว</h3>
                         {planDetails.place_list.length > 0 ? (
                             planDetails.place_list.map((place) => (
                                 <div key={place.place_id} className="place-item animate-fade-in">
-                                    <div className="place-tags">
-                                        {(Array.isArray(place.place?.category) ? place.place.category : [place.place?.category])
-                                            .filter(Boolean)
-                                            .map((cat, index) => (
-                                                <span className="place-tag" key={index}>{cat}</span>
-                                            ))}
-                                    </div>
                                     <img
                                         src={place.place?.photo || `/place_images/${place.place?.place_id}.jpg`}
                                         alt={place.place?.name || "ชื่อไม่ระบุ"}
@@ -100,7 +89,14 @@ const PlanDetails = () => {
                                     <div className="place-info">
                                         <h4>{place.place?.name || "ชื่อสถานที่ไม่ระบุ"}</h4>
                                         <p>⭐ {place.place?.rating || "ไม่มีคะแนน"}</p>
-                                        <p>⏰ เวลาทำการ: {place.place?.opening_hours || "ไม่ระบุเวลาเปิด-ปิด"}</p>
+                                        <div className="place-tags">
+                                            {place.place?.tag?.map((tagObj, index) => (
+                                                <span key={index} className="place-tag">
+                                                    {tagObj.tag_name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p>⏰ เวลาทำการ: {place.place?.business_hour?.map(b => b.business_hour).join(", ") || "ไม่ระบุเวลาเปิด-ปิด"}</p>
                                     </div>
                                     <div className="place-actions">
                                         <a
@@ -109,10 +105,10 @@ const PlanDetails = () => {
                                             rel="noopener noreferrer"
                                             className="show-route-button"
                                         >
-                                            แสดงเส้นทาง
+                                            🚗 แสดงเส้นทาง
                                         </a>
-                                        <button onClick={() => handleDeletePlace(place.place_id)} className="delete-place-button" title="ลบสถานที่"> 
-                                        <i className="fas fa-trash-alt"></i>
+                                        <button onClick={() => handleDeletePlace(place.place_id)} className="delete-place-button">
+                                            <i className="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </div>

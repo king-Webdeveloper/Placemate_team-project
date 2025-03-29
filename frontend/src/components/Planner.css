@@ -6,36 +6,37 @@
   padding: 30px;
   background-color: #ffffff;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้ container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
-/* จัดให้ตรงกลาง */
 .planner-page .planner-container h2 {
   font-size: 2rem;
   color: #333;
   text-align: center;
   margin-bottom: 20px;
+  position: relative;
 }
 
-/* ปุ่มสร้างแผนการเดินทาง */
-.planner-page .create-plan-button {
-  background: #f5f5f5;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 20px; /* เพิ่มระยะห่างจากฟอร์ม */
-}
-
-.planner-page .create-plan-button:hover {
+/* ปุ่มสร้างแผนการเดินทาง (ใหม่ - ขวาบน สีส้ม เปลี่ยนเป็นเขียวตอน hover) */
+.planner-page .add-Plan .add-plan-button {
   background-color: #ff7f50;
   color: white;
+  font-size: 1.5rem;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  width: 30%;
 }
 
-/* การ์ดแผนการเดินทาง */
+.planner-page .add-Plan .add-plan-button:hover {
+  background-color: #4caf50;
+}
+
 .planner-page .plan-card {
   background: #ffffff;
   border-radius: 10px;
@@ -53,14 +54,13 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* จัดหัวข้อแผนให้ตรงกลาง */
 .planner-page .plan-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
-/* ชื่อแผน */
 .planner-page .plan-title {
   font-size: 1.2rem;
   font-weight: bold;
@@ -68,7 +68,6 @@
   text-align: left;
 }
 
-/* ปุ่มเริ่มต้นการเดินทาง */
 .planner-page .start-trip-button {
   background-color: #f5f5f5;
   border: none;
@@ -84,14 +83,12 @@
   color: white;
 }
 
-/* ข้อมูลวันที่ */
 .planner-page .plan-info {
   font-size: 0.9rem;
   color: #555;
   margin-top: 6px;
 }
 
-/* ปุ่มลบ & แชร์ ไปทางซ้าย */
 .planner-page .plan-actions {
   display: flex;
   justify-content: flex-start;
@@ -101,7 +98,6 @@
   font-size: 0.85rem;
 }
 
-/* ปุ่มไอคอน */
 .planner-page .action-button {
   display: flex;
   align-items: center;
@@ -116,12 +112,10 @@
   color: #ff7f50;
 }
 
-/* ไอคอน */
 .planner-page .action-button i {
   font-size: 1rem;
 }
 
-/* ฟอร์มสร้างแผน */
 .planner-page form {
   display: flex;
   flex-direction: column;
@@ -133,7 +127,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* ปรับ input ให้มีขนาดใหญ่ขึ้นและเรียบร้อย */
 .planner-page input[type="text"], .planner-page input[type="datetime-local"] {
   width: 100%;
   padding: 10px;
@@ -143,7 +136,6 @@
   box-sizing: border-box;
 }
 
-/* ปรับปุ่มสร้างแผนการเดินทางให้ชัดเจน */
 .planner-page .create-plan-button {
   background-color: #ff7f50;
   color: white;
@@ -151,9 +143,26 @@
   padding: 12px;
   font-size: 1.1rem;
   cursor: pointer;
+  border: none;
 }
 
 .planner-page .create-plan-button:hover {
   background-color: #ff5722;
 }
 
+.planner-page .planner-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.planner-page .planner-header .add-Plan{
+  display: inline-flex;
+  justify-content: end;
+  width: 50%;
+  margin-left: 50%;
+  gap: 10px;
+  margin-top: 10px;
+}

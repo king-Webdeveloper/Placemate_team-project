@@ -85,11 +85,20 @@ const Planner = () => {
     return (
         <div className="planner-page">
             <div className="planner-container">
-                <h2>Your Travel Plans</h2>
-                {message && <p className="message">{message}</p>}
+                {/* <h2>Your Travel Plans</h2>
+                {message && <p className="message">{message}</p>} */}
+                <div className="planner-header">
+                    <h2>Your Travel Plans</h2>
+                    {message && <p className="message">{message}</p>}
+                        <div className="add-Plan">
+                            <div className="add-plan-button" onClick={handleAddNewPlan}>+</div>
+                            {/* <div className="add-plan-button" onClick={handleAddNewPlan}>+</div> */}
+                        </div> 
+                </div>
+
 
                 {/* ปุ่ม "+" สำหรับไปหน้าใหม่ */}
-                <div className="add-plan-button" onClick={handleAddNewPlan}>+</div> {/* เพิ่มการเรียกใช้ navigate */}
+                {/* <div className="add-plan-button" onClick={handleAddNewPlan}>+</div> เพิ่มการเรียกใช้ navigate */}
 
                 <div className="plans-list">
                     {plans.map((plan) => (

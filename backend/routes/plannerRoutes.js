@@ -369,11 +369,17 @@ router.get("/planner/:planId", async (req, res) => {
             include: {
               place_list: {
                 include: {
-                  place: true, // ✅ ดึงข้อมูลจากตาราง place มาด้วย
+                  place: {
+                    include: {
+                      tag: true, // ✅ ใช้ tag ไม่ใช่ place_tag
+                      business_hour: true,
+                    },
+                  },
                 },
               },
             },
-          });          
+          });
+                
 
         // ถ้าไม่พบแผนการเดินทาง
         if (!plan) {

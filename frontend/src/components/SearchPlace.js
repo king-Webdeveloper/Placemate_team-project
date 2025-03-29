@@ -11,9 +11,9 @@ const SearchPlace = () => {
 
     const [searchTerm, setSearchTerm] = useState(initialQuery);
     const [searchResults, setSearchResults] = useState([]);
-    const [loading, setLoading] = useState(false);  // สถานะการโหลด
-    const [error, setError] = useState("");  // ข้อผิดพลาด
-    const [selectedPlaces, setSelectedPlaces] = useState([]);  // สถานที่ที่เลือก
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [selectedPlaces, setSelectedPlaces] = useState([]);
 
     useEffect(() => {
         if (initialQuery.trim()) {
@@ -24,18 +24,17 @@ const SearchPlace = () => {
     const handleSearch = async (query) => {
         if (!query.trim()) return;
 
-        setLoading(true);  // เริ่มโหลดข้อมูล
-        setError("");  // รีเซ็ตข้อผิดพลาดก่อนเริ่มการค้นหา
+        setLoading(true);
+        setError("");
 
         try {
             const response = await axios.get(`http://localhost:5000/api/search/places?query=${encodeURIComponent(query)}`);
             const data = response.data;
 
-            // ตรวจสอบ category และรูปภาพ
             const updatedResults = data.map((place) => ({
                 ...place,
                 category: Array.isArray(place.category) ? place.category.join(", ") : place.category || "ไม่ระบุ",
-                photo: place.photo || "/default-placeholder.png", // ใช้รูปภาพ placeholder หากไม่มี
+                photo: place.photo || "/default-placeholder.png",
             }));
 
             setSearchResults(updatedResults);
@@ -43,35 +42,27 @@ const SearchPlace = () => {
             console.error("Error fetching search results:", error);
             setError("ไม่สามารถค้นหาสถานที่ได้ กรุณาลองใหม่อีกครั้ง");
         } finally {
-            setLoading(false);  // หยุดโหลดข้อมูล
+            setLoading(false);
         }
     };
 
     const handleSelectPlace = (place) => {
-        // เพิ่มสถานที่ที่เลือกลงใน selectedPlaces
         setSelectedPlaces(prevPlaces => {
             const exists = prevPlaces.some(p => p.place_id === place.place_id);
-            if (exists) {
-                return prevPlaces.filter(p => p.place_id !== place.place_id);  // ถ้าเลือกซ้ำให้ลบออก
-            } else {
-                return [...prevPlaces, place];  // เพิ่มสถานที่ใหม่
-            }
+            return exists ? prevPlaces.filter(p => p.place_id !== place.place_id) : [...prevPlaces, place];
         });
     };
 
     const handleAddPlaces = () => {
-        // ส่งข้อมูลสถานที่ทั้งหมดไปยัง CreatePlan.js เพื่อให้ยืนยันการเลือก
         navigate(`/create-plan?selectedPlaces=${encodeURIComponent(JSON.stringify(selectedPlaces))}`);
     };
 
     return (
         <div className="searchplace-search-place-container">
             <h2>ค้นหาสถานที่</h2>
+            <button onClick={handleAddPlaces} className="searchplace-confirm-button">ยืนยันการเลือกสถานที่ทั้งหมด</button>
 
-            {/* ปุ่มยืนยันการเลือกสถานที่ทั้งหมด */}
-            <button onClick={handleAddPlaces} className="confirm-button">ยืนยันการเลือกสถานที่ทั้งหมด</button>
-
-            <div className="searchbar-search-bar">
+            <div className="searchplace-search-bar">
                 <input
                     type="text"
                     value={searchTerm}
@@ -84,29 +75,35 @@ const SearchPlace = () => {
                 </button>
             </div>
 
-            {loading && <p>กำลังค้นหา...</p>}  {/* แสดงข้อความระหว่างโหลดข้อมูล */}
-
-            {error && <p className="error-message">{error}</p>}  {/* แสดงข้อผิดพลาด */}
+            {loading && <p>กำลังค้นหา...</p>}
+            {error && <p className="searchplace-error-message">{error}</p>}
 
             <div className="searchplace-search-results">
                 {searchResults.length > 0 ? (
                     searchResults.map((place) => (
-                        <div key={place.place_id} className="result-search">
-                            <img
-                                src={`/place_images/${place.place_id}.jpg`}
-                                alt={`Place ${place.id}`}
-                                className="place-image"
-                            />
-                            <div className="div-searchResult">
+                        <div key={place.place_id} className="searchplace-result-search">
+                            <div className="searchplace-image-container">
+                                <div className="searchplace-place-tags">
+                                    {place.tag && place.tag.map((tagObj, index) => (
+                                        <span key={index} className="searchplace-place-tag">{tagObj.tag_name}</span>
+                                    ))}
+                                </div>
+                                <img
+                                    src={`/place_images/${place.place_id}.jpg`}
+                                    alt={`Place ${place.id}`}
+                                    className="searchplace-place-image"
+                                />
+                            </div>
+                            <div className="searchplace-div-searchResult">
                                 <strong>{place.name}</strong>
-                                <p>{place.category}</p>
                                 <p>⭐ {place.rating || "ไม่มีเรตติ้ง"}</p>
                             </div>
-                            <div className="go-bottom">
+                            <div className="searchplace-go-bottom">
                                 <button 
                                     onClick={() => handleSelectPlace(place)} 
-                                    className="go-button"
-                                    style={{ backgroundColor: selectedPlaces.some(p => p.place_id === place.place_id) ? '#28a745' : '#007bff' }} // ปรับสีปุ่มเมื่อเลือกสถานที่แล้ว
+                                    // className="searchplace-go-button"
+                                    className={`searchplace-go-button ${selectedPlaces.some(p => p.place_id === place.place_id) ? 'selected' : ''}`}
+                                    // style={{ backgroundColor: selectedPlaces.some(p => p.place_id === place.place_id) ? '#28a745' : '#007bff' }}
                                 >
                                     {selectedPlaces.some(p => p.place_id === place.place_id) ? 'ยกเลิกเลือก' : 'เลือก'}
                                 </button>
@@ -114,7 +111,7 @@ const SearchPlace = () => {
                         </div>
                     ))
                 ) : (
-                    !loading && <p>ไม่พบผลลัพธ์ที่ตรงกับคำค้นหาของคุณ</p>
+                    !loading && <p></p>
                 )}
             </div>
         </div>
