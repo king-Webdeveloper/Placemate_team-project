@@ -156,7 +156,7 @@ router.post("/planner/add", async (req, res) => {
  * @swagger
  * /api/planner/remove:
  *   delete:
- *     summary: ลบแผนการเดินทาง
+ *     summary: ลบแผนการเดินทาง (พร้อมเก็บบันทึกแผนไว้ใน deleted_plan)
  *     tags: [Planner]
  *     requestBody:
  *       required: true
@@ -169,41 +169,27 @@ router.post("/planner/add", async (req, res) => {
  *                 type: integer
  *     responses:
  *       200:
- *         description: ลบสำเร็จ
+ *         description: ลบแผนและบันทึกลง deleted_plan สำเร็จ
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
- *       404:
- *         description: ไม่พบแผนการเดินทาง
  *       403:
  *         description: ไม่มีสิทธิ์ลบแผนนี้
+ *       404:
+ *         description: ไม่พบแผนการเดินทาง
  *       500:
  *         description: Server error
  */
 router.delete("/planner/remove", async (req, res) => {
     try {
-        console.log("✅ DELETE /planner/remove ถูกเรียกใช้งาน");
-        console.log("Cookies ที่ได้รับ:", req.cookies);
-
-
         const token = req.cookies.auth_token;
         if (!token) {
-            console.warn("⚠ ไม่มี auth_token ใน Cookie");
             return res.status(401).json({ error: "Unauthorized: No authentication token found" });
         }
 
-        let user_id;
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            user_id = decoded.user_id;
-            console.log("✅ Token Decode สำเร็จ:", decoded);
-        } catch (err) {
-            console.error("❌ Token ไม่ถูกต้อง:", err);
-            return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
-        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user_id = decoded.user_id;
 
         const { plan_id } = req.body;
-        console.log("📌 กำลังลบแผนที่ ID:", plan_id);
-
         if (!plan_id) {
             return res.status(400).json({ error: "plan_id is required" });
         }
@@ -213,21 +199,29 @@ router.delete("/planner/remove", async (req, res) => {
         });
 
         if (!existingPlan) {
-            console.warn("⚠ แผนที่ต้องการลบไม่มีอยู่ในระบบ");
             return res.status(404).json({ error: "Plan not found" });
         }
 
         if (existingPlan.user_id !== parseInt(user_id)) {
-            console.warn("⚠ ผู้ใช้ไม่มีสิทธิ์ลบแผนนี้");
             return res.status(403).json({ error: "You do not have permission to delete this plan" });
         }
+
+        await prisma.deleted_plan.create({
+            data: {
+                plan_id: existingPlan.plan_id,
+                user_id: existingPlan.user_id,
+                title: existingPlan.title,
+                start_time: existingPlan.start_time,
+                end_time: existingPlan.end_time,
+                deleted_at: new Date()
+            }
+        });
 
         await prisma.plan.delete({
             where: { plan_id: parseInt(plan_id) }
         });
 
-        console.log("✅ แผนถูกลบเรียบร้อย:", plan_id);
-        res.json({ message: "Plan removed successfully" });
+        res.json({ message: "Plan removed and backed up successfully" });
     } catch (error) {
         console.error("❌ Error removing plan:", error);
         res.status(500).json({ error: "Failed to remove plan" });
@@ -327,6 +321,59 @@ router.post("/planner/:planId/add-place", async (req, res) => {
     } catch (error) {
         console.error("Error adding places:", error);
         res.status(500).json({ error: "Failed to add places" });
+    }
+});
+
+
+/**
+ * @swagger
+ * /api/planner/deleted:
+ *   get:
+ *     summary: ดึงรายการแผนการเดินทางที่ถูกลบล่าสุด (สูงสุด 10 รายการ)
+ *     tags: [Planner]
+ *     responses:
+ *       200:
+ *         description: รายการแผนการเดินทางที่ถูกลบสำเร็จ
+ *       401:
+ *         description: Unauthorized - No valid authentication
+ *       500:
+ *         description: Server error
+ */
+router.get("/planner/deleted", async (req, res) => {
+    try {
+        console.log("✅ เรียกใช้งาน GET /planner/deleted");
+        console.log("🍪 Cookies ที่ได้รับ:", req.cookies);
+
+        const token = req.cookies.auth_token;
+        if (!token) {
+            console.warn("⚠️ ไม่พบ auth_token ใน Cookie");
+            return res.status(401).json({ error: "Unauthorized: No authentication token found" });
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+            console.log("🔐 Token decode แล้ว:", decoded);
+        } catch (err) {
+            console.error("❌ Token ผิดพลาด:", err);
+            return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+        }
+
+        const user_id = decoded.user_id;
+
+        console.log(`📌 ดึง deleted_plan ของ user_id: ${user_id}`);
+
+        const deletedPlans = await prisma.deleted_plan.findMany({
+            where: { user_id: parseInt(user_id) },
+            orderBy: { deleted_at: "desc" },
+            take: 10
+        });
+
+        console.log("✅ แผนการเดินทางที่ถูกลบที่เจอ:", deletedPlans.length);
+        res.json(deletedPlans);
+    } catch (error) {
+        console.error("❌ Error fetching deleted plans:", error);
+        res.status(500).json({ error: "Failed to fetch deleted plans" });
     }
 });
 

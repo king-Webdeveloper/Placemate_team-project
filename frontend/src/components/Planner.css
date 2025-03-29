@@ -22,7 +22,8 @@
 .planner-page .add-Plan .add-plan-button {
   background-color: #ff7f50;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1rem;
+  font-weight: bolder;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
@@ -30,7 +31,7 @@
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  width: 30%;
+  width: 50%;
 }
 
 .planner-page .add-Plan .add-plan-button:hover {
@@ -158,11 +159,14 @@
   margin-bottom: 20px;
 }
 
+.planner-page .planner-header h2{
+  font-size: 3rem;
+}
+
 .planner-page .planner-header .add-Plan{
   display: inline-flex;
   justify-content: end;
-  width: 50%;
-  margin-left: 50%;
+  width: 60%;
   gap: 10px;
   margin-top: 10px;
 }

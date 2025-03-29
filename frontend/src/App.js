@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Planner from "./components/Planner";
+import DeletedPlans from './components/DeletedPlans';
 import PlanDetails from './components/PlanDetails';
 import CreatePlan from './components/CreatePlan';
 import Listtogo from "./components/Listtogo";
@@ -35,7 +36,7 @@ function Content() {
   // const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place"].includes(location.pathname);
   // const showNavbar = location.pathname.includes("/plan-details");
   // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
-  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place"].includes(location.pathname);
+  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place", "/deleted-plans"].includes(location.pathname);
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
   console.log("Current Path:", location.pathname);  // ตรวจสอบเส้นทางที่กำลังใช้อยู่
@@ -73,6 +74,7 @@ function Content() {
         <Route path="/listtogo" element={<Listtogo />} />
         <Route path="/searchresult" element={<Searchresult />} />
         <Route path="/planner" element={<Planner />} />
+        <Route path="/deleted-plans" element={<DeletedPlans />} />
         <Route path="/plan-details/:planId" element={<PlanDetails />} />
         <Route path="/create-plan" element={<CreatePlan />} />
         <Route path="/search-place" element={<SearchPlace />} />

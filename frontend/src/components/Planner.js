@@ -91,8 +91,8 @@ const Planner = () => {
                     <h2>Your Travel Plans</h2>
                     {message && <p className="message">{message}</p>}
                         <div className="add-Plan">
-                            <div className="add-plan-button" onClick={handleAddNewPlan}>+</div>
-                            {/* <div className="add-plan-button" onClick={handleAddNewPlan}>+</div> */}
+                            <div className="add-plan-button" onClick={handleAddNewPlan}>สร้างแผนการเดินทาง</div>
+                            <div className="add-plan-button" onClick={() => navigate('/deleted-plans')}>ดูประวัติแผนการเดินทาง</div>
                         </div> 
                 </div>
 

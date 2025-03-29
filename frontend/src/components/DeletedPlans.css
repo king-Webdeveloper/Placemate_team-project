@@ -1,0 +1,74 @@
+.deleted-plans-page {
+    padding: 30px;
+    background-color: #f7f7f7;
+    min-height: 100vh;
+  }
+  
+  .deleted-plans-container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .deleted-plans-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #333;
+  }
+  
+  .deleted-plans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .deleted-plan-card {
+    background-color: #fff8f3;
+    border-left: 5px solid #ff7f50;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .plan-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 5px;
+  }
+  
+  .plan-info {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+  
+  .no-data {
+    text-align: center;
+    color: #888;
+  }
+  
+  .back-button {
+    display: block;
+    margin: 25px auto 0;
+    padding: 10px 20px;
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #4caf50;
+  }
+  
