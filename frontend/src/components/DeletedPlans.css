@@ -1,74 +1,158 @@
+/* General layout for the page */
 .deleted-plans-page {
-    padding: 30px;
-    background-color: #f7f7f7;
-    min-height: 100vh;
-  }
-  
-  .deleted-plans-container {
-    max-width: 800px;
-    margin: auto;
-    background: white;
-    border-radius: 12px;
-    padding: 20px 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .deleted-plans-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    color: #333;
-  }
-  
-  .deleted-plans-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .deleted-plan-card {
-    background-color: #fff8f3;
-    border-left: 5px solid #ff7f50;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-  
-  .plan-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #444;
-    margin-bottom: 5px;
-  }
-  
-  .plan-info {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-  }
-  
-  .no-data {
-    text-align: center;
-    color: #888;
-  }
-  
-  .back-button {
-    display: block;
-    margin: 25px auto 0;
-    padding: 10px 20px;
-    background-color: #ff7f50;
-    color: white;
-    border: none;
+  padding: 30px;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+.deleted-plans-container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  border-radius: 12px;
+  padding: 20px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Header for deleted plans section */
+.deleted-plans-header {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+/* Error message */
+.deleted-plans-error-message {
+  color: red;
+  text-align: center;
+}
+
+/* No data message */
+.deleted-plans-no-data {
+  text-align: center;
+  color: #888;
+}
+
+/* List of deleted plans */
+.deleted-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Each deleted plan's card */
+.deleted-plan-card {
+  background-color: #fff8f3;
+  border-left: 5px solid #ff7f50;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Plan title */
+.deleted-plan-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+/* Plan info (start, end, deleted time) */
+.deleted-plan-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* Plan places container */
+.deleted-plan-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+/* Each place item in the deleted plan */
+.deleted-place-item {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 48%;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden; /* Prevents overflow */
+}
+
+/* Place photo */
+.deleted-place-photo {
+  width: 100%; /* Make sure image takes full width */
+  height: 200px; /* Fixed height for better control */
+  object-fit: cover; /* Ensures image covers space without stretching */
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+/* Place name text */
+.deleted-place-item div {
+  font-size: 0.9rem; /* Smaller font size */
+  color: #444;
+  font-weight: bold;
+  margin-top: 5px;
+  text-align: center;
+}
+
+/* Back button */
+.deleted-plans-back-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* หรือ right: 20px */
+  padding: 16px 28px;
+  background-color: #ff7f50;
+  font-size: 1.5rem;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.deleted-plans-back-button:hover {
+  background-color: #4caf50;
+}
+
+
+.plan-places .place-item {
+    background-color: #fff;
+    padding: 10px;
     border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .back-button:hover {
-    background-color: #4caf50;
-  }
-  
+    border: 1px solid #ddd;
+    width: 48%;
+    box-sizing: border-box;
+    text-align: center;
+    overflow: hidden; /* Prevents overflow */
+}
+
+.plan-places .place-item .place-photo{
+  width: 100%; /* Make sure image takes full width */
+  height: 200px; /* Fixed height for better control */
+  object-fit: cover; /* Ensures image covers space without stretching */
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.plan-places .place-item {
+  font-size: 0.9rem; /* Smaller font size */
+  color: #444;
+  font-weight: bold;
+  margin-top: 5px;
+  text-align: center; /* Prevents overflow */
+}
+
+.plan-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}

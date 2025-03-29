@@ -35,7 +35,7 @@
 }
 
 .planner-form-container button:hover {
-  background: #ff5733;
+  background: #28a745;
 }
 
 /* ปรับแต่งปุ่มยกเลิก */
@@ -83,4 +83,10 @@
 
 .remove-place-btn:hover {
   background: darkred;
+}
+
+.planner-form-container .form-buttons{
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }

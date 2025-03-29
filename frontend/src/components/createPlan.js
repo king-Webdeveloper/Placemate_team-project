@@ -18,9 +18,14 @@ const CreatePlan = () => {
   return (
     <div className="create-plan-page">
       <h2>Create New Travel Plan</h2>
-      <button onClick={() => navigate('/search-place')} className="search-place-btn">
-        🔍 ค้นหาสถานที่
-      </button>
+      <div className='search-buttom-special'>
+          <button onClick={() => navigate('/search-place')} className="search-place-btn">
+          🔍 ค้นหาสถานที่
+        </button>
+        <button onClick={() => navigate('/search-place')} className="search-place-btn">
+          เพิ่มสถานที่จาก Listtogo
+        </button>
+      </div>
       <PlannerForm selectedPlaces={selectedPlaces} setSelectedPlaces={setSelectedPlaces} />
     </div>
   );

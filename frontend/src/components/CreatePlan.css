@@ -37,18 +37,19 @@
   }
   
   .create-plan-page .planner-form-container .cancel-button {
-    background: #f0f0f0;
-    color: #333;
+    background: #ff7f50;
+    color: white;
     padding: 12px 20px;
-    border-radius: 5px;
     border: none;
-    font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 1.1rem;
     transition: background 0.3s ease;
+    margin-top: 15px;
   }
   
   .create-plan-page .planner-form-container .cancel-button:hover {
-    background: #ddd;
+    background: #28a745;
   }
   
   /* ปรับขนาดข้อความ */
@@ -69,8 +70,10 @@
     background-color: #ff7f50;
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 16px;
+    max-width: 60%;
+    width: 600px;
+    padding: 15px 20px;
+    font-size: 18px;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease-in-out;
@@ -78,5 +81,12 @@
 }
 
 .search-place-btn:hover {
-    background-color: #ff6347;
+    background-color: #4caf50;
+}
+
+.create-plan-page .search-buttom-special{
+  display: flex;
+  width: 30%;
+  gap: 40px;
+  justify-content: space-between;
 }

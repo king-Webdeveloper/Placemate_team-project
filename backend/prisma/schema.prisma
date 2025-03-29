@@ -126,5 +126,14 @@ model deleted_plan {
   start_time      DateTime? @db.Timestamp(6)
   end_time        DateTime? @db.Timestamp(6)
   deleted_at      DateTime  @default(now()) @db.Timestamp(6) 
+  deleted_place_list deleted_place_list[]
+}
 
+model deleted_place_list {
+  id               Int       @id @default(autoincrement())
+  deleted_plan_id  Int
+  place_id         String    @db.VarChar(255)
+  place_name       String?   @db.VarChar(255)
+  photo            String?   @db.VarChar(255)
+  deleted_plan     deleted_plan @relation(fields: [deleted_plan_id], references: [deleted_plan_id])
 }

@@ -188,14 +188,21 @@ router.delete("/planner/remove", async (req, res) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user_id = decoded.user_id;
-
         const { plan_id } = req.body;
+
         if (!plan_id) {
             return res.status(400).json({ error: "plan_id is required" });
         }
 
         const existingPlan = await prisma.plan.findUnique({
-            where: { plan_id: parseInt(plan_id) }
+            where: { plan_id: parseInt(plan_id) },
+            include: {
+                place_list: {
+                    include: {
+                        place: true
+                    }
+                }
+            }
         });
 
         if (!existingPlan) {
@@ -206,7 +213,8 @@ router.delete("/planner/remove", async (req, res) => {
             return res.status(403).json({ error: "You do not have permission to delete this plan" });
         }
 
-        await prisma.deleted_plan.create({
+        // 1. เก็บแผนที่ถูกลบไว้ใน deleted_plan
+        const deletedPlan = await prisma.deleted_plan.create({
             data: {
                 plan_id: existingPlan.plan_id,
                 user_id: existingPlan.user_id,
@@ -217,16 +225,38 @@ router.delete("/planner/remove", async (req, res) => {
             }
         });
 
-        await prisma.plan.delete({
-            where: { plan_id: parseInt(plan_id) }
+        // 2. เก็บสถานที่ของแผนลง deleted_place_list
+        const deletedPlaceData = existingPlan.place_list.map((pl) => ({
+            deleted_plan_id: deletedPlan.deleted_plan_id,
+            place_id: pl.place_id,
+            place_name: pl.place.name,
+            photo: pl.place.photo
+        }));
+
+        if (deletedPlaceData.length > 0) {
+            await prisma.deleted_place_list.createMany({
+                data: deletedPlaceData
+            });
+        }
+
+        // 3. ลบ place_list และ plan
+        await prisma.place_list.deleteMany({
+            where: { plan_id: existingPlan.plan_id }
         });
 
-        res.json({ message: "Plan removed and backed up successfully" });
+        await prisma.plan.delete({
+            where: { plan_id: existingPlan.plan_id }
+        });
+
+        console.log("✅ ลบแผนและเก็บประวัติเรียบร้อย:", deletedPlan);
+        res.json({ message: "Plan removed and archived successfully" });
+
     } catch (error) {
         console.error("❌ Error removing plan:", error);
         res.status(500).json({ error: "Failed to remove plan" });
     }
 });
+
 
 /**
  * @swagger
@@ -366,8 +396,16 @@ router.get("/planner/deleted", async (req, res) => {
         const deletedPlans = await prisma.deleted_plan.findMany({
             where: { user_id: parseInt(user_id) },
             orderBy: { deleted_at: "desc" },
-            take: 10
-        });
+            include: {
+              deleted_place_list: { // รวมข้อมูลสถานที่
+                select: {
+                  place_id: true,
+                  place_name: true,
+                  photo: true, // ดึงข้อมูลภาพ
+                }
+              }
+            }
+          });
 
         console.log("✅ แผนการเดินทางที่ถูกลบที่เจอ:", deletedPlans.length);
         res.json(deletedPlans);
