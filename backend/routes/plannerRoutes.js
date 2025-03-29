@@ -238,7 +238,7 @@ router.delete("/planner/remove", async (req, res) => {
  * @swagger
  * /api/planner/{planId}/add-place:
  *   post:
- *     summary: เพิ่มสถานที่ในแผนการเดินทาง
+ *     summary: เพิ่มสถานที่หลายๆ จุดในแผนการเดินทาง
  *     tags: [Planner]
  *     parameters:
  *       - in: path
@@ -253,28 +253,39 @@ router.delete("/planner/remove", async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               place_id:
- *                 type: string
- *               start_time:
- *                 type: string
- *                 format: date-time
- *               end_time:
- *                 type: string
- *                 format: date-time
+ *               places:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     place_id:
+ *                       type: string
+ *                     start_time:
+ *                       type: string
+ *                       format: date-time
+ *                     end_time:
+ *                       type: string
+ *                       format: date-time
  *     responses:
- *       200:
- *         description: เพิ่มสถานที่สำเร็จ
+ *       201:
+ *         description: เพิ่มสถานที่หลายๆ จุดสำเร็จ
  *       400:
  *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized - User not logged in
  *       404:
- *         description: ไม่พบแผนการเดินทาง
+ *         description: แผนการเดินทางไม่พบ
  *       500:
- *         description: Server error
+ *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
  */
 router.post("/planner/:planId/add-place", async (req, res) => {
     const { planId } = req.params;
-    const { place_id, start_time, end_time } = req.body;
-    // const { places } = req.body; // รับหลายสถานที่เป็น array
+    const places = req.body.places;  // รับข้อมูลหลายๆ สถานที่ใน array
+    console.log("📌 ข้อมูลสถานที่ที่ได้รับจาก Frontend:", req.body);
+
+    if (!Array.isArray(places) || places.length === 0) {
+        return res.status(400).json({ error: "Places must be an array and cannot be empty" });
+    }
 
     const token = req.cookies.auth_token;
     if (!token) {
@@ -299,24 +310,26 @@ router.post("/planner/:planId/add-place", async (req, res) => {
         return res.status(403).json({ error: "You do not have permission to add places to this plan" });
     }
 
+    // ตรวจสอบสถานที่ในแผนก่อนว่าอยู่แล้วหรือไม่ และเพิ่มสถานที่หลายๆ จุด
     try {
-        const newPlaceList = await prisma.place_list.create({
-            data: {
+        const newPlaces = await prisma.place_list.createMany({
+            data: places.map(place => ({
                 plan_id: parseInt(planId),
-                place_id: place_id,
-                start_time: new Date(start_time),
-                end_time: new Date(end_time),
+                place_id: place.place_id,
+                start_time: new Date(place.start_time),
+                end_time: new Date(place.end_time),
                 created_at: new Date(),
                 updated_at: new Date(),
-            }
+            })),
         });
-
-        res.status(201).json(newPlaceList);
+        console.log("✅ เพิ่มสถานที่หลายๆ จุดสำเร็จ:", newPlaces);
+        res.status(201).json(newPlaces);
     } catch (error) {
-        console.error("Error adding place:", error);
-        res.status(500).json({ error: "Failed to add place" });
+        console.error("Error adding places:", error);
+        res.status(500).json({ error: "Failed to add places" });
     }
 });
+
 
 /**
  * @swagger
@@ -352,11 +365,15 @@ router.get("/planner/:planId", async (req, res) => {
     try {
         // ค้นหาแผนการเดินทางจากฐานข้อมูล
         const plan = await prisma.plan.findUnique({
-            where: { plan_id: parsedPlanId },
+            where: { plan_id: parseInt(planId) },
             include: {
-                place_list: true,  // รวมข้อมูลจาก place_list
+              place_list: {
+                include: {
+                  place: true, // ✅ ดึงข้อมูลจากตาราง place มาด้วย
+                },
+              },
             },
-        });
+          });          
 
         // ถ้าไม่พบแผนการเดินทาง
         if (!plan) {
@@ -373,31 +390,69 @@ router.get("/planner/:planId", async (req, res) => {
 
 
 // ลบสถานที่จากแผนการเดินทาง
+/**
+ * @swagger
+ * /api/planner/{planId}/remove-place:
+ *   delete:
+ *     summary: ลบสถานที่ออกจากแผนการเดินทาง
+ *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               place_id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: ลบสถานที่ออกจากแผนสำเร็จ
+ *       400:
+ *         description: ข้อมูลไม่ถูกต้อง
+ *       404:
+ *         description: ไม่พบแผนการเดินทาง
+ *       500:
+ *         description: Server error
+ */
 router.delete("/planner/:planId/remove-place", async (req, res) => {
     const { planId } = req.params;
     const { place_id } = req.body;
 
+    if (!place_id || isNaN(parseInt(planId))) {
+        return res.status(400).json({ error: "Invalid planId or place_id" });
+    }
+
     try {
         const plan = await prisma.plan.findUnique({
             where: { plan_id: parseInt(planId) },
-            include: { place_list: true },
         });
 
         if (!plan) {
             return res.status(404).json({ error: "Plan not found" });
         }
 
-        // ลบสถานที่ที่ต้องการจาก place_list
-        const placeList = await prisma.place_list.delete({
-            where: { place_list_id: parseInt(place_id) },
+        // ลบสถานที่ทั้งหมดใน planId ที่มี place_id ตรงกัน
+        const deleted = await prisma.place_list.deleteMany({
+            where: {
+                plan_id: parseInt(planId),
+                place_id: place_id,
+            },
         });
 
-        res.status(200).json(placeList);
+        res.status(200).json({ message: "Place removed successfully", deletedCount: deleted.count });
     } catch (error) {
         console.error("Error removing place from plan:", error);
         res.status(500).json({ error: "Failed to remove place" });
     }
 });
+
 
 /**
  * @swagger

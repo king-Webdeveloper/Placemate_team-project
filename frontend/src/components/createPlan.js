@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo} from 'react';
+// ✅ CreatePlan.js (แก้ไขให้รับ selectedPlaces แบบ array จาก query string)
+import React, { useState, useMemo } from 'react';
+// import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PlannerForm from './PlannerForm';
 import './CreatePlan.css';
@@ -6,29 +8,12 @@ import './CreatePlan.css';
 const CreatePlan = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
 
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
-  const selectedPlace = queryParams.get("selectedPlace")
-    ? JSON.parse(decodeURIComponent(queryParams.get("selectedPlace")))
-    : null;
+  const selectedPlacesParam = queryParams.get("selectedPlaces");
+  const selectedFromQuery = selectedPlacesParam ? JSON.parse(decodeURIComponent(selectedPlacesParam)) : [];
 
-  const [selectedPlaces, setSelectedPlaces] = useState([]);
-
-  useEffect(() => {
-    if (selectedPlace) {
-        setSelectedPlaces(prevPlaces => {
-            // ตรวจสอบว่ามีสถานที่นี้ในรายการแล้วหรือไม่
-            const exists = prevPlaces.some(p => p.place_id === selectedPlace.place_id);
-            return exists ? prevPlaces : [...prevPlaces, selectedPlace]; // เพิ่มสถานที่ใหม่ถ้ายังไม่มี
-        });
-
-        // ล้าง query params หลังจากเพิ่มสถานที่แล้ว
-        queryParams.delete("selectedPlace");
-        navigate({ search: queryParams.toString() }, { replace: true });
-    }
-  }, [selectedPlace, navigate, queryParams]);
-
+  const [selectedPlaces, setSelectedPlaces] = useState(selectedFromQuery);
 
   return (
     <div className="create-plan-page">

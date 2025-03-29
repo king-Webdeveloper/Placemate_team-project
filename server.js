@@ -187,3 +187,57 @@ router.delete("/planner/remove", async (req, res) => {
     res.status(500).json({ error: "Failed to remove plan" });
   }
 });
+
+// เพิ่มสถานที่ในแผนการเดินทาง
+app.post('/api/planner/:planId/add-place', async (req, res) => {
+  const { planId } = req.params;
+  const { place_id, start_time, end_time } = req.body;
+
+  if (!place_id || !start_time || !end_time) {
+    return res.status(400).json({ error: "place_id, start_time, and end_time are required" });
+  }
+
+  try {
+    // เพิ่มสถานที่ลงใน place_list สำหรับแผนการเดินทางนี้
+    const newPlace = await prisma.placeList.create({
+      data: {
+        plan_id: parseInt(planId),
+        place_id: place_id,
+        start_time: new Date(start_time),
+        end_time: new Date(end_time),
+      }
+    });
+
+    res.status(201).json(newPlace);
+  } catch (error) {
+    console.error("Error adding place:", error);
+    res.status(500).json({ error: "Failed to add place" });
+  }
+});
+
+// ดึงข้อมูลแผนการเดินทางพร้อมสถานที่
+app.get('/api/planner/:planId', async (req, res) => {
+  const { planId } = req.params;
+
+  try {
+    const plan = await prisma.plan.findUnique({
+      where: { plan_id: parseInt(planId) },
+      include: {
+        place_list: { // รวมข้อมูลสถานที่
+          include: {
+            place: true, // รวมข้อมูลสถานที่จากตาราง place
+          },
+        },
+      },
+    });
+
+    if (!plan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+
+    res.json(plan);
+  } catch (error) {
+    console.error("Error fetching plan details:", error);
+    res.status(500).json({ error: "Failed to fetch plan details" });
+  }
+});

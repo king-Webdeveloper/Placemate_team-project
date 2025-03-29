@@ -1,3 +1,4 @@
+// ✅ PlannerForm.js (เพิ่มการเรียก POST /planner/:planId/add-place หลังสร้างแผน)
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -21,11 +22,7 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
                 });
 
                 if (response.status === 401) {
-                    Swal.fire({
-                        title: "กรุณาเข้าสู่ระบบ",
-                        text: "คุณต้องล็อกอินก่อนที่จะสร้างแผนการเดินทาง",
-                        icon: "warning"
-                    }).then(() => {
+                    Swal.fire({ title: "กรุณาเข้าสู่ระบบ", text: "คุณต้องล็อกอินก่อนที่จะสร้างแผนการเดินทาง", icon: "warning" }).then(() => {
                         navigate("/login");
                     });
                 } else {
@@ -41,12 +38,10 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
         checkLoginStatus();
     }, [navigate]);
 
-    // 🛠 ฟังก์ชันลบสถานที่
     const handleRemovePlace = (placeId) => {
         setSelectedPlaces(prevPlaces => prevPlaces.filter(p => p.place_id !== placeId));
     };
 
-    // 🛠 ฟังก์ชันส่งข้อมูลไปยัง Backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage("");
@@ -61,7 +56,6 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
             title,
             start_time: startTime,
             end_time: endTime,
-            places: selectedPlaces.map(p => p.place_id),
         };
 
         try {
@@ -70,9 +64,25 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
                 headers: { "Content-Type": "application/json" },
             });
 
-            console.log("Response from API:", response.data);
-
             if (response.status === 201 && response.data && response.data.plan_id) {
+                const planId = response.data.plan_id;
+
+                // 🔁 เพิ่มสถานที่เข้าแผนที่เพิ่งสร้าง
+                if (selectedPlaces.length > 0) {
+                    const placePayload = {
+                        places: selectedPlaces.map(p => ({
+                            place_id: p.place_id,
+                            start_time: startTime,
+                            end_time: endTime
+                        }))
+                    };
+
+                    await axios.post(`http://localhost:5000/api/planner/${planId}/add-place`, placePayload, {
+                        withCredentials: true,
+                        headers: { "Content-Type": "application/json" },
+                    });
+                }
+
                 Swal.fire({
                     title: "สร้างแผนการเดินทางสำเร็จ!",
                     text: "แผนของคุณถูกบันทึกเรียบร้อยแล้ว",
@@ -82,7 +92,7 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
                 setTitle("");
                 setStartTime("");
                 setEndTime("");
-                setSelectedPlaces([]); // 🛠 รีเซ็ตสถานที่ที่เลือกหลังจากสร้างแผนสำเร็จ
+                setSelectedPlaces([]);
 
                 if (setPlans) {
                     setPlans((prevPlans) => [...prevPlans, response.data]);
@@ -90,7 +100,6 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
 
                 navigate('/planner');
             } else {
-                console.error("API did not return expected data format.");
                 setMessage("เกิดข้อผิดพลาดในการเพิ่มแผน");
             }
         } catch (err) {
@@ -109,31 +118,15 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>ชื่อแผน:</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="กรุณากรอกชื่อแผนการเดินทาง"
-                        required
-                    />
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                 </div>
                 <div className="form-group">
                     <label>วันเริ่มเดินทาง:</label>
-                    <input
-                        type="datetime-local"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        required
-                    />
+                    <input type="datetime-local" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
                 </div>
                 <div className="form-group">
                     <label>วันสิ้นสุดเดินทาง:</label>
-                    <input
-                        type="datetime-local"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        required
-                    />
+                    <input type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
                 </div>
 
                 <div className="selected-places">
@@ -141,13 +134,8 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
                     {selectedPlaces.length > 0 ? (
                         selectedPlaces.map(place => (
                             <div key={place.place_id} className="selected-place-item">
-                                <span>{place.place_name || place.name}</span> {/* ✅ ใช้ place.place_name || place.name */}
-                                <button 
-                                    className="remove-place-btn"
-                                    onClick={() => handleRemovePlace(place.place_id)}
-                                >
-                                    ❌
-                                </button>
+                                <span>{place.place_name || place.name}</span>
+                                <button className="remove-place-btn" onClick={() => handleRemovePlace(place.place_id)}>❌</button>
                             </div>
                         ))
                     ) : (
@@ -165,4 +153,4 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
     );
 };
 
-export default PlannerForm;
+export default PlannerForm

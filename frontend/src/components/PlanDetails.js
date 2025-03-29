@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./PlanDetails.css"; // ใช้ CSS ปกติ
+import "./PlanDetails.css";
 
 const PlanDetails = () => {
     const { planId } = useParams();
@@ -12,7 +12,9 @@ const PlanDetails = () => {
     useEffect(() => {
         const fetchPlanDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/planner/${planId}`);
+                const response = await axios.get(`http://localhost:5000/api/planner/${planId}`, {
+                    withCredentials: true,
+                });
                 setPlanDetails(response.data);
             } catch (error) {
                 console.error("Error fetching plan details:", error);
@@ -25,32 +27,42 @@ const PlanDetails = () => {
 
     const handleDeletePlace = async (placeId) => {
         try {
-            await axios.delete(`http://localhost:5000/api/planner/${planId}/remove-place`, {
+            const response = await axios.delete(`http://localhost:5000/api/planner/${planId}/remove-place`, {
                 data: { place_id: placeId },
                 withCredentials: true,
             });
 
-            setPlanDetails((prevState) => ({
-                ...prevState,
-                place_list: prevState.place_list.filter((place) => place.place_id !== placeId),
-            }));
+            if (response.status === 200) {
+                setPlanDetails((prevState) => ({
+                    ...prevState,
+                    place_list: prevState.place_list.filter((place) => place.place_id !== placeId),
+                }));
 
-            console.log("ลบสถานที่สำเร็จ:", placeId);
+                console.log("ลบสถานที่สำเร็จ:", placeId);
+            } else {
+                setError("ไม่สามารถลบสถานที่ได้");
+            }
         } catch (error) {
             console.error("Error while deleting place:", error);
+            setError("ไม่สามารถลบสถานที่ได้");
         }
     };
 
     const handleEndTrip = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/planner/remove`, {
+            const response = await axios.delete(`http://localhost:5000/api/planner/remove`, {
                 data: { plan_id: planId },
                 withCredentials: true,
             });
 
-            navigate("/planner");
+            if (response.status === 200) {
+                navigate("/planner");
+            } else {
+                setError("ไม่สามารถสิ้นสุดแผนการเดินทางได้");
+            }
         } catch (error) {
             console.error("Error while ending trip:", error);
+            setError("ไม่สามารถสิ้นสุดแผนการเดินทางได้");
         }
     };
 
@@ -61,34 +73,46 @@ const PlanDetails = () => {
             {planDetails ? (
                 <>
                     <h2 className="plan-title">{planDetails.title}</h2>
-                    <p className="trip-date">🚀 เริ่มเดินทาง: {new Date(planDetails.start_time).toLocaleString()}</p>
-                    <p className="trip-date">🏁 สิ้นสุดเดินทาง: {new Date(planDetails.end_time).toLocaleString()}</p>
+                    <p className="trip-date">
+                        🚀 เริ่มเดินทาง: {new Date(planDetails.start_time).toLocaleString()}
+                    </p>
+                    <p className="trip-date">
+                        🏁 สิ้นสุดเดินทาง: {new Date(planDetails.end_time).toLocaleString()}
+                    </p>
 
                     <div className="places-list">
                         <h3>📍 สถานที่ท่องเที่ยว</h3>
                         {planDetails.place_list.length > 0 ? (
                             planDetails.place_list.map((place) => (
-                                <div key={place.place_id} className="place-item">
-                                    {place.image_url && (
-                                        <img src={place.image_url} alt={place.place_name} className="place-image" />
-                                    )}
+                                <div key={place.place_id} className="place-item animate-fade-in">
+                                    <div className="place-tags">
+                                        {(Array.isArray(place.place?.category) ? place.place.category : [place.place?.category])
+                                            .filter(Boolean)
+                                            .map((cat, index) => (
+                                                <span className="place-tag" key={index}>{cat}</span>
+                                            ))}
+                                    </div>
+                                    <img
+                                        src={place.place?.photo || `/place_images/${place.place?.place_id}.jpg`}
+                                        alt={place.place?.name || "ชื่อไม่ระบุ"}
+                                        className="place-image"
+                                    />
                                     <div className="place-info">
-                                        <h4>{place.place_name}</h4>
-                                        <p>⭐ {place.rating ? place.rating : "ไม่มีคะแนน"}</p>
-                                        <p>{place.category ? place.category.join(", ") : "ไม่ระบุประเภท"}</p>
-                                        <p>⏰ เวลาทำการ: {place.opening_hours || "ไม่ระบุเวลาเปิด-ปิด"}</p>
+                                        <h4>{place.place?.name || "ชื่อสถานที่ไม่ระบุ"}</h4>
+                                        <p>⭐ {place.place?.rating || "ไม่มีคะแนน"}</p>
+                                        <p>⏰ เวลาทำการ: {place.place?.opening_hours || "ไม่ระบุเวลาเปิด-ปิด"}</p>
                                     </div>
                                     <div className="place-actions">
                                         <a
-                                            href={`https://www.google.com/maps/search/?q=${place.place_name}`}
+                                            href={`https://www.google.com/maps/search/?q=${encodeURIComponent(place.place?.name || "")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="show-route-button"
                                         >
-                                            🚗 แสดงเส้นทาง
+                                            แสดงเส้นทาง
                                         </a>
-                                        <button onClick={() => handleDeletePlace(place.place_id)} className="delete-place-button">
-                                            🗑️ ลบสถานที่
+                                        <button onClick={() => handleDeletePlace(place.place_id)} className="delete-place-button" title="ลบสถานที่"> 
+                                        <i className="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </div>

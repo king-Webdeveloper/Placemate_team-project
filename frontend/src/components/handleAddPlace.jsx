@@ -39,7 +39,7 @@ const handleAddPlace = async (place, navigate, setPlaces) => {
       }
   
       const newPlace = await addPlaceResponse.json();
-    //   setPlaces((prevPlaces) => [...prevPlaces, newPlace]); // Update places list
+      // setPlaces((prevPlaces) => [...prevPlaces, newPlace]); // Update places list
     } catch (error) {
       console.error("Error adding place:", error);
       navigate("/login"); // Redirect on error
