@@ -1,10 +1,12 @@
+// Profile.js[frontend]
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ใช้ useNavigate สำหรับการเปลี่ยนเส้นทาง
+import { useNavigate } from "react-router-dom";
+import "./Profile.css";
 
 function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // ใช้ useNavigate เพื่อเปลี่ยนเส้นทาง
+  const navigate = useNavigate(); 
 
   // ดึงข้อมูลโปรไฟล์ของผู้ใช้จาก /api/cookies-check
   useEffect(() => {
@@ -35,7 +37,7 @@ function Profile() {
   // ฟังก์ชันสำหรับการออกจากระบบ
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/logout", {
+      const response = await fetch("http://localhost:5000/api/logout", { 
         method: "POST",
         credentials: "include", // สำคัญ: ให้ส่งคุกกี้ไปด้วย
       });
@@ -59,9 +61,9 @@ function Profile() {
       <h2>Profile</h2>
       <p><strong>Name:</strong> {user.username}</p>
       
-      <button onClick={handleLogout} style={{ marginTop: "20px" }}>
-        Logout
-      </button>
+      <button onClick={handleLogout} className="logout-button">
+      Logout
+    </button>
     </div>
   );
 }

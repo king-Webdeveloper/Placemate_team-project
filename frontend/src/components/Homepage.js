@@ -19,8 +19,6 @@ function Homepage() {
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
 
-<<<<<<< HEAD
-=======
   const [recommendationData, setRecommendationData] = useState([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] =useState(true);
   const [recommendationError, setRecommendationError] = useState(null);
@@ -53,7 +51,6 @@ function Homepage() {
     setLocation(locationData);  // เก็บข้อมูลลงใน state
   }, []);
 
->>>>>>> 005e8461454582ba54e4359ad029fb0c666faf28
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -365,14 +362,14 @@ function Homepage() {
                           </span>
 
                           {/* ปุ่มดูสถานที่ */}
-                          <button
+                          {/* <button
                             onClick={() =>
                               navigate(`/places/${place.place_id}`)
                             }
                             className="go-button"
                           >
                             ดูสถานที่
-                          </button>
+                          </button> */}
 
                           {/* ปุ่มเพิ่มไปยัง List to go */}
                           <button

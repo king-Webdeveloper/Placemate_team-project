@@ -10,7 +10,7 @@ import Searchresult from "./components/Searchresult";
 import Placereview from "./components/Placereview";
 import { getUserLocation } from "./components/getGeo";
 import ProtectedLogin from "./components/ProtectedLogin";
-import { AuthProvider } from "./context/Pathmanagement"; // นำเข้า AuthProvider
+import { AuthProvider } from "./context/Pathmanagement"; 
 import "./App.css";
 
 function App() {
@@ -26,7 +26,10 @@ function App() {
 
 function Content() {
   const location = useLocation();
-  const showNavbar = ["/profile", "/searchresult", "/listtogo"].includes(location.pathname);
+  const showNavbar =
+  ["/profile", "/searchresult", "/listtogo"].some((path) =>
+    location.pathname.startsWith(path)
+  ) || location.pathname.startsWith("/placereview");
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
   useEffect(() => {

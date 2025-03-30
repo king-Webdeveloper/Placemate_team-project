@@ -92,3 +92,5 @@ mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
 # 1.Download sweetalert2
 npm install sweetalert2
 
+# 1.Download react-rating-stars
+npm install react-rating-stars-component
