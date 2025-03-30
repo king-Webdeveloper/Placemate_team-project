@@ -194,7 +194,7 @@ function Homepage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3&day=${dayName}`
+        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3`
       ); // Include dayName in query
 
       const contentType = response.headers.get("content-type");
@@ -243,11 +243,13 @@ function Homepage() {
   return (
     <div className="homepage">
       <header className="navbar">
-        <img src="/PM1.1.png" alt="Logo" className="logo" />
+      <Link to="/">
+                <img src="/PM1.1.png" alt="Logo" className="logo" />
+            </Link>
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
-          <Link to="/about">ABOUT US</Link>
+          <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
           <Link to="/profile" className="nav-profile">

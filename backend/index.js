@@ -2,13 +2,14 @@ const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const cookieParser = require('cookie-parser');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const app = express();
 const prisma = new PrismaClient();
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());  // ใช้ middleware นี้ก่อนที่จะมีการจัดการ route อื่นๆ
 
@@ -25,6 +26,20 @@ app.use(cors({
   credentials: true, // อนุญาตให้ส่งคุกกี้ข้ามโดเมน
   optionsSuccessStatus: 200
 }));
+
+// // ✅ Middleware Order
+// app.use(cookieParser()); // ต้องมาก่อน request อื่นๆ
+// app.use(express.json()); // รองรับ JSON Body
+// app.use(bodyParser.json());
+
+// // ✅ Debugging Middleware
+// app.use((req, res, next) => {
+//   console.log("🌍 Incoming Request:", req.method, req.url);
+//   console.log("🍪 Cookies Received:", req.cookies);
+//   next();
+// });
+
+
 
 // Swagger definition
 const swaggerDefinition = {
@@ -78,6 +93,9 @@ app.use('/api', getseaechresultRoutes);
 
 const getplacereviewRoutes = require('./routes/placereviewRoutes'); // Adjust the path as necessary
 app.use('/api', getplacereviewRoutes);
+
+const getplannerRoutes = require('./routes/plannerRoutes.js'); // Adjust the path as necessary
+app.use('/api', getplannerRoutes);
 
 const createPreferenceRoutes = require('./routes/createPreferenceRoute');
 app.use('/api', createPreferenceRoutes);
