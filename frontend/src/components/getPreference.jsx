@@ -1,5 +1,5 @@
 const getPreference = async (userId, preference) => {
-    alert(userId+" "+preference)
+    // alert(userId+" "+preference)
     try {
         const response = await fetch("http://localhost:5000/api/createPreference", {
             method: "POST",
