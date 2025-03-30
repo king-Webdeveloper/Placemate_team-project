@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+const cookieParser = require("cookie-parser");
 require('dotenv').config();
 
 const app = express();
@@ -12,9 +13,17 @@ const port = 5000;
 // Middleware
 app.use(cors()); // อนุญาตให้ Frontend เชื่อมต่อได้
 app.use(bodyParser.json());
+app.use(cookieParser());
+
 
 // ใช้ Routes ของ Auth
+const authRoutes = require('./routes/auth'); // นำเข้า authRoutes
 app.use("/api", authRoutes);
+
+// ใช้ Routes ของ Planner
+const plannerRoutes = require('./routes/plannerRoutes'); // ให้แน่ใจว่า path ถูกต้อง
+app.use("/api", plannerRoutes);
+
 
 // เริ่มต้น Server
 app.listen(PORT, () => {
@@ -33,8 +42,8 @@ const pool = new Pool({
   port: 5432,
 });
 
-app.use(cors());
-app.use(bodyParser.json());
+// app.use(cors());
+// app.use(bodyParser.json());
 
 // Register
 app.post('/register', async (req, res) => {
@@ -104,5 +113,131 @@ app.delete('/api/list-to-go/remove', async (req, res) => {
     res.send('Place removed from List to Go');
   } catch (err) {
     res.status(500).send(err.message);
+  }
+});
+
+// ดึงข้อมูลแผนการเดินทางทั้งหมด
+router.get("/planner", async (req, res) => {
+  try {
+    const plans = await prisma.plan.findMany({
+      select: {
+        plan_id: true,
+        user_id: true,
+        title: true,
+        created_at: true,
+      },
+    });
+    res.json(plans);
+  } catch (error) {
+    console.error("Error fetching plans:", error);
+    res.status(500).json({ error: "Failed to fetch plans" });
+  }
+});
+
+// เพิ่มแผนการเดินทางใหม่
+router.post("/planner/add", async (req, res) => {
+  const { user_id, title, start_time } = req.body;
+
+  if (!user_id || !title || !start_time) {
+    return res.status(400).json({ error: "user_id, title, and start_time are required" });
+  }
+
+  try {
+    // เพิ่มแผนการเดินทางใหม่
+    const newPlan = await prisma.plan.create({
+      data: {
+        user_id: user_id,
+        title: title,
+        created_at: new Date(),
+        updated_at: new Date(),
+      }
+    });
+
+    res.status(201).json(newPlan);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add new plan" });
+  }
+});
+
+// ลบแผนการเดินทาง
+router.delete("/planner/remove", async (req, res) => {
+  const { plan_id } = req.body;
+
+  if (!plan_id) {
+    return res.status(400).json({ error: "plan_id is required" });
+  }
+
+  try {
+    const plan = await prisma.plan.findUnique({
+      where: { plan_id: plan_id },
+    });
+
+    if (!plan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+
+    await prisma.plan.delete({
+      where: { plan_id: plan_id },
+    });
+
+    res.json({ message: "Plan removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to remove plan" });
+  }
+});
+
+// เพิ่มสถานที่ในแผนการเดินทาง
+app.post('/api/planner/:planId/add-place', async (req, res) => {
+  const { planId } = req.params;
+  const { place_id, start_time, end_time } = req.body;
+
+  if (!place_id || !start_time || !end_time) {
+    return res.status(400).json({ error: "place_id, start_time, and end_time are required" });
+  }
+
+  try {
+    // เพิ่มสถานที่ลงใน place_list สำหรับแผนการเดินทางนี้
+    const newPlace = await prisma.placeList.create({
+      data: {
+        plan_id: parseInt(planId),
+        place_id: place_id,
+        start_time: new Date(start_time),
+        end_time: new Date(end_time),
+      }
+    });
+
+    res.status(201).json(newPlace);
+  } catch (error) {
+    console.error("Error adding place:", error);
+    res.status(500).json({ error: "Failed to add place" });
+  }
+});
+
+// ดึงข้อมูลแผนการเดินทางพร้อมสถานที่
+app.get('/api/planner/:planId', async (req, res) => {
+  const { planId } = req.params;
+
+  try {
+    const plan = await prisma.plan.findUnique({
+      where: { plan_id: parseInt(planId) },
+      include: {
+        place_list: { // รวมข้อมูลสถานที่
+          include: {
+            place: true, // รวมข้อมูลสถานที่จากตาราง place
+          },
+        },
+      },
+    });
+
+    if (!plan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+
+    res.json(plan);
+  } catch (error) {
+    console.error("Error fetching plan details:", error);
+    res.status(500).json({ error: "Failed to fetch plan details" });
   }
 });

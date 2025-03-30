@@ -1,0 +1,219 @@
+/* ============================= */
+/* 📦 CONTAINER */
+.searchplace-search-place-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .searchplace-search-place-container h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .searchplace-confirm-button {
+    margin-bottom: 16px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .searchplace-confirm-button:hover {
+    background-color: #388e3c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ============================= */
+  /* 🔎 SEARCH BAR */
+  .searchplace-search-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    background-color: #ddd;
+    border-radius: 25px;
+    padding: 5px;
+    position: relative;
+  }
+  
+  .searchplace-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  .searchplace-search-button {
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  .searchplace-search-button:hover {
+    background-color: #555;
+  }
+  
+  /* ============================= */
+  /* 🗂 GRID RESULTS */
+  .searchplace-search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    padding: 15px;
+    justify-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .searchplace-result-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 275px;
+    height: 360px;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(49, 49, 49, 0.2);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .searchplace-result-search:hover {
+    transform: scale(1.01);
+  }
+  
+  /* ============================= */
+  /* 🖼 IMAGE + TAGS */
+  .searchplace-image-container {
+    position: relative;
+  }
+  
+  .searchplace-place-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .searchplace-place-tags {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 1;
+  }
+  
+  .searchplace-place-tag {
+    background-color: #e0f7fa;
+    color: #00796b;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 121, 107, 0.15);
+  }
+  
+  .searchplace-place-tag:hover {
+    background-color: #b2ebf2;
+    transform: scale(1.05);
+  }
+  
+  /* ============================= */
+  /* 📄 TEXT INFO */
+  .searchplace-div-searchResult {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .searchplace-div-searchResult p{
+    font-size: 18px;
+  }
+  
+  .searchplace-place-name {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    margin-bottom: 6px;
+    color: #222;
+  }
+  
+  .searchplace-place-rating {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f57c00;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* ============================= */
+  /* ✅ SELECT BUTTON */
+  .searchplace-go-bottom {
+    padding: 10px;
+  }
+  
+  .searchplace-go-button {
+    background-color: #ff0000;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .searchplace-go-button:hover {
+    background-color: #4caf50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .searchplace-go-button.selected {
+    background-color: #28a745; /* สีเขียวเมื่อติดสถานะ selected */
+  }
+
+  /* ============================= */
+  /* ⚠️ ERROR */
+  .searchplace-error-message {
+    color: #c0392b;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  

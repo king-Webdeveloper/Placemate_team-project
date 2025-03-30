@@ -72,3 +72,46 @@
   text-decoration: underline;
   transform: scale(1.05);
 }
+
+.Navbarspace .navbar {
+  position: relative;
+  z-index: 999;
+}
+
+
+/* ✅ Responsive สำหรับหน้าจอเล็ก */
+@media (max-width: 768px) {
+  /* ปรับ layout ของ Navbar สำหรับหน้าจอเล็ก */
+  .Navbarspace .navbar {
+    flex-direction: column;
+    padding: 15px;
+    align-items: center; /* จัดกลางให้กับเมนู */
+    gap: 15px;
+  }
+
+  .Navbarspace .navbar-center {
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .Navbarspace .navbar nav {
+    flex-direction: column;
+    gap: 10px; /* ปรับช่องว่างระหว่างเมนู */
+    justify-content: center;
+    align-items: center; /* จัดกลางเมนู */
+  }
+
+  .Navbarspace .navbar-nav a {
+    font-size: 16px; /* ปรับขนาดตัวอักษร */
+  }
+
+  .Navbarspace .logo {
+    height: 40px;
+    margin: 0;
+  }
+
+  .Navbarspace .nav-profile {
+    margin-top: 15px;
+  }
+}

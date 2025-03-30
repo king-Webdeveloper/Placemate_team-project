@@ -240,11 +240,13 @@ function Homepage() {
   return (
     <div className="homepage">
       <header className="navbar">
-        <img src="/PM1.1.png" alt="Logo" className="logo" />
+      <Link to="/">
+                <img src="/PM1.1.png" alt="Logo" className="logo" />
+            </Link>
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
-          <Link to="/about">ABOUT US</Link>
+          <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
           <Link to="/profile" className="nav-profile">
@@ -372,9 +374,7 @@ function Homepage() {
 
                           {/* ปุ่มเพิ่มไปยัง List to go */}
                           <button
-                            onClick={() =>
-                              console.log(`Add place ${place.place_id} to list`)
-                            }
+                            onClick={() => handleAddPlace(place, navigate)}
                             className="go-button"
                           >
                             เพิ่มไปยัง List to go
