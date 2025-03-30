@@ -1,4 +1,3 @@
-// Homepage.js [frontend]
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
@@ -19,8 +18,6 @@ function Homepage() {
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
 
-<<<<<<< HEAD
-=======
   const [recommendationData, setRecommendationData] = useState([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] =useState(true);
   const [recommendationError, setRecommendationError] = useState(null);
@@ -53,7 +50,6 @@ function Homepage() {
     setLocation(locationData);  // เก็บข้อมูลลงใน state
   }, []);
 
->>>>>>> 005e8461454582ba54e4359ad029fb0c666faf28
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
