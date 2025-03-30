@@ -18,16 +18,10 @@ function Homepage() {
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
 
-  const [recommendationData, setRecommendationData] = useState([]);
-  const [isLoadingRecommendations, setIsLoadingRecommendations] =
-    useState(true);
-  const [recommendationError, setRecommendationError] = useState(null);
-
   const [recommendedPlaces, setRecommendedPlaces] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
 
   const [popularPreferences, setPopularPreferences] = useState([]);
 
@@ -240,9 +234,9 @@ function Homepage() {
   return (
     <div className="homepage">
       <header className="navbar">
-      <Link to="/">
-                <img src="/PM1.1.png" alt="Logo" className="logo" />
-            </Link>
+        <Link to="/">
+          <img src="/PM1.1.png" alt="Logo" className="logo" />
+        </Link>
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
