@@ -1,4 +1,3 @@
-// Homepage.js [frontend]
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
@@ -19,15 +18,10 @@ function Homepage() {
   const [loading, setLoading] = useState(false); // Track loading state
   const [hasMore, setHasMore] = useState(true); // Check if more data is available
 
-  const [recommendationData, setRecommendationData] = useState([]);
-  const [isLoadingRecommendations, setIsLoadingRecommendations] =useState(true);
-  const [recommendationError, setRecommendationError] = useState(null);
-
   const [recommendedPlaces, setRecommendedPlaces] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
 
   const [popularPreferences, setPopularPreferences] = useState([]);
 
@@ -47,8 +41,8 @@ function Homepage() {
   useEffect(() => {
     // เรียกใช้ฟังก์ชัน getUserLocation เพื่อดึงข้อมูล location
     const locationData = getUserLocation();
-    
-    setLocation(locationData);  // เก็บข้อมูลลงใน state
+
+    setLocation(locationData); // เก็บข้อมูลลงใน state
   }, []);
 
   useEffect(() => {
@@ -130,20 +124,22 @@ function Homepage() {
     console.log("Fetching recommendations for page:", pageNumber);
     try {
       setIsFetching(true);
-      const response = await fetch(`http://localhost:5000/api/recommendations?limit=6&lat=${location.lat}&lng=${location.lng}&user_id=${userId}&page=${pageNumber}`);
+      const response = await fetch(
+        `http://localhost:5000/api/recommendations?limit=6&lat=${location.lat}&lng=${location.lng}&user_id=${userId}&page=${pageNumber}`
+      );
       if (!response.ok) throw new Error("Failed to fetch recommendations");
-  
+
       const data = await response.json();
-      
+
       // คำนวณการแสดงผลข้อมูลในหน้าแรก
       if (pageNumber === 1) {
         setRecommendedPlaces(data.data);
       } else {
         setRecommendedPlaces((prevPlaces) => [...prevPlaces, ...data.data]);
       }
-  
+
       // คำนวณว่า มีหน้าถัดไปหรือไม่
-      setHasMorePages(data.total > pageNumber * 6);  // ถ้ามีข้อมูลทั้งหมดมากกว่าหน้าปัจจุบัน * limit ก็แสดงปุ่ม "เพิ่มเติม"
+      setHasMorePages(data.total > pageNumber * 6); // ถ้ามีข้อมูลทั้งหมดมากกว่าหน้าปัจจุบัน * limit ก็แสดงปุ่ม "เพิ่มเติม"
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       setFetchError(error.message);
@@ -151,7 +147,6 @@ function Homepage() {
       setIsFetching(false);
     }
   };
-  
 
   // ใช้ useEffect เพื่อดึงข้อมูลเมื่อ userId เปลี่ยนแปลง
   useEffect(() => {
@@ -191,20 +186,19 @@ function Homepage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3&day=${dayName}`
+        `http://localhost:5000/api/getrandomplaces?page=${page}&limit=3`
       ); // Include dayName in query
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Server returned non-JSON response");
       }
-      
+
       const data = await response.json();
-      console.log("คุณอาจชอบ",data);
+      console.log("คุณอาจชอบ", data);
 
       console.log(data.places[0].business_hour[0].business_hour); // ตรวจสอบ business_hour ของสถานที่แรก
       console.log(data.places[0].tag[0].tag_name); // ตรวจสอบ business_hour ของสถานที่แรก
-
 
       if (data.places.length === 0) {
         setHasMore(false);
@@ -240,11 +234,13 @@ function Homepage() {
   return (
     <div className="homepage">
       <header className="navbar">
-        <img src="/PM1.1.png" alt="Logo" className="logo" />
+        <Link to="/">
+          <img src="/PM1.1.png" alt="Logo" className="logo" />
+        </Link>
         <nav className="navbar-nav">
           <Link to="/listtogo">LIST TO GO</Link>
           <Link to="/planner">PLANNER</Link>
-          <Link to="/about">ABOUT US</Link>
+          <Link to="/aboutme">ABOUT US</Link>
         </nav>
         {isLoggedIn ? (
           <Link to="/profile" className="nav-profile">
@@ -290,10 +286,9 @@ function Homepage() {
           <>
             <h2>แนะนำสำหรับคุณ</h2>
             <section className="recommended">
-              
               <div className="place-grid">
                 {recommendedPlaces.length === 0 ? (
-                  <p>ไม่มีข้อมูลแนะนำในตอนนี้</p>
+                  <p>เริ่มต้นค้นหาสถานที่เพื่อรับคำแนะนำ</p>
                 ) : (
                   recommendedPlaces.map((place, index) => {
                     const placeTags =
@@ -373,9 +368,7 @@ function Homepage() {
 
                           {/* ปุ่มเพิ่มไปยัง List to go */}
                           <button
-                            onClick={() =>
-                              console.log(`Add place ${place.place_id} to list`)
-                            }
+                            onClick={() => handleAddPlace(place, navigate)}
                             className="go-button"
                           >
                             เพิ่มไปยัง List to go
@@ -389,18 +382,17 @@ function Homepage() {
               {/* ปุ่มโหลดข้อมูลหน้าถัดไป */}
               {hasMorePages && (
                 <div className="set-center">
-                {hasMorePages && (
-                  <button onClick={handleLoadMore} disabled={isFetching}>
-                    {isFetching ? "กำลังโหลด..." : "เพิ่มเติม"}
-                  </button>
-                )}
-              </div>
+                  {hasMorePages && (
+                    <button onClick={handleLoadMore} disabled={isFetching}>
+                      {isFetching ? "กำลังโหลด..." : "เพิ่มเติม"}
+                    </button>
+                  )}
+                </div>
               )}
             </section>
           </>
         )}
       </div>
-      
 
       <div>
         <h2>ยอดนิยม</h2>
@@ -500,69 +492,70 @@ function Homepage() {
       </div>
 
       <div>
-  <h2>คุณอาจชอบ</h2>
-  <section className="recommended">
-    <div className="place-grid">
-      {places?.map((place, index) => (
-        <div key={index} className="place-card">
-          <a
-            href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src={`/place_images/${place.place_id}.jpg`}
-              alt={`Place ${place.id}`}
-              className="place-image"
-            />
-          </a>
+        <h2>คุณอาจชอบ</h2>
+        <section className="recommended">
+          <div className="place-grid">
+            {places?.map((place, index) => (
+              <div key={index} className="place-card">
+                <a
+                  href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={`/place_images/${place.place_id}.jpg`}
+                    alt={`Place ${place.id}`}
+                    className="place-image"
+                  />
+                </a>
 
-          <div className="place-info">
-            <span className="place-category">
-              {/* แสดง Tags */}
-              {place.tag?.map((tag, index) => (
-                <span key={index}>
-                  <button className="tag-button">
-                    {tag.tag_name}
-                    {index !== place.tag.length - 1 ? ", " : ""}
+                <div className="place-info">
+                  <span className="place-category">
+                    {/* แสดง Tags */}
+                    {place.tag?.map((tag, index) => (
+                      <span key={index}>
+                        <button className="tag-button">
+                          {tag.tag_name}
+                          {index !== place.tag.length - 1 ? ", " : ""}
+                        </button>
+                      </span>
+                    )) || "ไม่ระบุ"}
+                  </span>
+
+                  <strong>
+                    {/* แสดง business_hour */}
+                    {place.business_hour?.[0]?.business_hour &&
+                    place.business_hour[0].business_hour !== "NaN" &&
+                    place.business_hour[0].business_hour !== "ปิดทำการ"
+                      ? place.business_hour[0].business_hour
+                      : ""}
+                  </strong>
+                  <br />
+                  <span>
+                    {place.name}
+                    {isNaN(place.rating) || place.rating === "NaN"
+                      ? ""
+                      : "⭐" + place.rating}
+                  </span>
+
+                  <button
+                    onClick={() => handleGoGoogleMap(userId, place.place_id)}
+                    className="go-button"
+                  >
+                    ดูสถานที่
                   </button>
-                </span>
-              )) || "ไม่ระบุ"}
-            </span>
-
-            <strong>
-              {/* แสดง business_hour */}
-              {place.business_hour?.[0]?.business_hour && place.business_hour[0].business_hour !== "NaN" && place.business_hour[0].business_hour !== "ปิดทำการ"
-                ? place.business_hour[0].business_hour
-                : ""}
-            </strong>
-            <br />
-            <span>
-              {place.name}
-              {isNaN(place.rating) || place.rating === "NaN" ? "" : "⭐" + place.rating}
-            </span>
-
-            <button
-              onClick={() => handleGoGoogleMap(userId, place.place_id)}
-              className="go-button"
-            >
-              ดูสถานที่
-            </button>
-            <button
-              onClick={() => handleAddPlace(place, navigate)}
-              className="go-button"
-            >
-              เพิ่มไปยัง List to go
-            </button>
+                  <button
+                    onClick={() => handleAddPlace(place, navigate)}
+                    className="go-button"
+                  >
+                    เพิ่มไปยัง List to go
+                  </button>
+                </div>
+              </div>
+            )) || <p>ไม่มีข้อมูลสถานที่</p>}
           </div>
-        </div>
-      )) || <p>ไม่มีข้อมูลสถานที่</p>}
-    </div>
-  </section>
-</div>
-
-
-
+        </section>
+      </div>
     </div>
   );
 }

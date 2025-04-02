@@ -87,6 +87,22 @@ choco install mkcert -y
 # 3. create certificate
 mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
 
+# เพิ่มข้อมูลลงใน schema prisma (backend) ส่วนของ plan
+
+# 0.อันดับแรกสุดให้เพิ่มข้อมูลลงใน database ก่อน (Postgres)
+   Name                   Data type                   Length/Precision     
+  start_time     timestamp with out timezone                 6  
+  end_time       timestamp with out timezone                 6
+
+# 1.เข้าไปใน schema ไปตรงส่วน model plan และทำการเพิ่มตามนี้
+  start_time DateTime?    @db.Timestamp(6)
+  end_time   DateTime?    @db.Timestamp(6)
+
+# 2.ใช้ คำสั่ง npx prisma migrate status เพื่อเช็คว่า prisma มีการ appile หรือยัง (ปกติต้องขึ้นว่ายังนะ กูคิดว่าน่าจะเป็นทุกคน)
+
+# 3.หลังจากขึ้นแล้วให้ใช้คำสั่ง npx prisma migrate resolve --applied "ชื่อที่ migration" (แจ้งให้ prisma รู้ว่า migration ถูกใช้งานแล้ว)
+
+# 4.ใช้คำสั่ง npx prisma db push เพื่ออัปเดตโครงสร้าง Database หลังจากนั้นให้รัสตาร์ทโปรแกรมและเปิดใหม่
 # For making A beautiful responsive for website(download in frontend)
 
 # 1.Download sweetalert2

@@ -1,0 +1,172 @@
+/* CSS เฉพาะหน้านี้ */
+.planner-page .planner-container {
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.planner-page .planner-container h2 {
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* ปุ่มสร้างแผนการเดินทาง (ใหม่ - ขวาบน สีส้ม เปลี่ยนเป็นเขียวตอน hover) */
+.planner-page .add-Plan .add-plan-button {
+  background-color: #ff7f50;
+  color: white;
+  font-size: 1rem;
+  font-weight: bolder;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  width: 50%;
+}
+
+.planner-page .add-Plan .add-plan-button:hover {
+  background-color: #4caf50;
+}
+
+.planner-page .plan-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  transition: 0.3s ease-in-out;
+}
+
+.planner-page .plan-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.planner-page .plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.planner-page .plan-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  text-align: left;
+}
+
+.planner-page .start-trip-button {
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.planner-page .start-trip-button:hover {
+  background-color: #ff7f50;
+  color: white;
+}
+
+.planner-page .plan-info {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 6px;
+}
+
+.planner-page .plan-actions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+
+.planner-page .action-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #444;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.planner-page .action-button:hover {
+  color: #ff7f50;
+}
+
+.planner-page .action-button i {
+  font-size: 1rem;
+}
+
+.planner-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  margin-top: 30px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.planner-page input[type="text"], .planner-page input[type="datetime-local"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.planner-page .create-plan-button {
+  background-color: #ff7f50;
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: none;
+}
+
+.planner-page .create-plan-button:hover {
+  background-color: #ff5722;
+}
+
+.planner-page .planner-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.planner-page .planner-header h2{
+  font-size: 3rem;
+}
+
+.planner-page .planner-header .add-Plan{
+  display: inline-flex;
+  justify-content: end;
+  width: 60%;
+  gap: 10px;
+  margin-top: 10px;
+}

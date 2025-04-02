@@ -288,33 +288,46 @@
 @media (max-width: 768px) {
   .homepage {
     width: 100%;
-  }
-
-  .homepage .navbar {
-    flex-direction: column;
-    text-align: center;
     padding: 15px;
   }
 
-  .homepage .logo {
-    height: 40px;
-  }
-
-  .homepage .navbar nav {
-    margin-top: 10px;
-  }
-
+  /* ปรับขนาดของ Hero Section */
   .homepage .hero {
-    padding: 50px 20px;
-    font-size: 1.5rem;
+    padding: 60px 20px;
+    font-size: 1.4rem;
   }
 
+  /* ปรับขนาดของ Carousel */
+  .homepage .carousel {
+    height: 250px; /* ลดขนาดความสูงสำหรับมือถือ */
+  }
+
+  /* ปรับ Layout ของ Place Grid */
   .homepage .place-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* เปลี่ยนเป็นคอลัมน์เดียว */
+    gap: 15px; /* ลดช่องว่างระหว่างไอเทม */
   }
 
-  .homepage .btn {
-    font-size: 16px;
+  /* ปรับการแสดงผลของ Search Section */
+  .homepage .search-bar {
+    max-width: 90%; /* ปรับความกว้างให้พอดี */
+  }
+
+  /* ปรับ Navbar */
+  .homepage .navbar {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .homepage .navbar-nav {
+    gap: 20px;
+    justify-content: center; /* จัดตำแหน่งให้อยู่ตรงกลาง */
+  }
+
+  /* ปรับการแสดงผลของ Profile Nav */
+  .homepage .nav-profile {
+    margin-top: 10px;
   }
 }
 
