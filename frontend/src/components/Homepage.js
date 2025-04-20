@@ -33,39 +33,31 @@ function Homepage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDateInfo(getDateInfo()); // อัปเดตเวลาทุก 1 วินาที
+      setDateInfo(getDateInfo());
     }, 1000);
-
-    return () => clearInterval(interval); // ล้าง interval เมื่อ component ถูก unmount
+    return () => clearInterval(interval);
   }, []);
   const { dayName, time } = dateInfo;
 
   useEffect(() => {
-    // เรียกใช้ฟังก์ชัน getUserLocation เพื่อดึงข้อมูล location
     const locationData = getUserLocation();
 
-    setLocation(locationData); // เก็บข้อมูลลงใน state
+    setLocation(locationData);
   }, []);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/cookies-check",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
+        const response = await fetch("http://localhost:5000/api/cookies-check", {
+          method: "GET",
+          credentials: "include",
+        });
         if (!response.ok) {
           setIsLoggedIn(false);
           return;
         }
-
         const responseText = await response.text();
         let userdata;
-
         try {
           userdata = JSON.parse(responseText);
         } catch (jsonError) {
@@ -73,7 +65,6 @@ function Homepage() {
           setIsLoggedIn(false);
           return;
         }
-
         setIsLoggedIn(true);
         setUsername(userdata.username);
         setUserId(userdata.user_id);
@@ -82,7 +73,6 @@ function Homepage() {
         setIsLoggedIn(false);
       }
     };
-
     checkLoginStatus();
   }, []);
 
@@ -107,6 +97,17 @@ function Homepage() {
       });
   }, []);
 
+    const handleClickPlace = async (placeId) => {
+    if (userId) {
+      try {
+        await getPreference(userId, placeId);
+      } catch (error) {
+        console.error("Error sending preference:", error);
+      }
+    }
+    navigate(`/placereview/${placeId}`);
+  };
+
   const handleSearch = () => {
     if (query.trim()) {
       navigate(`/searchresult?query=${encodeURIComponent(query.trim())}`);
@@ -115,7 +116,6 @@ function Homepage() {
 
   const handleGoGoogleMap = (userId, placeId) => {
     // Construct the Google Maps URL with the latitude and longitude
-    getPreference(userId, placeId);
     const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
     // Open the URL in a new tab
     window.open(googleMapsUrl, "_blank");
@@ -318,12 +318,12 @@ function Homepage() {
                           target="_blank"
                           rel="noopener noreferrer"
                         > */}
-                          <img
-                          src={`/place_images/${place.place_id}.jpg`}
-                          alt={`Place ${place.name}`}
-                          className="place-image"
-                          onClick={() => navigate(`/placereview/${place.place_id}`)}
-                          style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
+                        <img
+                        src={`/place_images/${place.place_id}.jpg`}
+                        alt={`Place ${place.name}`}
+                        className="place-image"
+                        onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                        style={{ cursor: "pointer" }}
                         />
                         {/* </a> */}
 
@@ -361,14 +361,15 @@ function Homepage() {
                           </span>
 
                           {/* ปุ่มดูสถานที่ */}
-                          {/* <button
+
+                          <button
                             onClick={() =>
-                              navigate(`/places/${place.place_id}`)
+                              handleGoGoogleMap(userId, place.place_id)
                             }
                             className="go-button"
                           >
                             ดูสถานที่
-                          </button> */}
+                          </button>
 
                           {/* ปุ่มเพิ่มไปยัง List to go */}
                           <button
@@ -427,12 +428,12 @@ function Homepage() {
                       rel="noopener noreferrer"
                     > */} 
                       <img
-                      src={`/place_images/${place.place_id}.jpg`}
-                      alt={`Place ${place.name}`}
-                      className="place-image"
-                      onClick={() => navigate(`/placereview/${place.place_id}`)}
-                      style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
-                    />
+                        src={`/place_images/${place.place_id}.jpg`}
+                        alt={`Place ${place.name}`}
+                        className="place-image"
+                        onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                        style={{ cursor: "pointer" }}
+                      />
                     {/* </a> */}
 
                     <div className="place-info">
@@ -509,12 +510,12 @@ function Homepage() {
                   rel="noopener noreferrer"
                 > */}
                   <img
-                      src={`/place_images/${place.place_id}.jpg`}
-                      alt={`Place ${place.name}`}
-                      className="place-image"
-                      onClick={() => navigate(`/placereview/${place.place_id}`)}
-                      style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
-                    />
+                    src={`/place_images/${place.place_id}.jpg`}
+                    alt={`Place ${place.name}`}
+                    className="place-image"
+                    onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                    style={{ cursor: "pointer" }}
+                  />
                 {/* </a> */}
 
                 <div className="place-info">

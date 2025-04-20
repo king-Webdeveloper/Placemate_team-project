@@ -7,6 +7,7 @@ import "./Searchresult.css";
 import handleAddPlace from "./handleAddPlace";
 import getDateInfo from "./getDateInfo"; 
 import getPreference from "./getPreference";
+import Swal from "sweetalert2";
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา

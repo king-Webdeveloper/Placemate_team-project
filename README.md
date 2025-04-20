@@ -108,5 +108,5 @@ mkcert <IP ADDRESS> //"e.g. mkcert 192.168.1.3"
 # 1.Download sweetalert2
 npm install sweetalert2
 
-# 1.Download multer
+# 1.Download multer in backend
 npm install multer

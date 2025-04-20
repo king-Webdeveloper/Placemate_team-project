@@ -72,7 +72,7 @@ router.get("/list-to-go/places", async (req, res) => {
  *               user_id:
  *                 type: integer
  *               name:
- *                 type: character varying(255)
+ *                 type: string
  *     responses:
  *       201:
  *         description: เพิ่มสำเร็จ
@@ -80,49 +80,64 @@ router.get("/list-to-go/places", async (req, res) => {
  *         description: ข้อมูลไม่ถูกต้อง
  *       404:
  *         description: ไม่พบสถานที่
+ *       409:
+ *         description: สถานที่นี้ถูกเพิ่มแล้ว
  *       500:
  *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
  */
 router.post("/list-to-go/add", async (req, res) => {
-    const { user_id, name } = req.body;
-  
-    if (!user_id || !name) {
-      return res.status(400).json({ error: "user_id and name are required" });
+  const { user_id, name } = req.body;
+
+  if (!user_id || !name) {
+    return res.status(400).json({ error: "user_id and name are required" });
+  }
+
+  try {
+    // ค้นหาสถานที่จากชื่อ
+    const place = await prisma.place.findFirst({
+      where: { name }
+    });
+
+    if (!place) {
+      return res.status(404).json({ error: "Place not found" });
     }
-  
-    try {
-      // ค้นหาสถานที่จากชื่อ
-      const place = await prisma.place.findFirst({
-        where: { name }
-      });
-  
-      if (!place) {
-        return res.status(404).json({ error: "Place not found" });
-      }
-  
-      // ตรวจสอบว่า user_id มีอยู่ในตาราง user หรือไม่
-      const userExists = await prisma.user.findUnique({
-        where: { user_id: user_id }
-      });
-  
-      if (!userExists) {
-        return res.status(404).json({ error: "User not found" });
-      }
-  
-      // เพิ่มสถานที่ลงใน list_to_go
-      const addedPlace = await prisma.list_to_go.create({
-        data: {
-          user_id: user_id,
-          place_id: place.place_id
-        }
-      });
-  
-      res.status(201).json(addedPlace);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Failed to add place to list" });
+
+    // ตรวจสอบว่า user_id มีอยู่ในตาราง user หรือไม่
+    const userExists = await prisma.user.findUnique({
+      where: { user_id: user_id }
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ error: "User not found" });
     }
-  });
+
+    // ✅ ตรวจสอบว่ามีอยู่ใน list_to_go แล้วหรือยัง
+    const existing = await prisma.list_to_go.findFirst({
+      where: {
+        user_id: user_id,
+        place_id: place.place_id
+      }
+    });
+
+    if (existing) {
+      return res.status(409).json({ error: "Place already in list" }); // ⛔ 409 Conflict
+    }
+
+    // ✅ เพิ่มสถานที่ลงใน list_to_go
+    const addedPlace = await prisma.list_to_go.create({
+      data: {
+        user_id: user_id,
+        place_id: place.place_id
+      }
+    });
+
+    res.status(201).json(addedPlace);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add place to list" });
+  }
+});
+
   
 /**
  * @swagger

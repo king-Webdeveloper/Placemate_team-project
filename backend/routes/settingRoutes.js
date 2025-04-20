@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 // ✅ ใช้ memoryStorage แทน diskStorage
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
+ 
 /**
  * @swagger
  * /api/upload-profile:
@@ -131,17 +131,19 @@ router.post("/upload-profile", upload.single("profileImage"), async (req, res) =
  */
 router.get("/user-image/:userId", async (req, res) => {
   const userId = Number(req.params.userId);
-
+  console.log("userId:", userId); // Debugging log
   try {
     const user = await prisma.user.findUnique({
       where: { user_id: userId },
     });
+    console.log("User data:", user); // Debugging log
 
     if (!user || !user.imageData) {
       return res.status(404).json({ error: "Image not found" });
     }
 
-    const ext = path.extname(user.imgname || "").toLowerCase(); 
+    const ext = path.extname(user.imgname || "").toLowerCase();
+    console.log("Image extension:", ext); // Debugging log 
     const mimeTypes = {
       ".jpg": "image/jpeg",
       ".jpeg": "image/jpeg",

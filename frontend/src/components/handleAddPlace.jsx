@@ -1,53 +1,98 @@
 // handleAddPlace.jsx [frontend]
+import Swal from "sweetalert2";
+
 const handleAddPlace = async (place, navigate, setPlaces) => {
   try {
-    // Fetch user token from cookies
+    // 🔐 ตรวจสอบว่าเข้าสู่ระบบแล้วหรือยัง โดยเช็ค token
     const response = await fetch("http://localhost:5000/api/get-cookie", {
       method: "GET",
       credentials: "include",
     });
+
     if (!response.ok) {
-      throw new Error("Failed to fetch user token from cookies");
+      navigate("/login");
+      return;
     }
-    const data = await response.json(); 
-    //   console.log("Data received:", data);
-    // Check if token is present
+
+    const data = await response.json();
+
     if (!data.token) {
-      console.error("No token found, redirecting...");
-      navigate("/"); // Redirect to homepage
-      return; // Stop further execution
+      navigate("/login");
+      return;
     }
 
-    const token = data.token; // Extract token from response
-    const userId = data.user_id; // Extract user ID if present
+    const token = data.token;
+    const userId = data.user_id;
 
-    console.log(userId,place.name )
-    // Send request to add place
+    // ✅ แสดงกล่องยืนยันหลัง login แล้วเท่านั้น
+    const result = await Swal.fire({
+      title: "คุณต้องการเพิ่มสถานที่นี้หรือไม่?",
+      text: `${place.name} จะถูกเพิ่มใน List to go ของคุณ`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "เพิ่มเลย!",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+    });
+
+    if (!result.isConfirmed) return;
+
+    // 🚀 ส่งคำขอเพิ่ม
     const addPlaceResponse = await fetch("http://localhost:5000/api/list-to-go/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // Include token in headers
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        user_id: userId, // Include user ID
-        name: place.name, // Place name
+        user_id: userId,
+        name: place.name,
       }),
     });
 
+    // ⚠️ ตรวจสอบกรณีซ้ำ
+    if (addPlaceResponse.status === 409) {
+      await Swal.fire({
+        title: "มีอยู่แล้ว!",
+        text: `${place.name} มีอยู่ใน List to go ของคุณแล้ว`,
+        icon: "info",
+      });
+      return;
+    }
+
+    // ❌ กรณีอื่นที่ไม่สำเร็จ
     if (!addPlaceResponse.ok) {
       throw new Error("Failed to add place");
     }
 
     const newPlace = await addPlaceResponse.json();
-    // setPlaces((prevPlaces) => [...prevPlaces, newPlace]); // Update places list
+
+    // ✅ แจ้งผลลัพธ์หลังเพิ่มเสร็จ
+    await Swal.fire({
+      title: "เพิ่มเรียบร้อย!",
+      text: `${place.name} ถูกเพิ่มใน List to go ของคุณแล้ว`,
+      icon: "success",
+    });
+
+    // อัปเดต state ถ้าจำเป็น
+    // setPlaces?.((prev) => [...prev, newPlace]);
+
   } catch (error) {
     console.error("Error adding place:", error);
-    navigate("/login"); // Redirect on error
+    // ❗ แสดง error ถ้า token ใช้ไม่ได้หรือ fetch fail
+    await Swal.fire({
+      title: "เกิดข้อผิดพลาด",
+      text: "ไม่สามารถเพิ่มสถานที่ได้ กรุณาลองใหม่หรือล็อกอินอีกครั้ง",
+      icon: "error",
+    });
+
+    navigate("/login");
   }
 };
 
 export default handleAddPlace;
+
 
 
   

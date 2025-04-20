@@ -100,6 +100,9 @@ app.use('/api', getplannerRoutes);
 const createPreferenceRoutes = require('./routes/createPreferenceRoute');
 app.use('/api', createPreferenceRoutes);
 
+const getSettingRoutes = require('./routes/settingRoutes.js'); // Adjust the path as necessary
+app.use('/api', getSettingRoutes);
+
 const googleRoutes = require("./routes/googleRoutes.js");
 app.use("/api/google", googleRoutes);
 
