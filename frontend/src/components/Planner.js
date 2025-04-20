@@ -77,6 +77,30 @@ const Planner = () => {
         });
     };
 
+    const handleSyncToCalendar = async (planId) => {
+        try {
+            const response = await axios.post("http://localhost:5000/api/google/sync-plan", 
+                { plan_id: planId },
+                { withCredentials: true }
+            );
+    
+            Swal.fire({
+                icon: "success",
+                title: "เชื่อม Google Calendar สำเร็จ!",
+                html: `<a href="${response.data.eventLink}" target="_blank">ดูใน Google Calendar</a>`,
+                confirmButtonText: "ตกลง"
+            });
+        } catch (error) {
+            console.error("Error syncing plan:", error.response?.data || error);
+            Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+                text: error.response?.data?.error || "ไม่สามารถเชื่อมกับ Google Calendar ได้"
+            });
+        }
+    };
+    
+
     const handleStartTrip = (planId) => {
         // เมื่อคลิกปุ่มเริ่มต้นการเดินทาง, จะพาไปยังหน้ารายละเอียดของแผนการเดินทาง
         navigate(`/plan-details/${planId}`);
@@ -119,6 +143,9 @@ const Planner = () => {
                                 </span>
                                 <span className="action-button">
                                     <i className="fas fa-link"></i> แชร์การเดินทาง
+                                </span>
+                                <span className="action-button" onClick={() => handleSyncToCalendar(plan.plan_id)}>
+                                    <i className="fas fa-calendar-check"></i> Sync ไป Google Calendar
                                 </span>
                             </div>
                         </div>

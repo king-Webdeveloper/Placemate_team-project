@@ -1,3 +1,5 @@
+console.log("✅ googleRoutes.js ถูกโหลดเรียบร้อยแล้ว");
+
 // routes/googleRoutes.js
 const express = require("express");
 const { google } = require("googleapis");

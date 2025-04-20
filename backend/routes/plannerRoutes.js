@@ -678,6 +678,18 @@ router.post("/planner/:planId/add-listtogo", async (req, res) => {
             })),
         });
 
+        // เพิ่มสถานที่จาก ListToGo ลงใน deleted_place_list เมื่อแผนถูกลบ
+        const deletedPlaceData = places.map(place => ({
+            plan_id: parseInt(planId),
+            place_id: place.list_to_go_id,  // ใช้ list_to_go_id จาก ListToGo
+            place_name: place.place_name,  // ชื่อสถานที่จาก ListToGo
+            photo: place.photo // รูปภาพสถานที่จาก ListToGo
+        }));
+
+        await prisma.deleted_place_list.createMany({
+            data: deletedPlaceData
+        });
+
         console.log("✅ เพิ่มสถานที่จาก ListToGo ลงในแผนการเดินทางสำเร็จ:", newPlaces);
         res.status(201).json(newPlaces);
     } catch (error) {
