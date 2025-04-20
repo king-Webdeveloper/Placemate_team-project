@@ -133,6 +133,7 @@ router.get("/reviews/:place_id", async (req, res) => {
         const place = await prisma.place.findUnique({
             where: { place_id: place_id }, // ใช้ place_id ในการค้นหาสถานที่
             select: {
+                place_id: true,
                 name: true,
                 address: true,
             },
@@ -147,20 +148,16 @@ router.get("/reviews/:place_id", async (req, res) => {
         const reviews = await prisma.review.findMany({
             where: { place_id: place_id }, // ค้นหาตาม place_id
             select: {
-                // user_id: true,
                 rating: true,
                 comment: true,
                 created_at: true,
             },
         });
 
-        // ถ้าไม่พบรีวิวให้ส่งสถานะ 404
-        if (reviews.length === 0) {
-            return res.status(404).json({ error: "No reviews found for this place" });
-        }
-
-        // คำนวณคะแนนเฉลี่ย
-        const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+        // ถ้าไม่พบรีวิวให้ส่งข้อมูลสถานที่พร้อมค่า average_rating เป็น 0
+        const averageRating = reviews.length
+            ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+            : 0;
 
         // ส่งข้อมูลสถานที่, รีวิว, และคะแนนเฉลี่ยกลับไป
         res.json({
@@ -168,91 +165,13 @@ router.get("/reviews/:place_id", async (req, res) => {
             place_name: place.name,
             address: place.address,
             average_rating: averageRating,
-            reviews,
+            reviews: reviews.length > 0 ? reviews : [], // ถ้าไม่มีรีวิว ก็ส่งเป็น array ว่าง
         });
     } catch (error) {
         console.error("Error fetching reviews:", error);
         res.status(500).json({ error: "Failed to fetch reviews" });
     }
 });
-
-
-// /**
-//  * @swagger
-//  * /api/reviews/place_id:
-//  *   get:
-//  *     summary: ดึงข้อมูลรีวิวทั้งหมดของสถานที่
-//  *     tags: [Reviews]
-//  *     parameters:
-//  *       - in: path
-//  *         name: place_id
-//  *         required: true
-//  *         schema:
-//  *           type: string
-//  *         description: ID ของสถานที่ที่ต้องการดึงรีวิว
-//  *     responses:
-//  *       200:
-//  *         description: รายการรีวิวของสถานที่
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 place_id:
-//  *                   type: character varying(255)
-//  *                   description: ID ของสถานที่
-//  *                 reviews:
-//  *                   type: array
-//  *                   items:
-//  *                     type: object
-//  *                     properties:
-//  *                       user_id:
-//  *                         type: integer
-//  *                         description: ID ของผู้ใช้งาน
-//  *                       rating:
-//  *                         type: integer
-//  *                         description: คะแนนที่ให้
-//  *                       comment:
-//  *                         type: character varying(1000)
-//  *                         description: คอมเมนต์ของผู้ใช้
-//  *                       created_at:
-//  *                         type: timestamp without time zone
-//  *                         description: เวลาในการสร้างรีวิว
-//  */
-// router.get("/reviews/:place_id", async (req, res) => {
-//     try {
-//         const { place_id } = req.params; // รับค่า place_id จาก URL parameters
-
-//         // ดึงรีวิวทั้งหมดจากฐานข้อมูลโดยใช้ place_id
-//         const reviews = await prisma.review.findMany({
-//             where: { place_id: place_id }, // ค้นหาตาม place_id
-//             select: {
-//                 user_id: true,
-//                 rating: true,
-//                 comment: true,
-//                 created_at: true,
-//             },
-//         });
-
-//         // ถ้าไม่พบรีวิวให้ส่งสถานะ 404
-//         if (reviews.length === 0) {
-//             return res.status(404).json({ error: "No reviews found for this place" });
-//         }
-
-//         // คำนวณคะแนนเฉลี่ย
-//         const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-
-//         // ส่งข้อมูลรีวิวพร้อมคะแนนเฉลี่ยกลับไป
-//         res.json({
-//             place_id,
-//             average_rating: averageRating,
-//             reviews,
-//         });
-//     } catch (error) {
-//         console.error("Error fetching reviews:", error);
-//         res.status(500).json({ error: "Failed to fetch reviews" });
-//     }
-// });
 
 module.exports = router;
 
