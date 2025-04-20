@@ -39,17 +39,17 @@ const prisma = new PrismaClient();
  */
 router.get("/allplace", async (req, res) => {
   try {
-      const places = await prisma.place.findMany({
-          include: {
-              tag: true, // Fetch tags related to each place
-              business_hour: true, // Fetch all business hours
-          },
-      });
+    const places = await prisma.place.findMany({
+      include: {
+        tag: true, // Fetch tags related to each place
+        business_hour: true, // Fetch all business hours
+      },
+    });
 
-      res.json(places);
+    res.json(places);
   } catch (error) {
-      console.error("Error fetching all places:", error);
-      res.status(500).json({ error: "Failed to fetch all places" });
+    console.error("Error fetching all places:", error);
+    res.status(500).json({ error: "Failed to fetch all places" });
   }
 });
 
@@ -99,30 +99,30 @@ router.get("/allplace", async (req, res) => {
  *                           type: string
  */
 router.get("/search/places", async (req, res) => {
-    try {
-        const { query, dayName } = req.query; // รับค่าค้นหาจาก query parameter
+  try {
+    const { query, dayName } = req.query; // รับค่าค้นหาจาก query parameter
 
-        // สร้าง filter สำหรับ business_hour ถ้ามี day ที่ต้องการ
-        const whereClause = {
-            ...(query && { name: { contains: query, mode: "insensitive" } }), // กรองตาม query
-            ...(dayName && { business_hour: { some: { day: dayName } } }), // กรอง places ที่มี business_hour ตรงกับ dayName
-        };
+    // สร้าง filter สำหรับ business_hour ถ้ามี day ที่ต้องการ
+    const whereClause = {
+      ...(query && { name: { contains: query, mode: "insensitive" } }), // กรองตาม query
+      ...(dayName && { business_hour: { some: { day: dayName } } }), // กรอง places ที่มี business_hour ตรงกับ dayName
+    };
 
-        const places = await prisma.place.findMany({
-            where: whereClause,
-            include: {
-                tag: true, // Fetch tags related to each place
-                business_hour: {
-                    where: { day: dayName }, // กรอง business_hour ตาม dayName ที่ต้องการ
-                }, // Fetch only business hours matching the dayName
-            },
-        });
+    const places = await prisma.place.findMany({
+      where: whereClause,
+      include: {
+        tag: true, // Fetch tags related to each place
+        business_hour: {
+          where: { day: dayName }, // กรอง business_hour ตาม dayName ที่ต้องการ
+        }, // Fetch only business hours matching the dayName
+      },
+    });
 
-        res.json(places);
-    } catch (error) {
-        console.error("Error fetching places:", error);
-        res.status(500).json({ error: "Failed to fetch places" });
-    }
+    res.json(places);
+  } catch (error) {
+    console.error("Error fetching places:", error);
+    res.status(500).json({ error: "Failed to fetch places" });
+  }
 });
 
 // GET POPULAR PLACE
@@ -170,13 +170,19 @@ router.get("/popular-places", async (req, res) => {
     // console.log('Places:', places);  // ตรวจสอบผลลัพธ์จาก query ที่ดึงข้อมูลจาก place
 
     if (places.length === 0) {
-      return res.status(404).json({ error: "No places found for the given preferences" });
+      return res
+        .status(404)
+        .json({ error: "No places found for the given preferences" });
     }
 
     // สร้างการเรียงลำดับโดยใช้ frequency จาก topPreferences
     const sortedPlaces = places.sort((a, b) => {
-      const aFrequency = topPreferences.find(p => p.preference === a.place_id)?._count.preference || 0;
-      const bFrequency = topPreferences.find(p => p.preference === b.place_id)?._count.preference || 0;
+      const aFrequency =
+        topPreferences.find((p) => p.preference === a.place_id)?._count
+          .preference || 0;
+      const bFrequency =
+        topPreferences.find((p) => p.preference === b.place_id)?._count
+          .preference || 0;
       return bFrequency - aFrequency; // เรียงจากมากไปหาน้อย
     });
 
@@ -254,7 +260,7 @@ router.get("/popular-places", async (req, res) => {
 //       // ดึงจำนวนสถานที่ทั้งหมด
 //       const totalPlaces = await prisma.place.count();
 //       const randomSkip = Math.max(0, Math.floor(Math.random() * totalPlaces) - 5); // เลือกตำแหน่งเริ่มต้นแบบสุ่ม
-      
+
 //       const places = await prisma.place.findMany({
 //           take: 10, // กำหนดจำนวนสถานที่ที่ต้องการสุ่ม
 //           skip: randomSkip,
@@ -263,7 +269,7 @@ router.get("/popular-places", async (req, res) => {
 //               business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
 //           },
 //       });
-      
+
 //       res.json(places);
 //   } catch (error) {
 //       console.error("Error fetching random places:", error);
@@ -272,36 +278,37 @@ router.get("/popular-places", async (req, res) => {
 // });
 router.get("/getrandomplaces", async (req, res) => {
   try {
-      const { page = 1, limit = 10 } = req.query; // รับค่า page และ limit จาก query parameter
-      const parsedPage = Math.max(1, parseInt(page));
-      const parsedLimit = Math.max(1, parseInt(limit));
+    const { page = 1, limit = 10 } = req.query; // รับค่า page และ limit จาก query parameter
+    const parsedPage = Math.max(1, parseInt(page));
+    const parsedLimit = Math.max(1, parseInt(limit));
 
-      // ดึงจำนวนสถานที่ทั้งหมด
-      const totalPlaces = await prisma.place.count();
-      const randomSkip = Math.max(0, Math.floor(Math.random() * totalPlaces) - parsedLimit);
-      
-      const places = await prisma.place.findMany({
-          take: parsedLimit, // กำหนดจำนวนสถานที่ที่ต้องการโหลดต่อครั้ง
-          skip: randomSkip,
-          include: {
-              tag: true, // ดึงข้อมูล tags ที่เกี่ยวข้อง
-              business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
-          },
-      });
-      
-      res.json({
-          page: parsedPage,
-          limit: parsedLimit,
-          total: totalPlaces,
-          places,
-      });
+    // ดึงจำนวนสถานที่ทั้งหมด
+    const totalPlaces = await prisma.place.count();
+    const randomSkip = Math.max(
+      0,
+      Math.floor(Math.random() * totalPlaces) - parsedLimit
+    );
+
+    const places = await prisma.place.findMany({
+      take: parsedLimit, // กำหนดจำนวนสถานที่ที่ต้องการโหลดต่อครั้ง
+      skip: randomSkip,
+      include: {
+        tag: true, // ดึงข้อมูล tags ที่เกี่ยวข้อง
+        business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
+      },
+    });
+
+    res.json({
+      page: parsedPage,
+      limit: parsedLimit,
+      total: totalPlaces,
+      places,
+    });
   } catch (error) {
-      console.error("Error fetching random places:", error);
-      res.status(500).json({ error: "Failed to fetch random places" });
+    console.error("Error fetching random places:", error);
+    res.status(500).json({ error: "Failed to fetch random places" });
   }
 });
-
-
 
 /**
  * @swagger
@@ -331,44 +338,44 @@ router.get("/getrandomplaces", async (req, res) => {
  *         description: เกิดข้อผิดพลาดในเซิร์ฟเวอร์
  */
 router.post("/search/addtolisttogo", async (req, res) => {
-    const { user_id, name } = req.body;
+  const { user_id, name } = req.body;
 
-    if (!user_id || !name) {
-        return res.status(400).json({ error: "user_id and name are required" });
+  if (!user_id || !name) {
+    return res.status(400).json({ error: "user_id and name are required" });
+  }
+
+  try {
+    // ค้นหา place_id จาก name
+    const place = await prisma.place.findFirst({
+      where: { name },
+    });
+
+    if (!place) {
+      return res.status(404).json({ error: "Place not found" });
     }
 
-    try {
-        // ค้นหา place_id จาก name
-        const place = await prisma.place.findFirst({
-            where: { name }
-        });
+    // ตรวจสอบว่า user_id มีอยู่ในตาราง user หรือไม่
+    const userExists = await prisma.user.findUnique({
+      where: { user_id: user_id },
+    });
 
-        if (!place) {
-            return res.status(404).json({ error: "Place not found" });
-        }
-
-        // ตรวจสอบว่า user_id มีอยู่ในตาราง user หรือไม่
-        const userExists = await prisma.user.findUnique({
-            where: { user_id: user_id }
-        });
-
-        if (!userExists) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // เพิ่มข้อมูลลงตาราง list_to_go
-        const addedPlace = await prisma.list_to_go.create({
-            data: {
-                user_id: user_id,
-                place_id: place.place_id
-            }
-        });
-
-        res.status(201).json(addedPlace);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to add place to list" });
+    if (!userExists) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    // เพิ่มข้อมูลลงตาราง list_to_go
+    const addedPlace = await prisma.list_to_go.create({
+      data: {
+        user_id: user_id,
+        place_id: place.place_id,
+      },
+    });
+
+    res.status(201).json(addedPlace);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add place to list" });
+  }
 });
 
 /**
@@ -399,14 +406,13 @@ router.post("/search/addtolisttogo", async (req, res) => {
  *                     type: number
  */
 router.get("/recommendations", async (req, res) => {
-  
   try {
     const page = parseInt(req.query.page) || 1; // หน้าปัจจุบัน (default: 1)
     const limit = parseInt(req.query.limit) || 6; // จำนวนข้อมูลต่อหน้า (default: 10)
     const skip = (page - 1) * limit; // ข้ามข้อมูลไปตามหน้าปัจจุบัน
-    const user_id = parseInt(req.query.user_id)
-    const lat = parseFloat(req.query.lat)
-    const lng = parseFloat(req.query.lng)
+    const user_id = parseInt(req.query.user_id);
+    const lat = parseFloat(req.query.lat);
+    const lng = parseFloat(req.query.lng);
 
     // console.log(page, limit, skip, user_id);
     // console.log(lat, lng);
@@ -476,7 +482,7 @@ router.get("/recommendations", async (req, res) => {
     // คำนวณ transformed values สำหรับระยะทาง
     const transformedValues = haversineDistances.map((h) => ({
       place_id: h.place_id,
-      transformed_value: 1 / (Math.exp(h.distance_km * 10) / 1e5 + 1) * 0.35,
+      transformed_value: (1 / (Math.exp(h.distance_km * 10) / 1e5 + 1)) * 0.35,
     }));
 
     // คำนวณ cosine similarity
@@ -486,15 +492,24 @@ router.get("/recommendations", async (req, res) => {
         ((avg_food_drink * tv.food_drink +
           avg_entertainment * tv.entertainment +
           avg_shopping * tv.shopping) /
-          (Math.sqrt(avg_food_drink ** 2 + avg_entertainment ** 2 + avg_shopping ** 2) *
-            Math.sqrt(tv.food_drink ** 2 + tv.entertainment ** 2 + tv.shopping ** 2) || 1));
+          (Math.sqrt(
+            avg_food_drink ** 2 + avg_entertainment ** 2 + avg_shopping ** 2
+          ) *
+            Math.sqrt(
+              tv.food_drink ** 2 + tv.entertainment ** 2 + tv.shopping ** 2
+            ) || 1));
 
-      return { place_id: tv.place_id, weighted_cosine_similarity: weightedCosineSimilarity || 0 };
+      return {
+        place_id: tv.place_id,
+        weighted_cosine_similarity: weightedCosineSimilarity || 0,
+      };
     });
 
     // รวมค่าทั้งหมดและคำนวณคะแนน
     const finalScores = cosineSimilarities.map((c) => {
-      const transformedValue = transformedValues.find((t) => t.place_id === c.place_id)?.transformed_value || 0;
+      const transformedValue =
+        transformedValues.find((t) => t.place_id === c.place_id)
+          ?.transformed_value || 0;
       const randomB = Math.random() * 0.2;
       const score = c.weighted_cosine_similarity + transformedValue + randomB;
 
@@ -536,6 +551,5 @@ router.get("/recommendations", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch recommendations" });
   }
 });
-
 
 module.exports = router;
