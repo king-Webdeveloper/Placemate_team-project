@@ -1,7 +1,6 @@
 // Placereview.js [frontend]
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom"; // เพิ่ม Link สำหรับนำทางไปยังหน้า login
-import ReactStars from "react-rating-stars-component";
 import "./Placereview.css";
 
 const Placereview = () => {
@@ -14,34 +13,6 @@ const Placereview = () => {
     const [averageRating, setAverageRating] = useState(0); // เก็บคะแนนเฉลี่ย
     const [placeName, setPlaceName] = useState(""); // เก็บชื่อสถานที่
     const [isLoggedIn, setIsLoggedIn] = useState(false); // สถานะการล็อกอิน
-    const [username, setUsername] = useState(""); // ชื่อผู้ใช้
-
-    // ฟังก์ชั่นตรวจสอบสถานะการล็อกอิน
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/api/cookies-check", {
-                    method: "GET",
-                    credentials: "include",
-                });
-
-                const responseText = await response.text();
-                const data = JSON.parse(responseText);
-
-                if (response.ok) {
-                    setIsLoggedIn(true);
-                    setUsername(data.username);
-                } else {
-                    setIsLoggedIn(false);
-                }
-            } catch (error) {
-                console.error("Error checking login status:", error);
-                setIsLoggedIn(false);
-            }
-        };
-
-        checkLoginStatus();
-    }, []);
 
     // ฟังก์ชั่นดึงข้อมูลรีวิวและชื่อสถานที่จาก API
     useEffect(() => {

@@ -100,6 +100,9 @@ app.use('/api', getplannerRoutes);
 const createPreferenceRoutes = require('./routes/createPreferenceRoute');
 app.use('/api', createPreferenceRoutes);
 
+const getsettingRoutes = require('./routes/settingRoutes'); // Adjust the path as necessary
+app.use('/api', getsettingRoutes);
+
 
 // Start Server
 const PORT = 5000;

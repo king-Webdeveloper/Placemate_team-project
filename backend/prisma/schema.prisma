@@ -112,6 +112,8 @@ model user {
   email      String?      @db.VarChar(255)
   created_at DateTime?    @default(now()) @db.Timestamp(6)
   updated_at DateTime?    @default(now()) @db.Timestamp(6)
+  imgname      String?   @db.VarChar(255) 
+  imageData    Bytes?                         
   list_to_go list_to_go[]
   plan       plan[]
   preference preference[]

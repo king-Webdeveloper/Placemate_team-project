@@ -1,3 +1,4 @@
+// Homepage.js[frontend]
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Pathmanagement"; // ใช้ AuthContext
@@ -311,17 +312,19 @@ function Homepage() {
                     return (
                       <div key={index} className="place-card">
                         {/* Google Maps Link */}
-                        <a
+                        {/* <a
                           href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                        >
+                        > */}
                           <img
-                            src={`/place_images/${place.place_id}.jpg`}
-                            alt={`Place ${place.name}`}
-                            className="place-image"
-                          />
-                        </a>
+                          src={`/place_images/${place.place_id}.jpg`}
+                          alt={`Place ${place.name}`}
+                          className="place-image"
+                          onClick={() => navigate(`/placereview/${place.place_id}`)}
+                          style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
+                        />
+                        {/* </a> */}
 
                         <div className="place-info">
                           {/* แสดง Tags */}
@@ -417,17 +420,19 @@ function Homepage() {
 
                 return (
                   <div key={index} className="place-card">
-                    <a
+                    {/* <a
                       href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                    >
+                    > */} 
                       <img
-                        src={`/place_images/${place.place_id}.jpg`}
-                        alt={`Place ${place.id}`}
-                        className="place-image"
-                      />
-                    </a>
+                      src={`/place_images/${place.place_id}.jpg`}
+                      alt={`Place ${place.name}`}
+                      className="place-image"
+                      onClick={() => navigate(`/placereview/${place.place_id}`)}
+                      style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
+                    />
+                    {/* </a> */}
 
                     <div className="place-info">
                       <span className="place-category">
@@ -497,17 +502,19 @@ function Homepage() {
           <div className="place-grid">
             {places?.map((place, index) => (
               <div key={index} className="place-card">
-                <a
+                {/* <a
                   href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                >
+                > */}
                   <img
-                    src={`/place_images/${place.place_id}.jpg`}
-                    alt={`Place ${place.id}`}
-                    className="place-image"
-                  />
-                </a>
+                      src={`/place_images/${place.place_id}.jpg`}
+                      alt={`Place ${place.name}`}
+                      className="place-image"
+                      onClick={() => navigate(`/placereview/${place.place_id}`)}
+                      style={{ cursor: "pointer" }} // ให้ดูเป็นปุ่มคลิกได้
+                    />
+                {/* </a> */}
 
                 <div className="place-info">
                   <span className="place-category">

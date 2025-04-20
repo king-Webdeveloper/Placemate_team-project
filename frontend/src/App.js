@@ -1,3 +1,4 @@
+// App.js [frontend]
 import React, { useEffect, useState } from "react";
 // import React, { useEffect } from "react";
 // import React from "react";
@@ -38,10 +39,22 @@ function Content() {
   // const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place"].includes(location.pathname);
   // const showNavbar = location.pathname.includes("/plan-details");
   // const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
-  const showNavbar = ["/profile", "/searchresult", "/listtogo", "/planner", "/create-plan", "/plan-details/", "/search-place", "/deleted-plans", "/select-listtogo"].includes(location.pathname);
+  const showNavbar = [
+    "/profile",
+    "/searchresult",
+    "/listtogo",
+    "/planner",
+    "/create-plan",
+    "/plan-details/",
+    "/search-place",
+    "/deleted-plans",
+    "/select-listtogo"
+  ].includes(location.pathname) || location.pathname.startsWith("/placereview/");
+  
+
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
 
-  console.log("Current Path:", location.pathname);  // ตรวจสอบเส้นทางที่กำลังใช้อยู่
+  // console.log("Current Path:", location.pathname);  // ตรวจสอบเส้นทางที่กำลังใช้อยู่
 
   useEffect(() => {
     // เรียกใช้ getUserLocation เพื่อเริ่มการดึงข้อมูลและอัปเดตทุกๆ 5 วินาที
