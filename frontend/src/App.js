@@ -11,7 +11,7 @@ import Profile from "./components/Profile";
 import Planner from "./components/Planner";
 import DeletedPlans from './components/DeletedPlans';
 import PlanDetails from './components/PlanDetails';
-import CreatePlan from './components/createPlan';
+import CreatePlan from './components/CreatePlan';
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
 import Placereview from "./components/Placereview";
@@ -50,11 +50,8 @@ function Content() {
     "/deleted-plans",
     "/select-listtogo"
   ].includes(location.pathname) || location.pathname.startsWith("/placereview/");
-  
 
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
-
-  // console.log("Current Path:", location.pathname);  // ตรวจสอบเส้นทางที่กำลังใช้อยู่
 
   useEffect(() => {
     // เรียกใช้ getUserLocation เพื่อเริ่มการดึงข้อมูลและอัปเดตทุกๆ 5 วินาที
@@ -65,17 +62,6 @@ function Content() {
       stopUpdatingLocation(); // หยุดการอัปเดตเมื่อ component หายไป
     };
   }, []);
-
-
- // เช็คว่ามี `auth_token` ใน LocalStorage หรือไม่
-  // useEffect(() => {
-  //   const token = localStorage.getItem("auth_token");
-  //   console.log("🔍 Checking auth_token in LocalStorage:", token);
-
-  //   if (!token) {
-  //     console.warn("⚠ ไม่มี Token ใน LocalStorage, กรุณาล็อกอินใหม่");
-  //   }
-  // }, []);
 
   return (
     <>

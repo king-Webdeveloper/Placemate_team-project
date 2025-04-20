@@ -76,8 +76,8 @@ const PlanDetails = () => {
     
             Swal.fire({
                 icon: "success",
-                title: "เชื่อม Google Calendar สำเร็จ!",
-                html: `<a href="${response.data.eventLink}" target="_blank">ดูใน Google Calendar</a>`,
+                title: "บันทึกลงปฏิทินของคุณสำเร็จแล้ว",
+                html: `<a href="${response.data.eventLink}" target="_blank">ไปที่ปฏิทินของคุณ</a>`,
                 confirmButtonText: "ตกลง"
             });
         } catch (error) {
