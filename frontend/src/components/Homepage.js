@@ -7,6 +7,7 @@ import handleAddPlace from "./handleAddPlace";
 import getDateInfo from "./getDateInfo";
 import getPreference from "./getPreference";
 import { getUserLocation } from "./getLocation";
+import { haversine } from "./haversine";
 
 function Homepage() {
   const [query, setQuery] = useState(""); // เก็บค่าค้นหา
@@ -123,7 +124,7 @@ function Homepage() {
 
   // แนะนำสำหรับคุณ
   const fetchRecommendedPlaces = async (pageNumber = 1) => {
-    console.log("Fetching recommendations for page:", pageNumber);
+    // console.log("Fetching recommendations for page:", pageNumber);
     try {
       setIsFetching(true);
       const response = await fetch(
@@ -133,15 +134,28 @@ function Homepage() {
 
       const data = await response.json();
 
-      // คำนวณการแสดงผลข้อมูลในหน้าแรก
+      const enrichedData = data.data.map((place) => {
+        const distance = haversine(
+          parseFloat(location.lat),
+          parseFloat(location.lng),
+          parseFloat(place.lat),
+          parseFloat(place.lng)
+        );
+  
+        return {
+          ...place,
+          distance: distance.toFixed(2), // ตัดทศนิยมให้สวย ๆ
+        };
+      });
+  
       if (pageNumber === 1) {
-        setRecommendedPlaces(data.data);
+        setRecommendedPlaces(enrichedData);
       } else {
-        setRecommendedPlaces((prevPlaces) => [...prevPlaces, ...data.data]);
+        setRecommendedPlaces((prevPlaces) => [...prevPlaces, ...enrichedData]);
       }
-
-      // คำนวณว่า มีหน้าถัดไปหรือไม่
-      setHasMorePages(data.total > pageNumber * 6); // ถ้ามีข้อมูลทั้งหมดมากกว่าหน้าปัจจุบัน * limit ก็แสดงปุ่ม "เพิ่มเติม"
+  
+      setHasMorePages(data.total > pageNumber * 6);
+      
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       setFetchError(error.message);
@@ -170,7 +184,7 @@ function Homepage() {
     try {
       const response = await fetch("http://localhost:5000/api/popular-places");
       const data = await response.json();
-      console.log("Here's top prefer\n", data);
+      // console.log("Here's top prefer\n", data);
       setPopularPreferences(data.slice(0, 9)); // แสดง 10 อันดับแรก
     } catch (error) {
       console.error("Error fetching preferences:", error);
@@ -197,10 +211,10 @@ function Homepage() {
       }
 
       const data = await response.json();
-      console.log("คุณอาจชอบ", data);
+      // console.log("คุณอาจชอบ", data);
 
-      console.log(data.places[0].business_hour[0].business_hour); // ตรวจสอบ business_hour ของสถานที่แรก
-      console.log(data.places[0].tag[0].tag_name); // ตรวจสอบ business_hour ของสถานที่แรก
+      // console.log(data.places[0].business_hour[0].business_hour); // ตรวจสอบ business_hour ของสถานที่แรก
+      // console.log(data.places[0].tag[0].tag_name); // ตรวจสอบ business_hour ของสถานที่แรก
 
       if (data.places.length === 0) {
         setHasMore(false);
@@ -349,6 +363,7 @@ function Homepage() {
                             {businessHoursText && businessHoursText !== "NaN"
                               ? businessHoursText
                               : ""}
+                              ({place.distance} กม.)
                           </strong>
                           <br />
 
@@ -492,7 +507,7 @@ function Homepage() {
                 );
               })
             ) : (
-              <p>กำลังโหลดข้อมูล...</p> // ข้อความเมื่อไม่มีข้อมูล
+              <p>กำลังอัพเดท...</p> // ข้อความเมื่อไม่มีข้อมูล
             )}
           </div>
         </section>

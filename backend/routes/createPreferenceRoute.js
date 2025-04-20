@@ -60,6 +60,32 @@ router.post("/createPreference", async (req, res) => {
             return res.status(400).json({ error: "Missing userId or preference" });
         }
 
+        // ตรวจสอบว่ามี preference นี้อยู่แล้วไหม (ป้องกันการซ้ำ)
+        const existing = await prisma.preference.findFirst({
+            where: {
+                user_id: userId,
+                preference: preference,
+            },
+        });
+
+        if (existing) {
+            return res.status(409).json({ error: "Preference already exists" });
+        }
+
+        // ดึง preference ทั้งหมดของ user คนนี้
+        const userPreferences = await prisma.preference.findMany({
+            where: { user_id: userId },
+            orderBy: { created_at: "asc" }, // ต้องใช้ field นี้ใน model
+        });
+
+        // ถ้ามีครบ 3 แล้ว ให้ลบตัวเก่าสุดออกก่อน
+        if (userPreferences.length >= 3) {
+            await prisma.preference.delete({
+                where: { id: userPreferences[0].id },
+            });
+        }
+
+        // เพิ่ม preference ใหม่
         const newPreference = await prisma.preference.create({
             data: {
                 user_id: userId,
@@ -74,4 +100,7 @@ router.post("/createPreference", async (req, res) => {
     }
 });
 
+
 module.exports = router;
+
+
