@@ -122,7 +122,7 @@ router.post("/reviews/add-comment", async (req, res) => {
 router.get("/reviews/:place_id", async (req, res) => {
     try {
         const { place_id } = req.params; // รับค่า place_id จาก URL parameters
-        console.log("place_id is", place_id);
+        // console.log("place_id is", place_id);
 
         // ตรวจสอบว่า place_id มีค่าไหม
         if (!place_id) {

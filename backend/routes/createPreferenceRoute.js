@@ -81,7 +81,7 @@ router.post("/createPreference", async (req, res) => {
         // ถ้ามีครบ 3 แล้ว ให้ลบตัวเก่าสุดออกก่อน
         if (userPreferences.length >= 3) {
             await prisma.preference.delete({
-                where: { id: userPreferences[0].id },
+                where: { preference_id: userPreferences[0].preference_id },
             });
         }
 
