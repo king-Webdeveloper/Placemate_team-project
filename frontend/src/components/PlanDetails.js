@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from 'sweetalert2';
 import "./PlanDetails.css";
 
 const PlanDetails = () => {
@@ -66,6 +67,30 @@ const PlanDetails = () => {
         }
     };
 
+    const handleSyncToCalendar = async () => {
+        try {
+            const response = await axios.post("http://localhost:5000/api/google/sync-plan", 
+                { plan_id: planId },
+                { withCredentials: true }
+            );
+    
+            Swal.fire({
+                icon: "success",
+                title: "เชื่อม Google Calendar สำเร็จ!",
+                html: `<a href="${response.data.eventLink}" target="_blank">ดูใน Google Calendar</a>`,
+                confirmButtonText: "ตกลง"
+            });
+        } catch (error) {
+            console.error("Error syncing plan:", error.response?.data || error);
+            Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+                text: error.response?.data?.error || "ไม่สามารถเชื่อมกับ Google Calendar ได้"
+            });
+        }
+    };
+    
+
     return (
         <div className="plan-details-container">
             {error && <p className="error-message">{error}</p>}
@@ -118,6 +143,9 @@ const PlanDetails = () => {
                         )}
                     </div>
 
+                    <button onClick={handleSyncToCalendar} className="sync-calendar-button">
+                    📅 Sync ไปยัง Google Calendar
+                    </button>
                     <button onClick={handleEndTrip} className="end-trip-button">
                         ⛔ สิ้นสุดแผนการเดินทาง
                     </button>

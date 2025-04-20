@@ -90,3 +90,10 @@
   justify-content: center;
   gap: 20px;
 }
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+

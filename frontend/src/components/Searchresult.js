@@ -6,7 +6,7 @@ import { haversine } from "./haversine"; // Import the haversine function
 import "./Searchresult.css";
 import handleAddPlace from "./handleAddPlace";
 import getDateInfo from "./getDateInfo"; 
-import getPreference from "./getPreference"
+import getPreference from "./getPreference";
 
 const Searchresult = () => {
   const [searchTerm, setSearchTerm] = useState(""); // ค่าค้นหา

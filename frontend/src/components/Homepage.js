@@ -22,6 +22,7 @@ function Homepage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   const [popularPreferences, setPopularPreferences] = useState([]);
 
