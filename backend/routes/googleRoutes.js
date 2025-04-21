@@ -28,6 +28,17 @@ router.get("/auth/google", (req, res) => {
   res.redirect(url);
 });
 
+// ใน googleRoutes.js
+router.get("/check-token", (req, res) => {
+  const token = req.cookies.google_token;
+  if (token) {
+    res.json({ googleConnected: true });
+  } else {
+    res.json({ googleConnected: false });
+  }
+});
+
+
 // 🔄 Step 2: Google Redirect → save token
 router.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
@@ -40,7 +51,8 @@ router.get("/auth/google/callback", async (req, res) => {
     maxAge: 3600 * 1000,
   });
 
-  res.redirect("/"); // หรือ redirect ไปหน้า planner
+  res.redirect("http://localhost:3000/planner"); // หรือหน้าไหนก็ได้ใน frontend
+  // res.redirect(""); // หรือ redirect ไปหน้า planner
 });
 
 /**
@@ -124,5 +136,15 @@ router.post("/sync-plan", async (req, res) => {
     res.status(500).json({ error: "Failed to create calendar event" });
   }
 });
+
+router.post("/disconnect", (req, res) => {
+  res.clearCookie("google_token", {
+    httpOnly: true,
+    sameSite: "Lax",
+    secure: false,
+  });
+  res.json({ message: "Disconnected from Google Calendar" });
+});
+
 
 module.exports = router;
