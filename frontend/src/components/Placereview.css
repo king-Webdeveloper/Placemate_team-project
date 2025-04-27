@@ -49,13 +49,14 @@ h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* เงาอ่อน */
   }
 
-.review-list h2 {
+  .review-list h2 {
     font-size: 1.5rem;
     font-weight: bold;
     color: #2b2b2b; /* สีตัวอักษร */
-    text-align: left; /* จัดข้อความให้ไปทางซ้าย */
+    text-align: center; /* จัดข้อความให้ไปทางซ้าย */
     margin-bottom: 20px; /* เว้นระยะห่างด้านล่าง */
-    margin-left: 550px; /* เยื้องไปทางซ้ายเล็กน้อย */
+    top: 20px; /* ระยะห่างจากด้านบน */
+    z-index: 10; /* ให้หัวข้อแสดงอยู่ข้างบนเนื้อหาอื่น */
 }
 
 /* สไตล์สำหรับรีวิวแต่ละรายการ */
