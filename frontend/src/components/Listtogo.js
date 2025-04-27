@@ -6,9 +6,7 @@ import "./Listtogo.css";
 
 const ListToGo = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [places, setPlaces] = useState([]);
   const [listToGo, setListToGo] = useState([]);
-  const [searched, setSearched] = useState(false);
   const [userId, setUserId] = useState(null); // เพิ่ม state สำหรับ user_id
   const navigate = useNavigate();
 
@@ -54,13 +52,14 @@ const ListToGo = () => {
     }
   };
 
+  const handleClickPlace = (placeId) => {
+    // เพียงแค่นำทางไปยังหน้ารีวิวของสถานที่นั้น
+    navigate(`/placereview/${placeId}`);
+  };
+
 // listtogo.js [frontend]
 const handleRemovePlace = async (listToGo) => {
   if (!userId) return; // ตรวจสอบว่า user_id มีค่าก่อนทำงาน
-
-  // // แจ้งเตือนให้ยืนยันการลบสถานที่
-  // const isConfirmed = window.confirm("คุณแน่ใจว่าต้องการลบสถานที่นี้ออกจาก List to Go?");
-  // if (!isConfirmed) return; // หากผู้ใช้ไม่ยืนยัน จะไม่ทำการลบ
 
 // SweetAlert แจ้งเตือนการลบสถานที่
 Swal.fire({
@@ -112,48 +111,55 @@ Swal.fire({
 
 // listtogo.js [frontend]
 return (
-    <div className="listtogo-main-container">
-      <h1 className="listtogo-text">List to Go</h1>
+  <div className="listtogo-main-container">
+    <h1 className="listtogo-text">List to Go</h1>
 
-      {/* Search Bar */}
-      <div className="searchbar-search-bar">
-        <input
-          type="text"
-          className="searchbar-search-input"
-          placeholder="ค้นหา"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={handleSearch} className="searchbar-search-button">
-          ค้นหา
-        </button>
-      </div>
+    {/* Search Bar */}
+    <div className="searchbar-search-bar">
+      <input
+        type="text"
+        className="searchbar-search-input"
+        placeholder="ค้นหา"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <button onClick={handleSearch} className="searchbar-search-button">
+        ค้นหา
+      </button>
+    </div>
 
-      {/* รายการใน List to Go */}
-        <h2 className="text-lg font-semibold">รายการใน List to Go ของคุณ</h2>
-        {Array.isArray(listToGo) && listToGo.length > 0 && (
-          <ul className="listtogo-searchbar-resultbox">
-            {listToGo.map((place) => (
-              <li key={place.list_to_go_id} className="result-listtogo">
-                <div className="place-image-container">
-                  <img 
-                    src={`/place_images/${place.place_id}.jpg`} 
-                    alt={place.place_name} 
-                    className="place-image" 
-                  />
-                    <span className="place-name">{place.place_name}</span>
-                    <button
-                      onClick={() => handleRemovePlace(place)}
-                      className="remove-button"
-                    >
-                      ลบออกจาก List
-                    </button>
-                  </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    {/* รายการใน List to Go */}
+    <h2 className="text-lg font-semibold">รายการใน List to Go ของคุณ</h2>
+    {Array.isArray(listToGo) && listToGo.length > 0 && (
+      <ul className="listtogo-searchbar-resultbox">
+        {listToGo.map((place) => (
+          <li key={place.list_to_go_id} className="result-listtogo">
+            <div 
+              className="place-image-container"
+              onClick={() => handleClickPlace(place.place_id)}  // คลิกที่ div นี้จะนำทางไปยังหน้า PlaceReview
+              style={{ cursor: "pointer" }}  // ทำให้เห็นว่าเป็นลิงก์คลิกได้
+            >
+              <img 
+                src={`/place_images/${place.place_id}.jpg`} 
+                alt={place.place_name} 
+                className="place-image"
+              />
+              <span className="place-name">{place.place_name}</span>
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); // หยุดการ propagate ของ event เมื่อคลิกปุ่มนี้
+                  handleRemovePlace(place);  // เรียกฟังก์ชันลบ
+                }}
+                className="remove-button"
+              >
+                ลบออกจาก List
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 );
 }
 

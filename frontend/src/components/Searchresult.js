@@ -167,78 +167,94 @@ const Searchresult = () => {
     window.open(googleMapsUrl, "_blank");
   };
 
+  const handleClickPlace = async (placeId) => {
+    if (userId) {
+      try {
+        // เรียก API เพื่อบันทึกข้อมูลที่ผู้ใช้เลือก
+        await getPreference(userId, placeId); // ฟังก์ชันที่ใช้ส่ง preference ไปยัง backend
+      } catch (error) {
+        console.error("Error sending preference:", error);
+      }
+    }
+    // นำทางไปยังหน้ารีวิวของสถานที่นั้น
+    navigate(`/placereview/${placeId}`);
+  };
+
   return (
     <div>
-        <div className="center-box">
-          {/* {userLocation.lat && userLocation.lng ? (
-            <p>Latitude: {userLocation.lat}, Longitude: {userLocation.lng}</p>
-          ) : (
-            <p>Loading location...</p>
-          )} */}
-          
-          {/* <h1>{dayName}{time}</h1> */}
-          <div className="searchbar-search-bar">
-            <input
-              type="text"
-              className="searchbar-search-input"
-              placeholder="ค้นหา"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button onClick={() => handleSearch(searchTerm)} className="searchbar-search-button">
-              ค้นหา
-            </button>
-          </div>
-
-          {searched && searchResults.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
-          )}
-          <h2>ผลลัพธ์การค้นหา</h2>
+      <div className="center-box">
+        <div className="searchbar-search-bar">
+          <input
+            type="text"
+            className="searchbar-search-input"
+            placeholder="ค้นหา"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button onClick={() => handleSearch(searchTerm)} className="searchbar-search-button">
+            ค้นหา
+          </button>
         </div>
-
-        {searchResults.length > 0 && (
-          <div>
-            <ul className="container-list">
-              {searchResults.map((place) => (
-                <li key={place.id} className="result-search">
-                  <div className="div-searchResult">
-                    <img
-                      src={`/place_images/${place.place_id}.jpg`}
-                      alt={`Place ${place.id}`}
-                      className="place-image"
-                    />
-                    <strong>
-                      {place.business_hour && place.business_hour.length > 0
-                        ? place.business_hour
-                            .map(item => item.business_hour)
-                            .filter(hour => hour && hour !== "NaN" && hour !== "null" && hour !== "undefined")
-                            .join(", ")
-                        : "ไม่ระบุเวลา"}
-                    </strong>
-
-                    {/* <span>{place.name} {place.rating && `⭐${place.rating}`}</span> */}
-                    <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐" + place.rating}</span>
-                    <span>
-                      {place.tag.map((tagObj, index) => (
-                        <button key={index} className="tag-button">
-                          {tagObj.tag_name}
-                        </button>
-                      ))}
-                    </span>
-                    <span> - {place.distance.toFixed(2)} km</span>
-                  </div>
-                  <button onClick={() => handleGoGoogleMap(userId, place.place_id)} className="go-button">
-                    ดูสถานที่
-                  </button>
-                  <button onClick={() => handleAddPlace(place, navigate)} className="go-button">
-                    เพิ่มไปยัง List to go
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {loading && <p>Loading...</p>}
-          </div>
+  
+        {searched && searchResults.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">ไม่พบผลลัพธ์ที่ตรงกัน</p>
         )}
+        <h2>ผลลัพธ์การค้นหา</h2>
+      </div>
+  
+      {searchResults.length > 0 && (
+        <div>
+          <ul className="container-list">
+            {searchResults.map((place) => (
+              <li key={place.id} className="result-search">
+                <div 
+                  className="div-searchResult"
+                  onClick={() => handleClickPlace(place.place_id)}  // เพิ่ม onClick ที่ div นี้
+                  style={{ cursor: "pointer" }} // ทำให้เป็นลิงก์
+                >
+                  <img
+                    src={`/place_images/${place.place_id}.jpg`}
+                    alt={`Place ${place.id}`}
+                    className="place-image"
+                  />
+                  <strong>
+                    {place.business_hour && place.business_hour.length > 0
+                      ? place.business_hour
+                          .map(item => item.business_hour)
+                          .filter(hour => hour && hour !== "NaN" && hour !== "null" && hour !== "undefined")
+                          .join(", ")
+                      : "ไม่ระบุเวลา"}
+                  </strong>
+                  <span>{place.name}{place.rating == "nan" ? "" : "⭐" + place.rating}</span>
+                  <span>
+                    {place.tag.map((tagObj, index) => (
+                      <button key={index} className="tag-button">
+                        {tagObj.tag_name}
+                      </button>
+                    ))}
+                  </span>
+                  <span> - {place.distance.toFixed(2)} km</span>
+                </div>
+  
+                {/* ปุ่มต่างๆ ที่ไม่กระทบกับการนำทางไปยัง Page Review */}
+                <button onClick={(e) => { 
+                  e.stopPropagation();  // หยุดการ propagate event สำหรับปุ่ม
+                  handleGoGoogleMap(userId, place.place_id);
+                }} className="go-button">
+                  ดูสถานที่
+                </button>
+                <button onClick={(e) => {
+                  e.stopPropagation(); // หยุดการ propagate event สำหรับปุ่ม
+                  handleAddPlace(place, navigate);
+                }} className="go-button">
+                  เพิ่มไปยัง List to go
+                </button>
+              </li>
+            ))}
+          </ul>
+          {loading && <p>Loading...</p>}
+        </div>
+      )}
     </div>
   );
 };

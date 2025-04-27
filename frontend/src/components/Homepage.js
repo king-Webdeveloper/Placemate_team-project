@@ -98,7 +98,7 @@ function Homepage() {
       });
   }, []);
 
-    const handleClickPlace = async (placeId) => {
+  const handleClickPlace = async (placeId) => {
     if (userId) {
       try {
         await getPreference(userId, placeId);

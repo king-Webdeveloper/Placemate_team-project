@@ -73,7 +73,7 @@
     padding: 12px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(to right, #007BFF, #0056b3);
+    background: linear-gradient(to right, #ff7043, #f85827);
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -82,14 +82,14 @@
   }
   
   .login-container button:hover {
-    background: linear-gradient(to right, #0056b3, #004099);
+    background: linear-gradient(to right, #f85827, #f8511e);
     transform: scale(1.05);
-    box-shadow: 0px 6px 20px rgba(0, 91, 255, 0.4);
+    box-shadow: 0px 6px 20px rgba(232, 63, 7, 0.4);
   }
   
   .login-container button:active {
     transform: scale(0.95);
-    box-shadow: 0px 3px 10px rgba(0, 91, 255, 0.5);
+    box-shadow: 0px 3px 10px rgba(255, 77, 0, 0.5);
   }
   
   .login-container p {
@@ -99,7 +99,7 @@
   }
   
   .login-container p a {
-    color: #0056b3;
+    color: #f84b16;
     font-weight: bold;
     text-decoration: none;
   }
@@ -112,16 +112,16 @@
     display: inline-block;
     margin-top: 20px;
     padding: 10px 15px;
-    color: #007BFF;
+    color: #f85827;
     font-weight: bold;
     text-decoration: none;
-    border: 1px solid #007BFF;
+    border: 1px solid #f85827;
     border-radius: 6px;
     transition: all 0.3s ease-in-out;
   }
   
   .login-container .back-button:hover {
-    background-color: #007BFF;
+    background-color: #f85827;
     color: white;
   }
 
