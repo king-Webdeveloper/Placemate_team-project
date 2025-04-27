@@ -217,7 +217,8 @@ const Searchresult = () => {
                     </strong>
 
                     {/* <span>{place.name} {place.rating && `⭐${place.rating}`}</span> */}
-                    <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐" + place.rating}</span>
+                    {/* <span>{place.name}{isNaN(place.rating) && place.rating == "NaN" ? "" : "⭐" + place.rating}</span> */}
+                    <span>{place.name}{place.rating == "NaN" ? "" : "⭐" + place.rating}</span>
                     <span>
                       {place.tag.map((tagObj, index) => (
                         <button key={index} className="tag-button">
