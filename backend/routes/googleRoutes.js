@@ -122,15 +122,53 @@ router.post("/sync-plan", async (req, res) => {
       },
     };
 
-    const response = await calendar.events.insert({
-      calendarId: "primary",
-      requestBody: event,
+
+    let response;
+    let isUpdate = false;
+
+    // const response = await calendar.events.insert({
+    //   calendarId: "primary",
+    //   requestBody: event,
+    // });
+
+    // 👉 ถ้ามี event_id อยู่แล้ว ให้ update
+    if (plan.google_event_id) {
+      response = await calendar.events.update({
+        calendarId: "primary",
+        eventId: plan.google_event_id,
+        requestBody: event,
+      });
+      isUpdate = true;
+    } else {
+      // 🆕 ถ้ายังไม่มี ให้ insert ใหม่
+      response = await calendar.events.insert({
+        calendarId: "primary",
+        requestBody: event,
+      });
+    }
+
+    const updatedPlan = await prisma.plan.update({
+      where: { plan_id: parseInt(plan_id) },
+      data: {
+        google_event_link: response.data.htmlLink,
+        google_event_id: response.data.id,
+      },
     });
+
+    // บันทึกลิงก์ Google Calendar ลงในฐานข้อมูล (ใน `google_event_link`)
+    // const updatedPlan = await prisma.plan.update({
+    //   where: { plan_id: parseInt(plan_id) },
+    //   data: {
+    //     google_event_link: response.data.htmlLink, // ลิงก์ที่ได้จาก Google Calendar
+    //   },
+    // });
 
     res.status(200).json({
       message: "Event created in Google Calendar",
       eventLink: response.data.htmlLink,
+      updatedPlan: updatedPlan, // ส่งกลับข้อมูลแผนที่อัปเดต
     });
+
   } catch (err) {
     console.error("❌ Google Calendar Error:", err);
     res.status(500).json({ error: "Failed to create calendar event" });

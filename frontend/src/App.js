@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Planner from "./components/Planner";
+import EditPlan from "./components/EditPlan";
 import DeletedPlans from './components/DeletedPlans';
 import PlanDetails from './components/PlanDetails';
 import CreatePlan from './components/CreatePlan';
@@ -48,7 +49,8 @@ function Content() {
     "/plan-details/",
     "/search-place",
     "/deleted-plans",
-    "/select-listtogo"
+    "/select-listtogo",
+    "/edit-plan"
   ].includes(location.pathname) || location.pathname.startsWith("/placereview/");
 
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
@@ -82,6 +84,7 @@ function Content() {
         <Route path="/search-place" element={<SearchPlace />} />
         <Route path="/aboutme" element={<Aboutme />} />
         <Route path="/select-listtogo" element={<SelectListToGo />} />
+        <Route path="/edit-plan/:planId" element={<EditPlan />} />
       </Routes>
     </>
   );
