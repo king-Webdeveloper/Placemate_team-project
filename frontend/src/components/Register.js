@@ -1,28 +1,45 @@
+// Register.js[frontend]
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Register.css"; // Import CSS
-// import { Link } from "react-router-dom"; 
- 
+
 function Register() {
   const [username, setUsername] = useState(""); // ✅ เปลี่ยนจาก name เป็น username
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // จัดการ Error Message
   const [loading, setLoading] = useState(false); // แสดงสถานะ Loading
+  const [passwordFocus, setPasswordFocus] = useState(false); // ตรวจสอบว่า focus อยู่ในช่อง password หรือไม่
+  const [passwordValid, setPasswordValid] = useState(null); // ตรวจสอบว่า password valid หรือไม่ (null คือยังไม่ได้ตรวจสอบ)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); // รีเซ็ต error message ก่อนที่จะทำการสมัคร
+
+    // ตรวจสอบ username: ต้องไม่มีอักขระพิเศษ และมีความยาวมากกว่า 2 ตัว
+    const usernamePattern = /^[a-zA-Z0-9]+$/; // ไม่ให้มีอักขระพิเศษ
+    if (username.length <= 2 || !usernamePattern.test(username)) {
+      setError("Username ต้องไม่มีอักขระพิเศษ และมีความยาวมากกว่า 2 ตัว");
+      setLoading(false);
+      return; // หยุดการทำงานหากไม่ผ่านเงื่อนไข
+    }
+
+    // ตรวจสอบ password: ต้องมีความยาวมากกว่า 8 ตัว และประกอบด้วยตัวอักษรและตัวเลข
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordPattern.test(password)) {
+      setError("Password ต้องมีความยาวมากกว่า 8 ตัว และประกอบด้วยตัวอักษรและตัวเลข");
+      setLoading(false);
+      return; // หยุดการทำงานหากไม่ผ่านเงื่อนไข
+    }
 
     try {
       const response = await fetch("http://localhost:5000/api/register", {
-      // const response = await fetch(`${process.env.REACT_APP_API_URL}:5000/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password }), // ✅ เปลี่ยน name เป็น username
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
@@ -39,6 +56,12 @@ function Register() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ตรวจสอบความถูกต้องของ password
+  const checkPasswordValidity = (password) => {
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    setPasswordValid(passwordPattern.test(password));
   };
 
   return (
@@ -73,9 +96,22 @@ function Register() {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                checkPasswordValidity(e.target.value); // เช็คความถูกต้องเมื่อมีการเปลี่ยนแปลง
+              }}
+              onFocus={() => setPasswordFocus(true)} // เมื่อคลิกเข้าไปในช่อง password
+              onBlur={() => setPasswordFocus(false)} // เมื่อออกจากช่อง password
               required
             />
+            {passwordFocus && !passwordValid && (
+              <p className="password-info">
+                Password ต้องมีความยาวมากกว่า 8 ตัว และประกอบด้วยตัวอักษรและตัวเลข
+              </p>
+            )}
+            {passwordValid && password && (
+              <p className="password-valid">รหัสผ่านนี้สามารถใช้งานได้</p>
+            )}
           </div>
           {error && <p className="error">{error}</p>}
           <button type="submit" disabled={loading}>
@@ -92,3 +128,5 @@ function Register() {
 }
 
 export default Register;
+
+

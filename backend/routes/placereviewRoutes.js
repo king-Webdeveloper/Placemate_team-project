@@ -121,17 +121,14 @@ router.post("/reviews/add-comment", async (req, res) => {
  */
 router.get("/reviews/:place_id", async (req, res) => {
     try {
-        const { place_id } = req.params; // รับค่า place_id จาก URL parameters
-        // console.log("place_id is", place_id);
+        const { place_id } = req.params;
 
-        // ตรวจสอบว่า place_id มีค่าไหม
         if (!place_id) {
             return res.status(400).json({ error: "place_id is required" });
         }
 
-        // ดึงข้อมูลสถานที่ (ชื่อและที่อยู่) จากตาราง place
         const place = await prisma.place.findUnique({
-            where: { place_id: place_id }, // ใช้ place_id ในการค้นหาสถานที่
+            where: { place_id: place_id },
             select: {
                 place_id: true,
                 name: true,
@@ -139,39 +136,119 @@ router.get("/reviews/:place_id", async (req, res) => {
             },
         });
 
-        // ถ้าไม่พบสถานที่ให้ส่งสถานะ 404
         if (!place) {
             return res.status(404).json({ error: "Place not found" });
         }
 
-        // ดึงรีวิวทั้งหมดจากฐานข้อมูลโดยใช้ place_id
         const reviews = await prisma.review.findMany({
-            where: { place_id: place_id }, // ค้นหาตาม place_id
+            where: { place_id: place_id },
             select: {
+                review_id: true,
+                user_id: true,
                 rating: true,
                 comment: true,
                 created_at: true,
             },
         });
 
-        // ถ้าไม่พบรีวิวให้ส่งข้อมูลสถานที่พร้อมค่า average_rating เป็น 0
+        // เพิ่มการดึงข้อมูล username ของผู้รีวิว
+        const reviewsWithUsernames = await Promise.all(
+            reviews.map(async (review) => {
+                const user = await prisma.user.findUnique({
+                    where: { user_id: review.user_id },
+                    select: {
+                        username: true,
+                    },
+                });
+                return { ...review, username: user?.username }; // เพิ่ม username ลงในข้อมูลรีวิว
+            })
+        );
+
         const averageRating = reviews.length
             ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
             : 0;
 
-        // ส่งข้อมูลสถานที่, รีวิว, และคะแนนเฉลี่ยกลับไป
         res.json({
             place_id,
             place_name: place.name,
             address: place.address,
             average_rating: averageRating,
-            reviews: reviews.length > 0 ? reviews : [], // ถ้าไม่มีรีวิว ก็ส่งเป็น array ว่าง
+            reviews: reviewsWithUsernames, // ส่งรีวิวที่มี username
         });
     } catch (error) {
         console.error("Error fetching reviews:", error);
         res.status(500).json({ error: "Failed to fetch reviews" });
     }
 });
+
+/**
+ * @swagger
+ * /api/reviews/{review_id}:
+ *   delete:
+ *     summary: ลบรีวิว
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: path
+ *         name: review_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID ของรีวิวที่ต้องการลบ
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *                 description: ID ของผู้ใช้งานที่ต้องการลบรีวิว
+ *     responses:
+ *       200:
+ *         description: ลบรีวิวสำเร็จ
+ *       400:
+ *         description: ข้อมูลที่ส่งไม่ถูกต้อง
+ *       403:
+ *         description: ผู้ใช้ไม่มีสิทธิ์ในการลบรีวิว
+ *       404:
+ *         description: ไม่พบรีวิวที่ต้องการลบ
+ *       500:
+ *         description: เกิดข้อผิดพลาดในการลบรีวิว
+ */
+router.delete("/reviews/:review_id", async (req, res) => {
+    try {
+        const { review_id } = req.params; // รับ review_id จาก URL parameters
+        const { user_id } = req.body; // รับ user_id จาก body ของคำขอ (ต้องแน่ใจว่าผู้ใช้ล็อกอินและส่ง user_id มา)
+
+        // ตรวจสอบว่ารีวิวมีอยู่ในฐานข้อมูลหรือไม่
+        const review = await prisma.review.findUnique({
+            where: { review_id: parseInt(review_id) }, // ใช้ review_id ในการค้นหา
+        });
+
+        // ถ้าไม่พบรีวิวให้ส่งสถานะ 404
+        if (!review) {
+            return res.status(404).json({ error: "Review not found" });
+        }
+
+        // ตรวจสอบว่าผู้ใช้ที่ส่งคำขอลบเป็นเจ้าของรีวิวนั้นหรือไม่
+        if (review.user_id !== user_id) {
+            return res.status(403).json({ error: "You do not have permission to delete this review" });
+        }
+
+        // ลบรีวิวจากฐานข้อมูล
+        await prisma.review.delete({
+            where: { review_id: parseInt(review_id) },
+        });
+
+        // ส่งสถานะว่ารีวิวถูกลบสำเร็จ
+        res.status(200).json({ message: "Review deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting review:", error);
+        res.status(500).json({ error: "Failed to delete review" });
+    }
+});
+
 
 module.exports = router;
 

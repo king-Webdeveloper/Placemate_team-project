@@ -8,7 +8,7 @@ const Placereview = () => {
     const { place_id } = useParams(); // รับ place_id จาก URL parameters
     const navigate = useNavigate();
     const [reviews, setReviews] = useState([]); // เก็บข้อมูลรีวิว
-    const [rating, setRating] = useState(1); // ค่าคะแนน
+    const [rating, setRating] = useState(0); // เริ่มต้นที่ 0 คะแนน
     const [comment, setComment] = useState(""); // คอมเมนต์
     const [error, setError] = useState(""); // เก็บข้อความ error
     const [averageRating, setAverageRating] = useState(0); // เก็บคะแนนเฉลี่ย
@@ -37,6 +37,7 @@ const Placereview = () => {
                 const reviewsData = await reviewsResponse.json();
                 setReviews(reviewsData.reviews);
                 setAverageRating(reviewsData.average_rating);
+                
             } catch (err) {
                 console.error("Error fetching data:", err);
                 setError("ไม่สามารถดึงข้อมูลรีวิวได้");
@@ -79,8 +80,25 @@ const Placereview = () => {
         checkLoginStatus(); // เรียกฟังก์ชันตรวจสอบสถานะการล็อกอิน
     }, []); // เรียกใช้ useEffect เมื่อโหลดหน้า
 
+    const handleGoGoogleMap = (userId, placeId) => {
+        const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`; // You can adjust the zoom level (z) as needed
+        // Open the URL in a new tab
+        window.open(googleMapsUrl, "_blank");
+      };
+
     const handleSubmitReview = async (e) => {
         e.preventDefault();
+    
+        // ตรวจสอบว่าผู้ใช้เลือกคะแนนแล้วหรือไม่
+        if (rating === 0) {
+            await Swal.fire({
+                title: "กรุณาเพิ่มคะแนน",
+                text: "กรุณาเพิ่มคะแนนให้กับทางร้านก่อนที่จะส่งรีวิว",
+                icon: "warning",
+                confirmButtonText: "ตกลง"
+            });
+            return;
+        }
     
         if (!isLoggedIn) {
             navigate("/login");
@@ -155,12 +173,111 @@ const Placereview = () => {
             // กรณีกดยกเลิก ไม่ต้องทำอะไร
         }
     };
-    
 
+    const handleDeleteReview = async (review_id) => {
+        console.log("Review ID:", review_id);
+        // ตรวจสอบว่า review_id มีค่าหรือไม่
+        if (!review_id) {
+            console.error("Review ID is missing");
+            await Swal.fire({
+                title: "เกิดข้อผิดพลาด",
+                text: "ไม่พบรีวิวที่ต้องการลบ",
+                icon: "error",
+                confirmButtonText: "ตกลง"
+            });
+            return;
+        }
+    
+        // ตรวจสอบว่า user_id มีค่าหรือไม่
+        if (!userId) {
+            await Swal.fire({
+                title: "กรุณาล็อกอิน",
+                text: "คุณต้องล็อกอินก่อนถึงจะลบรีวิวได้",
+                icon: "warning",
+                confirmButtonText: "ไปที่หน้าเข้าสู่ระบบ"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // นำผู้ใช้ไปยังหน้าล็อกอิน
+                    window.location.href = '/login';
+                }
+            });
+            return;
+        }
+    
+        // ใช้ SweetAlert2 ยืนยันก่อนลบ
+        const result = await Swal.fire({
+            title: "คุณแน่ใจหรือไม่ว่าต้องการลบรีวิวนี้?",
+            text: "การลบรีวิวจะไม่สามารถย้อนกลับได้",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonText: "ยกเลิก"
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                // ส่งคำขอลบรีวิวไปยัง API
+                const response = await fetch(`http://localhost:5000/api/reviews/${review_id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        user_id: userId, // ส่ง user_id ไปด้วยเพื่อเช็คสิทธิ์การลบ
+                    }),
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "ไม่สามารถลบรีวิวได้");
+                }
+    
+                // รีเฟรชข้อมูลรีวิวหลังจากลบสำเร็จ
+                await Swal.fire({
+                    title: "สำเร็จ!",
+                    text: "รีวิวของคุณถูกลบแล้ว",
+                    icon: "success",
+                    confirmButtonText: "ตกลง"
+                });
+    
+                // ดึงข้อมูลรีวิวใหม่
+                if (!place_id) {
+                    console.error("Place ID is missing");
+                    await Swal.fire({
+                        title: "เกิดข้อผิดพลาด",
+                        text: "ไม่สามารถรีเฟรชข้อมูลรีวิวได้",
+                        icon: "error",
+                        confirmButtonText: "ตกลง"
+                    });
+                    return;
+                }
+    
+                const reviewsResponse = await fetch(`http://localhost:5000/api/reviews/${place_id}`);
+                if (!reviewsResponse.ok) {
+                    throw new Error("ไม่สามารถดึงข้อมูลรีวิวได้");
+                }
+                const reviewsData = await reviewsResponse.json();
+                setReviews(reviewsData.reviews);
+                setAverageRating(reviewsData.average_rating);
+    
+            } catch (err) {
+                console.error("Error deleting review:", err);
+                await Swal.fire({
+                    title: "เกิดข้อผิดพลาด",
+                    text: "ไม่สามารถลบรีวิวได้ กรุณาลองใหม่อีกครั้ง",
+                    icon: "error",
+                    confirmButtonText: "ตกลง"
+                });
+            }
+        }
+    };    
+    
     return (
         <div className="placereview">
             <h1>รีวิวสถานที่: {placeName || place_id}</h1> {/* แสดงชื่อสถานที่หรือ place_id */}
-
             {error && <p className="error">{error}</p>}
 
             <div className="average-rating">
@@ -171,12 +288,19 @@ const Placereview = () => {
                 )}
             </div>
 
+            <button onClick={(e) => { 
+                  e.stopPropagation();  // หยุดการ propagate event สำหรับปุ่ม
+                  handleGoGoogleMap(userId, place_id);
+                }} className="placereviewgo-button">
+                  ดูสถานที่
+            </button>
+
             {/* แสดงภาพสถานที่ */}
-            <div className="place-image-container">
+            <div className="placereview-image-container">
                 <img
                     src={`/place_images/${place_id}.jpg`}  // ดึงภาพจาก place_id
                     alt={`Place ${place_id}`}
-                    className="place-image"
+                    className="review-place-image"
                     onClick={() => navigate(`/placereview/${place_id}`)}  // นำไปหน้ารีวิว
                 />
             </div>
@@ -184,53 +308,70 @@ const Placereview = () => {
             <div className="review-list">
                 <h2>รีวิวทั้งหมด</h2>
                 {reviews.length > 0 ? (
-                    reviews.map((review) => (
-                        <div key={review.created_at} className="review-item">
-                            <p className="star-display">
-                                คะแนน:{" "}
-                                {[...Array(5)].map((_, i) => (
-                                    <span key={i} style={{ color: i < review.rating ? "#ffd700" : "#ccc" }}>
-                                        &#9733;
-                                    </span>
-                                ))}
-                            </p>
-                            <p>คอมเมนต์: {review.comment}</p>
-                            <p>รีวิวเมื่อ: {new Date(review.created_at).toLocaleString()}</p>
-                        </div>
-                    ))
+                    reviews.map((review) => {
+                        return (
+                            <div key={review.created_at} className="review-item">
+                                <p>รีวิวโดย: {review.username}</p> {/* แสดงชื่อผู้รีวิว */}
+                                <p className="star-display">
+                                    คะแนน:{" "}
+                                    {[...Array(5)].map((_, i) => (
+                                        <span
+                                            key={i}
+                                            style={{ color: i < review.rating ? "#ffd700" : "#ccc" }}
+                                        >
+                                            &#9733;
+                                        </span>
+                                    ))}
+                                </p>
+                                <p>คอมเมนต์: {review.comment}</p>
+                                <p>รีวิวเมื่อ: {new Date(review.created_at).toLocaleString()}</p>
+
+                                {isLoggedIn && review.user_id === userId && (
+                                    <button
+                                        className="delete-review-btn"
+                                        onClick={() => handleDeleteReview(review.review_id)}
+                                    >
+                                        🗑️ ลบรีวิว
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })
                 ) : (
                     <p>ยังไม่มีรีวิวสำหรับสถานที่นี้</p>
                 )}
             </div>
 
-            <div className="add-review">
-                <h2>เพิ่มรีวิวของคุณ</h2>
-                <form onSubmit={handleSubmitReview}>
-                    <label>คะแนน:</label>
-                    <div className="custom-star-rating">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <span
+
+            {/* ฟอร์มเพิ่มรีวิวจะต้องแสดงเมื่อผู้ใช้ล็อกอิน */}
+            {isLoggedIn && (
+                <div className="add-review">
+                    <h2>เพิ่มรีวิวของคุณ</h2>
+                    <form onSubmit={handleSubmitReview}>
+                        <label>คะแนน:</label>
+                        <div className="custom-star-rating">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <span
                                 key={star}
                                 className={`star ${star <= rating ? "filled" : ""}`}
                                 onClick={() => setRating(star)}
-                                onMouseEnter={() => setRating(star)} // เพิ่มถ้าอยากให้เปลี่ยนตอน hover
-                                onMouseLeave={() => setRating(rating)} // ให้กลับมาเป็นค่าที่เลือกจริง
-                            >
+                                >
                                 &#9733;
-                            </span>
-                        ))}
-                    </div>
+                                </span>
+                            ))}
+                        </div>
 
-                    <label>คอมเมนต์:</label>
-                    <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        maxLength={1000}
-                    ></textarea>
+                        <label>คอมเมนต์:</label>
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            maxLength={1000}
+                        ></textarea>
 
-                    <button type="submit">เพิ่มรีวิว</button>
-                </form>
-            </div>
+                        <button type="submit" >เพิ่มรีวิว</button> 
+                    </form>
+                </div>
+            )}
 
             {!isLoggedIn && (
                 <p style={{ textAlign: "center" }}>

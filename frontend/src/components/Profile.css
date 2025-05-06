@@ -1,5 +1,11 @@
 /* profile.css [frontend] */
-.logout-button {
+  .logout-container {
+    display: flex;
+    justify-content: center; /* ทำให้ปุ่มอยู่ขวา */
+    width: 100%;
+  }
+
+  .logout-button {
     background-color: #ff4d4f;
     color: white;
     border: none;
@@ -9,15 +15,13 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-
   }
-  
+
   .logout-button:hover {
     background-color: #ff7875;
     transform: translateY(-2px);
   }
-  
+
   .logout-button:active {
     background-color: #d9363e;
     transform: translateY(1px);
@@ -42,7 +46,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     margin-top: 20px;
     flex-direction: column;
   }
@@ -92,3 +96,73 @@
   .camera-icon-overlay:hover {
     background-color: #666;
   }
+
+  .reviews-section {
+    width: 80%;
+    max-width: 900px;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviews-section h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .reviews-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .review-item-history {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .review-item-history:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .review-item-history h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    color: #2c3e50;
+  }
+  
+  .review-item-history p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+  }
+  
+  .review-item-history .rating {
+    font-size: 18px;
+    color: #f39c12;
+  }
+  
+  .review-item-history .date {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 10px;
+    font-style: italic;
+  }
+  
+  /* เพิ่มการแสดงผลสำหรับข้อความเมื่อไม่มีรีวิว */
+  .no-reviews-message {
+    font-size: 18px;
+    color: #888;
+    text-align: center;
+    margin-top: 20px;
+  }
+  

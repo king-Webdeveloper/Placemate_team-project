@@ -168,6 +168,105 @@ router.get("/user-image/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/user-reviews/{userId}:
+ *   get:
+ *     summary: Get a user's reviews history with place details
+ *     description: Returns a list of reviews made by the user, including place name, place ID, rating, comment, and review date.
+ *     tags: [Setting]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user whose reviews are requested
+ *     responses:
+ *       200:
+ *         description: List of reviews with place details successfully retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 reviews:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       review_id:
+ *                         type: integer
+ *                       place_id:
+ *                         type: integer
+ *                       place_name:
+ *                         type: string
+ *                       rating:
+ *                         type: integer
+ *                       comment:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *       404:
+ *         description: User or reviews not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Failed to fetch reviews
+ */
+router.get("/user-reviews/:userId", async (req, res) => {
+  const userId = Number(req.params.userId);
+  try {
+      // ดึงข้อมูลรีวิวจากตาราง review ที่ user_id ตรงกับ userId ที่ส่งมา
+      const reviews = await prisma.review.findMany({
+          where: { user_id: userId },
+          select: {
+              review_id: true,
+              place_id: true,
+              rating: true,
+              comment: true,
+              created_at: true,
+          },
+      });
+
+      if (!reviews.length) {
+          return res.status(404).json({ error: "No reviews found for this user" });
+      }
+
+      // ดึงข้อมูลชื่อสถานที่และ place_id จาก place
+      const reviewsWithPlaceDetails = await Promise.all(
+          reviews.map(async (review) => {
+              const place = await prisma.place.findUnique({
+                  where: { place_id: review.place_id },
+                  select: {
+                      name: true,
+                      place_id: true,
+                  },
+              });
+
+              return {
+                  ...review,
+                  place_name: place?.name || "Unknown Place", // ถ้าไม่พบชื่อสถานที่จะเป็น "Unknown Place"
+                  place_id: place?.place_id || review.place_id, // หากไม่พบ place_id จะใช้ place_id จาก review
+              };
+          })
+      );
+
+      res.status(200).json({
+          reviews: reviewsWithPlaceDetails,
+      });
+  } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ error: "Failed to fetch reviews" });
+  }
+});
 
 
 /**

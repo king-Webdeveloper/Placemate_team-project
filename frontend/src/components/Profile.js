@@ -8,6 +8,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imgUrl, setImgUrl] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +22,7 @@ function Profile() {
         if (response.ok) {
           const data = await response.json();
           setUser(data);
+          fetchReviews(data.user_id); // ดึงข้อมูลรีวิวเมื่อได้ข้อมูลผู้ใช้
         } else {
           setUser(null);
         }
@@ -34,6 +36,24 @@ function Profile() {
 
     fetchProfile();
   }, []);
+
+  const handleClickPlace = (placeId) => {
+    // เพียงแค่นำทางไปยังหน้ารีวิวของสถานที่นั้น
+    navigate(`/placereview/${placeId}`);
+  };
+
+  const fetchReviews = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/user-reviews/${userId}`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Unable to fetch reviews");
+      const data = await response.json();
+      setReviews(data.reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
   useEffect(() => {
     if (user && user.user_id) {
@@ -144,12 +164,10 @@ function Profile() {
   return (
     <div className="profile-container">
       <h2>Profile</h2>
-
+  
       <div className="profile-box">
-      <div className="profile-image-wrapper">
-        {imgUrl && (
-            <img src={imgUrl} alt="Profile" className="profile-image" />
-          )}
+        <div className="profile-image-wrapper">
+          {imgUrl && <img src={imgUrl} alt="Profile" className="profile-image" />}
           <label htmlFor="upload-input" className="camera-icon-overlay">
             📷
           </label>
@@ -161,15 +179,42 @@ function Profile() {
             style={{ display: "none" }}
           />
         </div>
-
+  
         <div className="profile-info">
           <p className="profile-name">{user.username}</p>
         </div>
       </div>
 
-      <button onClick={handleLogout} className="logout-button">
-        Logout
-      </button>
+      {/* ปุ่ม Logout */}
+      <div className="logout-container">
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+      </div>
+  
+      {/* แสดงรีวิวที่ผู้ใช้เคยทำ */}
+      <div className="reviews-section">
+        <h3>ประวัติการรีวิว</h3>
+        {reviews.length > 0 ? (
+          <ul className="reviews-list">
+            {reviews.map((review) => (
+              <li onClick={() => handleClickPlace(review.place_id)} key={review.review_id} className="review-item-history">
+                {/* ทำให้ชื่อสถานที่สามารถคลิกได้ */}
+                <h4 >
+                  {review.place_name}
+                </h4>
+                <p className="rating">คะแนน: {review.rating} / 5</p>
+                <p className="comment">ความคิดเห็น: {review.comment}</p>
+                <p className="date">
+                  รีวิวเมื่อ: {new Date(review.created_at).toLocaleString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="no-reviews-message">คุณยังไม่ได้รีวิวร้านใดๆ</p>
+        )}
+      </div>
     </div>
   );
 }
