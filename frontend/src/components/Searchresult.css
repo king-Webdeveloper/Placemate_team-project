@@ -154,7 +154,7 @@
 
 /* ปุ่ม */
 .go-button {
-  background-color: #ff0000; /* สีแดงสไตล์ YouTube */
+  background-color: #fb682d; 
   color: white;
   padding: 10px;
   border: none;
@@ -170,7 +170,7 @@
 }
 
 .go-button:hover {
-  background-color: #cc0000; /* สีแดงเข้มเมื่อ hover */
+  background-color: #fb682d; /* สีแดงเข้มเมื่อ hover */
 }
 
 .tag-button {

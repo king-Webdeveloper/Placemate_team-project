@@ -98,7 +98,7 @@ function Homepage() {
       });
   }, []);
 
-    const handleClickPlace = async (placeId) => {
+  const handleClickPlace = async (placeId) => {
     if (userId) {
       try {
         await getPreference(userId, placeId);
@@ -272,7 +272,7 @@ function Homepage() {
       <section className="search-bar">
         <h2>ค้นหากิจกรรมที่อยากทำ</h2>
         <div className="search-tags">
-          {["Food & Drink", "Shopping", "Entertainment"].map((tag, index) => (
+          {["กินและดื่ม", "ร้านและห้าง", "เที่ยวบันเทิง"].map((tag, index) => (
             <button key={index} className="tag" onClick={() => setQuery(tag)}>
               {tag}
             </button>

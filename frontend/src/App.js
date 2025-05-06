@@ -12,7 +12,7 @@ import Planner from "./components/Planner";
 import EditPlan from "./components/EditPlan";
 import DeletedPlans from './components/DeletedPlans';
 import PlanDetails from './components/PlanDetails';
-import CreatePlan from './components/CreatePlan';
+import CreatePlan from './components/createPlan';
 import Listtogo from "./components/Listtogo";
 import Searchresult from "./components/Searchresult";
 import Placereview from "./components/Placereview";

@@ -91,7 +91,7 @@ router.post("/register", async (req, res) => {
         });
 
         if (existingUser) {
-            return res.status(400).json({ error: "User already exists" });
+            return res.status(400).json({ error: "Username or Email already exists" });
         }
 
         const salt = bcrypt.genSaltSync(10);
