@@ -24,6 +24,8 @@ app.use("/api", authRoutes);
 const plannerRoutes = require('./routes/plannerRoutes'); // ให้แน่ใจว่า path ถูกต้อง
 app.use("/api", plannerRoutes);
 
+const googleRoutes = require('./routes/googleRoutes');
+app.use("/api/google", googleRoutes);
 
 // เริ่มต้น Server
 app.listen(PORT, () => {
