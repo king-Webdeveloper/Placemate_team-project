@@ -78,6 +78,36 @@
   z-index: 999;
 }
 
+.google-calendar-btn {
+  background-color: white;
+  border: 1px solid #4caf50;
+  color: #4caf50;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.google-calendar-btn:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+.google-calendar-connected {
+  color: #4caf50;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.google-calendar-disconnect {
+  color: red;
+  font-size: 0.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
 
 /* ✅ Responsive สำหรับหน้าจอเล็ก */
 @media (max-width: 768px) {

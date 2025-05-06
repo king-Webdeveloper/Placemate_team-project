@@ -28,6 +28,17 @@ router.get("/auth/google", (req, res) => {
   res.redirect(url);
 });
 
+// ใน googleRoutes.js
+router.get("/check-token", (req, res) => {
+  const token = req.cookies.google_token;
+  if (token) {
+    res.json({ googleConnected: true });
+  } else {
+    res.json({ googleConnected: false });
+  }
+});
+
+
 // 🔄 Step 2: Google Redirect → save token
 router.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
@@ -40,7 +51,8 @@ router.get("/auth/google/callback", async (req, res) => {
     maxAge: 3600 * 1000,
   });
 
-  res.redirect("/"); // หรือ redirect ไปหน้า planner
+  res.redirect("http://localhost:3000/planner"); // หรือหน้าไหนก็ได้ใน frontend
+  // res.redirect(""); // หรือ redirect ไปหน้า planner
 });
 
 /**
@@ -110,19 +122,67 @@ router.post("/sync-plan", async (req, res) => {
       },
     };
 
-    const response = await calendar.events.insert({
-      calendarId: "primary",
-      requestBody: event,
+
+    let response;
+    let isUpdate = false;
+
+    // const response = await calendar.events.insert({
+    //   calendarId: "primary",
+    //   requestBody: event,
+    // });
+
+    // 👉 ถ้ามี event_id อยู่แล้ว ให้ update
+    if (plan.google_event_id) {
+      response = await calendar.events.update({
+        calendarId: "primary",
+        eventId: plan.google_event_id,
+        requestBody: event,
+      });
+      isUpdate = true;
+    } else {
+      // 🆕 ถ้ายังไม่มี ให้ insert ใหม่
+      response = await calendar.events.insert({
+        calendarId: "primary",
+        requestBody: event,
+      });
+    }
+
+    const updatedPlan = await prisma.plan.update({
+      where: { plan_id: parseInt(plan_id) },
+      data: {
+        google_event_link: response.data.htmlLink,
+        google_event_id: response.data.id,
+      },
     });
+
+    // บันทึกลิงก์ Google Calendar ลงในฐานข้อมูล (ใน `google_event_link`)
+    // const updatedPlan = await prisma.plan.update({
+    //   where: { plan_id: parseInt(plan_id) },
+    //   data: {
+    //     google_event_link: response.data.htmlLink, // ลิงก์ที่ได้จาก Google Calendar
+    //   },
+    // });
 
     res.status(200).json({
       message: "Event created in Google Calendar",
       eventLink: response.data.htmlLink,
+      updatedPlan: updatedPlan, // ส่งกลับข้อมูลแผนที่อัปเดต
     });
+
   } catch (err) {
     console.error("❌ Google Calendar Error:", err);
     res.status(500).json({ error: "Failed to create calendar event" });
   }
 });
+
+router.post("/disconnect", (req, res) => {
+  res.clearCookie("google_token", {
+    httpOnly: true,
+    sameSite: "Lax",
+    secure: false,
+  });
+  res.json({ message: "Disconnected from Google Calendar" });
+});
+
 
 module.exports = router;

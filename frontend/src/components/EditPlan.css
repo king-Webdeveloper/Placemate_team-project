@@ -1,0 +1,126 @@
+/* EditPlan.css */
+.edit-plan-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-plan-container h1 {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.error-message-edit {
+    color: #d9534f;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.edit-plan-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-plan-form .form-group {
+    margin-bottom: 15px;
+}
+
+.edit-plan-form label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.edit-plan-form input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.edit-plan-form input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.edit-plan-form button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-plan-form button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+.edit-plan-form .cancel-button {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.edit-plan-form .cancel-button:hover {
+    background-color: #5a6268;
+}
+
+.edit-plan-form input[type="datetime-local"] {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.edit-plan-container button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-top: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.edit-plan-container button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .edit-plan-container {
+        padding: 15px;
+    }
+
+    .edit-plan-form input {
+        padding: 8px;
+    }
+
+    .edit-plan-form button {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .edit-plan-form .cancel-button {
+        padding: 12px;
+        font-size: 14px;
+    }
+}

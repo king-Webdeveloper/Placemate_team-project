@@ -1,6 +1,7 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const jwt = require("jsonwebtoken");
+const { updateGoogleCalendarEvent } = require("./googleUtils");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -477,6 +478,129 @@ router.get("/planner/:planId", async (req, res) => {
     } catch (error) {
         console.error("Error fetching plan details:", error);
         res.status(500).json({ error: "Failed to fetch plan details" });
+    }
+});
+
+/**
+ * @swagger
+ * /api/planner/{planId}/edit:
+ *   put:
+ *     summary: แก้ไขชื่อและเวลาในการเดินทางของแผนการเดินทาง (พร้อม Google Calendar Link)
+ *     tags: [Planner]
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               start_time:
+ *                 type: string
+ *                 format: date-time
+ *               end_time:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: แก้ไขแผนการเดินทางสำเร็จ
+ *       400:
+ *         description: ข้อมูลไม่ถูกต้อง
+ *       401:
+ *         description: Unauthorized - User not logged in
+ *       500:
+ *         description: Server error
+ */
+router.put("/planner/:planId/edit", async (req, res) => {
+    const { planId } = req.params;
+    const { title, start_time, end_time } = req.body;
+
+    // ตรวจสอบข้อมูลที่ได้รับ
+    if (!title || !start_time || !end_time) {
+        return res.status(400).json({ error: "title, start_time, and end_time are required" });
+    }
+
+    // ตรวจสอบว่า start_time และ end_time เป็นวันที่ถูกต้องหรือไม่
+    if (isNaN(Date.parse(start_time)) || isNaN(Date.parse(end_time))) {
+        return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    try {
+        // ค้นหาข้อมูลแผนเดิม
+        const existingPlan = await prisma.plan.findUnique({
+            where: { plan_id: parseInt(planId) },
+        });
+
+        if (!existingPlan) {
+            return res.status(404).json({ error: "Plan not found" });
+        }
+
+        // เก็บลิงก์ Google Calendar ไว้ หากแผนนี้ได้ sync กับ Google Calendar แล้ว
+        // const googleEventLink = existingPlan.google_event_link;
+
+        // อัปเดตแผนการเดินทาง
+        const updatedPlan = await prisma.plan.update({
+            where: { plan_id: parseInt(planId) },
+            data: {
+                title: title,
+                start_time: new Date(start_time),
+                end_time: new Date(end_time),
+                // google_event_link: googleEventLink,  // รักษาลิงก์ Google Calendar
+                updated_at: new Date(),
+            },
+        });
+
+        const googleToken = req.cookies.google_token;
+
+        if (googleToken && existingPlan.google_event_id) {
+            try {
+                const link = await updateGoogleCalendarEvent(
+                    existingPlan.google_event_id, 
+                    {
+                        title,
+                        startTime: new Date(start_time),
+                        endTime: new Date(end_time),
+                    }, 
+                    googleToken
+                );
+
+                await prisma.plan.update({
+                where: { plan_id: parseInt(planId) },
+                data: { google_event_link: link },
+                });
+            } catch (err) {
+                console.error("⚠️ Failed to update Google Calendar:", err);
+                // Don't fail the request even if calendar update fails
+            }
+        }
+
+        // หากมีการ sync กับ Google Calendar ก่อนหน้านี้
+        // if (existingPlan.google_event_link) {
+        //     const googleEventLink = await updateGoogleCalendarEvent(existingPlan.google_event_id, {
+        //         title,
+        //         startTime: new Date(start_time),
+        //         endTime: new Date(end_time),
+        //     });
+
+        //     // อัปเดตลิงก์ Google Calendar ในฐานข้อมูล
+        //     await prisma.plan.update({
+        //         where: { plan_id: parseInt(planId) },
+        //         data: { google_event_link: googleEventLink },
+        //     });
+        // }
+
+        console.log("✅ แก้ไขแผนการเดินทางสำเร็จ:", updatedPlan);
+        res.status(200).json(updatedPlan);
+    } catch (error) {
+        console.error("❌ Error updating plan:", error);
+        res.status(500).json({ error: "Failed to update plan" });
     }
 });
 

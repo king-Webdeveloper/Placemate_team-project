@@ -99,7 +99,6 @@ const Planner = () => {
             });
         }
     };
-    
 
     const handleStartTrip = (planId) => {
         // เมื่อคลิกปุ่มเริ่มต้นการเดินทาง, จะพาไปยังหน้ารายละเอียดของแผนการเดินทาง
@@ -147,6 +146,18 @@ const Planner = () => {
                                 <span className="action-button" onClick={() => handleSyncToCalendar(plan.plan_id)}>
                                     <i className="fas fa-calendar-check"></i> Sync ไป Google Calendar
                                 </span>
+
+                                {plan.google_event_link && (
+                                    <a
+                                        className="action-button"
+                                        href={plan.google_event_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <i className="fas fa-external-link-alt"></i> ไปที่ปฏิทินของคุณ
+                                    </a>
+                                )}
+
                             </div>
                         </div>
                     ))}

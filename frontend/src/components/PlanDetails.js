@@ -97,9 +97,17 @@ const PlanDetails = () => {
 
             {planDetails ? (
                 <>
+                    {/* เพิ่มปุ่ม Edit */}
+                    <button 
+                        onClick={() => navigate(`/edit-plan/${planId}`)} 
+                        className="edit-plan-button">
+                        ✏️ แก้ไขแผน
+                    </button>
+
                     <h2 className="plan-title">{planDetails.title}</h2>
                     <p className="trip-date">🚀 เริ่มเดินทาง: {new Date(planDetails.start_time).toLocaleString()}</p>
                     <p className="trip-date">🏁 สิ้นสุดเดินทาง: {new Date(planDetails.end_time).toLocaleString()}</p>
+
 
                     <div className="places-list">
                         <h3>📍 สถานที่ท่องเที่ยว</h3>

@@ -102,9 +102,18 @@ router.get("/search/places", async (req, res) => {
   try {
     const { query, dayName } = req.query; // รับค่าค้นหาจาก query parameter
 
-    // สร้าง filter สำหรับ business_hour ถ้ามี day ที่ต้องการ
+    console.log(query)
+
+    // สร้าง filter สำหรับการค้นหาจาก query (ชื่อสถานที่ หรือ tag_name)
     const whereClause = {
-      ...(query && { name: { contains: query, mode: "insensitive" } }), // กรองตาม query
+      ...(query && {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } }, // ค้นหาจากชื่อสถานที่
+          { tag: { some: { tag_name: { contains: query, mode: "insensitive" } } } }, // ค้นหาจาก tag_name
+          // { tag: { some: { tag_name: { startsWith: query, mode: "insensitive" } } } }
+          // { tag: { some: { tag_name: { equals: query, mode: "insensitive" } } } }
+        ],
+      }),
       ...(dayName && { business_hour: { some: { day: dayName } } }), // กรอง places ที่มี business_hour ตรงกับ dayName
     };
 
@@ -114,7 +123,7 @@ router.get("/search/places", async (req, res) => {
         tag: true, // Fetch tags related to each place
         business_hour: {
           where: { day: dayName }, // กรอง business_hour ตาม dayName ที่ต้องการ
-        }, // Fetch only business hours matching the dayName
+        },
       },
     });
 
@@ -124,6 +133,8 @@ router.get("/search/places", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch places" });
   }
 });
+
+
 
 // GET POPULAR PLACE
 router.get("/popular-places", async (req, res) => {
@@ -255,27 +266,6 @@ router.get("/popular-places", async (req, res) => {
  *                       business_day:
  *                         type: string
  */
-// router.get("/getrandomplaces", async (req, res) => {
-//   try {
-//       // ดึงจำนวนสถานที่ทั้งหมด
-//       const totalPlaces = await prisma.place.count();
-//       const randomSkip = Math.max(0, Math.floor(Math.random() * totalPlaces) - 5); // เลือกตำแหน่งเริ่มต้นแบบสุ่ม
-
-//       const places = await prisma.place.findMany({
-//           take: 10, // กำหนดจำนวนสถานที่ที่ต้องการสุ่ม
-//           skip: randomSkip,
-//           include: {
-//               tag: true, // ดึงข้อมูล tags ที่เกี่ยวข้อง
-//               business_hour: true, // ดึงข้อมูล business_hour ทั้งหมด
-//           },
-//       });
-
-//       res.json(places);
-//   } catch (error) {
-//       console.error("Error fetching random places:", error);
-//       res.status(500).json({ error: "Failed to fetch random places" });
-//   }
-// });
 router.get("/getrandomplaces", async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query; // รับค่า page และ limit จาก query parameter
