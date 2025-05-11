@@ -94,20 +94,90 @@ router.post("/sync-plan", async (req, res) => {
   const user_id = decoded.user_id;
 
   try {
+    // const plan = await prisma.plan.findUnique({
+    //   where: { plan_id: parseInt(plan_id) },
+    // });
     const plan = await prisma.plan.findUnique({
       where: { plan_id: parseInt(plan_id) },
+      include: {
+        place_list: {
+          include: {
+            place: true,
+          },
+        },
+      },
     });
 
     if (!plan || plan.user_id !== parseInt(user_id)) {
       return res.status(403).json({ error: "You cannot access this plan" });
     }
 
-    // Set Google Token
+        // Set Google Token
     oauth2Client.setCredentials(JSON.parse(googleToken));
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
+    // สร้างอีเวนต์แยกตามแต่ละสถานที่
+    const createdEvents = [];
+
+    for (const item of plan.place_list) {
+      const placeName = item.place?.name || "ไม่ระบุชื่อสถานที่";
+      const start = new Date(item.start_time);
+      const end = new Date(item.end_time);
+
+      const event = {
+        summary: `${plan.title} (${placeName})`, // ✅ title(name)
+        start: {
+          dateTime: start.toISOString(),
+          timeZone: "Asia/Bangkok",
+        },
+        end: {
+          dateTime: end.toISOString(),
+          timeZone: "Asia/Bangkok",
+        },
+        description: `กำหนดการ: ${placeName}\nช่วงเวลา: ${start.toLocaleDateString("th-TH")} ${start.toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' })}`,
+        reminders: {
+          useDefault: false,
+          overrides: [{ method: "popup", minutes: 15 }],
+        },
+      };
+
+      const response = await calendar.events.insert({
+        calendarId: "primary",
+        requestBody: event,
+      });
+
+      createdEvents.push({
+        eventId: response.data.id,
+        summary: response.data.summary,
+        htmlLink: response.data.htmlLink,
+      });
+    }
+
+    //  สร้าง description โดยใช้ข้อมูลจาก place_list:
+    const sortedPlaces = plan.place_list
+      .slice()
+      .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
+    // สร้างข้อความรายละเอียด
+    const placeDescriptions = sortedPlaces.map((p, i) => {
+      const start = new Date(p.start_time);
+      const end = new Date(p.end_time);
+
+      const dateString = start.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+
+      const startTime = start.toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' });
+      const endTime = end.toLocaleTimeString("th-TH", { hour: '2-digit', minute: '2-digit' });
+
+      return `${i + 1}. ${p.place.name} - ${dateString} (${startTime} - ${endTime})`;
+    }).join("\n");
+
     const event = {
       summary: plan.title,
+      description: placeDescriptions, // ✅ เพิ่มรายละเอียดสถานที่
       start: {
         dateTime: new Date(plan.start_time).toISOString(),
         timeZone: "Asia/Bangkok",
@@ -122,6 +192,21 @@ router.post("/sync-plan", async (req, res) => {
       },
     };
 
+    // const event = {
+    //   summary: plan.title,
+    //   start: {
+    //     dateTime: new Date(plan.start_time).toISOString(),
+    //     timeZone: "Asia/Bangkok",
+    //   },
+    //   end: {
+    //     dateTime: new Date(plan.end_time).toISOString(),
+    //     timeZone: "Asia/Bangkok",
+    //   },
+    //   reminders: {
+    //     useDefault: false,
+    //     overrides: [{ method: "popup", minutes: 15 }],
+    //   },
+    // };
 
     let response;
     let isUpdate = false;

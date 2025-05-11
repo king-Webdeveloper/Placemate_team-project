@@ -50,7 +50,8 @@ function Content() {
     "/search-place",
     "/deleted-plans",
     "/select-listtogo",
-    "/edit-plan"
+    "/edit-plan",
+    "/aboutme"
   ].includes(location.pathname) || location.pathname.startsWith("/placereview/");
 
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });

@@ -96,4 +96,11 @@
   font-size: 14px;
   margin-top: 10px;
 }
+ 
 
+.place-time-inputs {
+  width: 300px;      /* หรือขนาดตามที่คุณต้องการ เช่น 150px */
+  padding: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+}

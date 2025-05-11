@@ -1,4 +1,4 @@
-// ✅ PlannerForm.js (เพิ่มการเรียก POST /planner/:planId/add-place หลังสร้างแผน)
+// ✅ PlannerForm.js 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -14,14 +14,7 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
     const [userId, setUserId] = useState(null);
     const [error, setError] = useState("");
     const navigate = useNavigate();
-
-    // // โหลดข้อมูลสถานที่จาก cookie เมื่อหน้าถูกโหลด
-    // useEffect(() => {
-    //     const savedPlaces = Cookies.get('selectedPlaces');
-    //     if (savedPlaces) {
-    //         setSelectedPlaces(JSON.parse(savedPlaces));  // แปลงข้อมูลจาก JSON กลับมาเป็นอาเรย์
-    //     }
-    // }, [setSelectedPlaces]);
+    const [draggedIndex, setDraggedIndex] = useState(null);
 
     // บันทึกข้อมูลใน cookie ทุกครั้งที่มีการเปลี่ยนแปลง
     useEffect(() => {
@@ -34,6 +27,14 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
         Cookies.set('endTime', endTime, { expires: expiryDate });
         // Cookies.set('selectedPlaces', JSON.stringify(selectedPlaces), { expires: expiryDate }); // บันทึกสถานที่ใน cookie
     }, [title, startTime, endTime]);
+
+    useEffect(() => {
+        const savedPlaces = localStorage.getItem('selectedPlaces');
+        if (savedPlaces) {
+            setSelectedPlaces(JSON.parse(savedPlaces));
+        }
+    }, [setSelectedPlaces]);
+
 
     useEffect(() => {
         const checkLoginStatus = async () => {
@@ -62,25 +63,93 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
         checkLoginStatus();
     }, [navigate]);
 
-    // เก็บข้อมูลลงใน cookie ทุกครั้งที่มีการเปลี่ยนแปลง
-    // useEffect(() => {
-    //     Cookies.set('title', title, { expires:  1 });  // เก็บข้อมูลไว้ใน cookie นาน 7 วัน
-    //     Cookies.set('startTime', startTime, { expires:  1 });
-    //     Cookies.set('endTime', endTime, { expires: 1 });
-    // }, [title, startTime, endTime]);
-
     const handleRemovePlace = (placeId) => {
-        setSelectedPlaces(prev => prev.filter(p => p.place_id !== placeId));
+        const updated = selectedPlaces.filter(p => p.place_id !== placeId);
+        setSelectedPlaces(updated);
+        localStorage.setItem('selectedPlaces', JSON.stringify(updated));
     };
 
-    // ฟังก์ชันลบสถานที่
-    // const handleRemovePlace = (placeId) => {
-    //     setSelectedPlaces(prev => {
-    //         const updatedPlaces = prev.filter(p => p.place_id !== placeId);
-    //         Cookies.set('selectedPlaces', JSON.stringify(updatedPlaces), { expires: 1 });
-    //         return updatedPlaces;
-    //     });
-    // };
+    const handleDragStart = (index) => {
+        setDraggedIndex(index);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault(); // จำเป็นต้องมี ไม่งั้น onDrop จะไม่ทำงาน
+    };
+
+    const handleDrop = (index) => {
+        if (draggedIndex === null || draggedIndex === index) return;
+
+        const updated = [...selectedPlaces];
+        const draggedItem = updated[draggedIndex];
+
+        updated.splice(draggedIndex, 1);
+        updated.splice(index, 0, draggedItem);
+
+        // 🔁 ลบเวลาเก่าทิ้ง
+        const resetTime = updated.map(place => ({
+            ...place,
+            start_time: "",
+            end_time: ""
+        }));
+
+        setSelectedPlaces(resetTime);
+        localStorage.setItem('selectedPlaces', JSON.stringify(resetTime));
+        setDraggedIndex(null);
+    };
+
+    const handleStartTimeChange = (e, index) => {
+        const newStartTime = e.target.value;
+        const updated = [...selectedPlaces];
+        updated[index].start_time = newStartTime;
+
+        // ตรวจสอบลำดับเวลา
+        if (
+            index > 0 &&
+            updated[index - 1].end_time &&
+            newStartTime < updated[index - 1].end_time
+        ) {
+            alert("เวลาเริ่มต้นของสถานที่นี้ทับกับสถานที่ก่อนหน้า");
+            return;
+        }
+
+        if (
+            index < updated.length - 1 &&
+            updated[index + 1].start_time &&
+            newStartTime > updated[index + 1].start_time
+        ) {
+            alert("เวลาเริ่มต้นต้องมาก่อนสถานที่ถัดไป");
+            return;
+        }
+
+        setSelectedPlaces(updated);
+        localStorage.setItem('selectedPlaces', JSON.stringify(updated));
+    };
+
+    const handleEndTimeChange = (e, index) => {
+        const newEndTime = e.target.value;
+        const updated = [...selectedPlaces];
+        updated[index].end_time = newEndTime;
+
+        // ตรวจสอบว่าจบหลังจากเริ่ม
+        if (updated[index].start_time && newEndTime <= updated[index].start_time) {
+            alert("เวลาสิ้นสุดต้องหลังเวลาเริ่มต้น");
+            return;
+        }
+
+        // ตรวจสอบว่าไม่ทับกับสถานที่ถัดไป
+        if (
+            index < updated.length - 1 &&
+            updated[index + 1].start_time &&
+            newEndTime > updated[index + 1].start_time
+        ) {
+            alert("เวลาสิ้นสุดทับกับสถานที่ถัดไป");
+            return;
+        }
+
+        setSelectedPlaces(updated);
+        localStorage.setItem('selectedPlaces', JSON.stringify(updated));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -137,9 +206,9 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
 
                         const placePayload = {
                             places: selectedPlaces.map(p => ({
-                                place_id: p.place_id,
-                                start_time: startTime,
-                                end_time: endTime
+                              place_id: p.place_id,
+                              start_time: p.start_time,
+                              end_time: p.end_time
                             }))
                         };
 
@@ -161,6 +230,7 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
                         Cookies.remove('title');
                         Cookies.remove('startTime');
                         Cookies.remove('endTime');
+                        localStorage.removeItem('selectedPlaces'); // ✅ เพิ่มบรรทัดนี้
                         // Cookies.remove('selectedPlaces'); // ลบข้อมูลสถานที่ใน cookie เมื่อสร้างแผนเสร็จ
 
                         if (setPlans) {
@@ -214,12 +284,44 @@ const PlannerForm = ({ setPlans, selectedPlaces, setSelectedPlaces }) => {
 
                 {error && <p className="error-message">{error}</p>}
 
+
                 <div className="selected-places">
                     <h3>สถานที่ที่เลือก:</h3>
                     {selectedPlaces.length > 0 ? (
-                        selectedPlaces.map(place => (
-                            <div key={place.place_id} className="selected-place-item">
+                        selectedPlaces.map((place, index) => (
+                            <div
+                                key={place.place_id}
+                                className="selected-place-item"
+                                draggable
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleDrop(index)}
+                            >
                                 <span>{place.place_name || place.name}</span>
+
+                                <div className="place-time-inputs">
+                                    <label>เวลาเริ่ม:</label>
+                                    <input
+                                        type="datetime-local"
+                                        className="planform-datetime-input"
+                                        value={place.start_time || ""}
+                                        min={index > 0 ? selectedPlaces[index - 1].end_time || startTime : startTime}
+                                        max={place.end_time || endTime}
+                                        onChange={(e) => handleStartTimeChange(e, index)}
+                                    />
+
+                                    <label>เวลาสิ้นสุด:</label>
+                                    <input
+                                        type="datetime-local"
+                                        className="planform-datetime-input"
+                                        value={place.end_time || ""}
+                                        min={place.start_time || startTime}
+                                        max={index < selectedPlaces.length - 1 ? selectedPlaces[index + 1].start_time || endTime : endTime}
+                                        onChange={(e) => handleEndTimeChange(e, index)}
+                                    />
+
+                                </div>
+
                                 <button className="remove-place-btn" onClick={() => handleRemovePlace(place.place_id)}>❌</button>
                             </div>
                         ))

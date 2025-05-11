@@ -1,3 +1,4 @@
+// SearchPlace.js[frontend]
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -96,8 +97,21 @@ const SearchPlace = () => {
         });
     };
 
+    // const handleAddPlaces = () => {
+    //     navigate(`/create-plan?selectedPlaces=${encodeURIComponent(JSON.stringify(selectedPlaces))}`);
+    // };
     const handleAddPlaces = () => {
-        navigate(`/create-plan?selectedPlaces=${encodeURIComponent(JSON.stringify(selectedPlaces))}`);
+    const existingPlaces = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+
+    const merged = [
+        ...existingPlaces,
+        ...selectedPlaces.filter(newPlace => 
+            !existingPlaces.some(existing => existing.place_id === newPlace.place_id)
+        )
+    ];
+
+    localStorage.setItem('selectedPlaces', JSON.stringify(merged));
+    navigate('/create-plan');
     };
 
     return (

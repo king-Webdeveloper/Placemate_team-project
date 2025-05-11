@@ -59,7 +59,7 @@ const Navbar = () => {
         <nav className="navbar-center">
           <Link to="/listtogo">List to Go</Link>
           <Link to="/planner">Planner</Link>
-          <Link to="/aboutus">About us</Link>
+          <Link to="/aboutme">About us</Link>
         </nav>
         {/* แสดงปุ่มตามสถานะการล็อกอิน */}
         {isLoggedIn ? (

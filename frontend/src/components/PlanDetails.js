@@ -1,3 +1,4 @@
+// PlanDetails.js[frontend]
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -67,6 +68,10 @@ const PlanDetails = () => {
         }
     };
 
+    const handleClickPlace = (placeId) => {
+        navigate(`/placereview/${placeId}`);
+    };
+
     const handleSyncToCalendar = async () => {
         try {
             const response = await axios.post("http://localhost:5000/api/google/sync-plan", 
@@ -113,7 +118,9 @@ const PlanDetails = () => {
                         <h3>📍 สถานที่ท่องเที่ยว</h3>
                         {planDetails.place_list.length > 0 ? (
                             planDetails.place_list.map((place) => (
-                                <div key={place.place_id} className="place-item animate-fade-in">
+                                <div key={place.place_id} className="place-item animate-fade-in"
+                                    onClick={() => handleClickPlace(place.place.place_id)}
+                                    style={{ cursor: "pointer" }}>
                                     <img
                                         src={place.place?.photo || `/place_images/${place.place?.place_id}.jpg`}
                                         alt={place.place?.name || "ชื่อไม่ระบุ"}
@@ -122,6 +129,12 @@ const PlanDetails = () => {
                                     <div className="place-info">
                                         <h4>{place.place?.name || "ชื่อสถานที่ไม่ระบุ"}</h4>
                                         <p>⭐ {place.place?.rating || "ไม่มีคะแนน"}</p>
+                                        {/* เวลาเริ่ม - สิ้นสุดของแต่ละสถานที่ */}
+                                        <p>
+                                            🕒 เวลาเริ่มต้นการท่องเที่ยว: {new Date(place.start_time).toLocaleString()}<br />
+                                            🕓 เวลาสิ้นสุดการท่องเที่ยว: {new Date(place.end_time).toLocaleString()}
+                                        </p>
+
                                         <div className="place-tags">
                                             {place.place?.tag?.map((tagObj, index) => (
                                                 <span key={index} className="place-tag">
@@ -137,10 +150,17 @@ const PlanDetails = () => {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="show-route-button"
+                                            onClick={(e) => e.stopPropagation()}
                                         >
                                             🚗 แสดงเส้นทาง
                                         </a>
-                                        <button onClick={() => handleDeletePlace(place.place_id)} className="delete-place-button">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeletePlace(place.place_id);
+                                            }} 
+                                            className="delete-place-button"
+                                        >
                                             <i className="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
@@ -151,9 +171,9 @@ const PlanDetails = () => {
                         )}
                     </div>
 
-                    <button onClick={handleSyncToCalendar} className="sync-calendar-button">
+                    {/* <button onClick={handleSyncToCalendar} className="sync-calendar-button">
                     📅 Sync ไปยัง Google Calendar
-                    </button>
+                    </button> */}
                     <button onClick={handleEndTrip} className="end-trip-button">
                         ⛔ สิ้นสุดแผนการเดินทาง
                     </button>

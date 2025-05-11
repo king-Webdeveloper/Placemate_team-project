@@ -1,4 +1,4 @@
-// SelectListToGo.js
+// SelectListToGo.js [frontend]
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -55,12 +55,32 @@ const SelectListToGo = () => {
 
   const handleSubmit = () => {
     if (selectedPlaces.length > 0) {
-      const selectedPlacesString = encodeURIComponent(JSON.stringify(selectedPlaces));
-      navigate(`/create-plan?selectedPlaces=${selectedPlacesString}`);
+      // ดึงของเก่าจาก localStorage
+      const existingPlaces = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+
+      // รวมกับใหม่และไม่ให้ซ้ำ (ตรวจจาก place_id)
+      const merged = [
+        ...existingPlaces,
+        ...selectedPlaces.filter(newPlace =>
+          !existingPlaces.some(old => old.place_id === newPlace.place_id)
+        )
+      ];
+
+      localStorage.setItem('selectedPlaces', JSON.stringify(merged));
+      navigate('/create-plan');
     } else {
       Swal.fire("กรุณาเลือกสถานที่ก่อนค่ะ", "", "warning");
     }
   };
+
+  // const handleSubmit = () => {
+  //   if (selectedPlaces.length > 0) {
+  //     const selectedPlacesString = encodeURIComponent(JSON.stringify(selectedPlaces));
+  //     navigate(`/create-plan?selectedPlaces=${selectedPlacesString}`);
+  //   } else {
+  //     Swal.fire("กรุณาเลือกสถานที่ก่อนค่ะ", "", "warning");
+  //   }
+  // };
 
   return (
     <div className="select-listtogo-container">

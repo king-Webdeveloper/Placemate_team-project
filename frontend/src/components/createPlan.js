@@ -1,4 +1,4 @@
-// ✅ CreatePlan.js (แก้ไขให้รับ selectedPlaces แบบ array จาก query string)
+// ✅ CreatePlan.js 
 import React, { useState, useMemo } from 'react';
 // import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
