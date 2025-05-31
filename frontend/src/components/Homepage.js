@@ -32,6 +32,9 @@ function Homepage() {
 
   const [dateInfo, setDateInfo] = useState(getDateInfo());
 
+  // State for dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDateInfo(getDateInfo());
@@ -49,10 +52,13 @@ function Homepage() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/cookies-check", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/cookies-check",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
           setIsLoggedIn(false);
           return;
@@ -123,12 +129,12 @@ function Homepage() {
   };
 
   // แนะนำสำหรับคุณ
-  const fetchRecommendedPlaces = async (pageNumber = 1) => {
+  const fetchRecommendedPlaces = async (pageNumber = 1, distance=5) => {
     // console.log("Fetching recommendations for page:", pageNumber);
     try {
       setIsFetching(true);
       const response = await fetch(
-        `http://localhost:5000/api/recommendations?limit=6&lat=${location.lat}&lng=${location.lng}&user_id=${userId}&page=${pageNumber}`
+        `http://localhost:5000/api/recommendations?limit=6&lat=${location.lat}&lng=${location.lng}&user_id=${userId}&page=${pageNumber}&distance=${distance}` 
       );
       if (!response.ok) throw new Error("Failed to fetch recommendations");
 
@@ -141,21 +147,20 @@ function Homepage() {
           parseFloat(place.lat),
           parseFloat(place.lng)
         );
-  
+
         return {
           ...place,
           distance: distance.toFixed(2), // ตัดทศนิยมให้สวย ๆ
         };
       });
-  
+
       if (pageNumber === 1) {
         setRecommendedPlaces(enrichedData);
       } else {
         setRecommendedPlaces((prevPlaces) => [...prevPlaces, ...enrichedData]);
       }
-  
+
       setHasMorePages(data.total > pageNumber * 6);
-      
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       setFetchError(error.message);
@@ -211,10 +216,6 @@ function Homepage() {
       }
 
       const data = await response.json();
-      // console.log("คุณอาจชอบ", data);
-
-      // console.log(data.places[0].business_hour[0].business_hour); // ตรวจสอบ business_hour ของสถานที่แรก
-      // console.log(data.places[0].tag[0].tag_name); // ตรวจสอบ business_hour ของสถานที่แรก
 
       if (data.places.length === 0) {
         setHasMore(false);
@@ -301,6 +302,78 @@ function Homepage() {
         {isLoggedIn && (
           <>
             <h2>แนะนำสำหรับคุณ</h2>
+            <div style={{ width: "100%", textAlign: "end", position: "relative" }}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  // color: "white", // ถ้าต้องการให้ปุ่มสีขาว
+                }}
+              >
+                กรอง
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/107/107799.png"
+                  alt="Example"
+                  style={{ width: "15px" }}
+                />
+              </button>
+
+              {showDropdown && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "0px", // ชิดขวา
+                    // left: "0px", // ชิดขวา
+                    // textAlign: "end",
+                    marginTop: "5px",
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
+                    zIndex: 1000,
+                    width: "130px",
+                  }}
+                >
+                  <ul
+                    style={{
+                      listStyle: "none",
+                      padding: "10px",
+                      margin: 0,
+                      fontSize: "20px",
+                    }}
+                  >
+                    <li
+                      style={{ padding: "5px 10px", cursor: "pointer" }}
+                      onClick={() => fetchRecommendedPlaces(1, 1.9)}
+                    >
+                      300 เมตร
+                    </li>
+                    <li style={{ padding: "5px 10px", cursor: "pointer" }}
+                    onClick={() => fetchRecommendedPlaces(1, 2.8)}
+                    >
+                      500 เมตร
+                    </li>
+                    <li style={{ padding: "5px 10px", cursor: "pointer" }}
+                    onClick={() => fetchRecommendedPlaces(1, 3.65)}
+                    >
+                      700 เมตร
+                    </li>
+                    <li style={{ padding: "5px 10px", cursor: "pointer" }}
+                    onClick={() => fetchRecommendedPlaces(1, 5)}
+                    >
+                      1000 เมตร
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
             <section className="recommended">
               <div className="place-grid">
                 {recommendedPlaces.length === 0 ? (
@@ -326,18 +399,12 @@ function Homepage() {
 
                     return (
                       <div key={index} className="place-card">
-                        {/* Google Maps Link */}
-                        {/* <a
-                          href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        > */}
                         <img
-                        src={`/place_images/${place.place_id}.jpg`}
-                        alt={`Place ${place.name}`}
-                        className="place-image"
-                        onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
-                        style={{ cursor: "pointer" }}
+                          src={`/place_images/${place.place_id}.jpg`}
+                          alt={`Place ${place.name}`}
+                          className="place-image"
+                          onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                          style={{ cursor: "pointer" }}
                         />
                         {/* </a> */}
 
@@ -363,7 +430,7 @@ function Homepage() {
                             {businessHoursText && businessHoursText !== "NaN"
                               ? businessHoursText
                               : ""}
-                              ({place.distance} กม.)
+                            ({place.distance} กม.)
                           </strong>
                           <br />
 
@@ -441,14 +508,14 @@ function Homepage() {
                       href={`https://www.google.com/maps/place/?q=place_id:${place.place_id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                    > */} 
-                      <img
-                        src={`/place_images/${place.place_id}.jpg`}
-                        alt={`Place ${place.name}`}
-                        className="place-image"
-                        onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
-                        style={{ cursor: "pointer" }}
-                      />
+                    > */}
+                    <img
+                      src={`/place_images/${place.place_id}.jpg`}
+                      alt={`Place ${place.name}`}
+                      className="place-image"
+                      onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                      style={{ cursor: "pointer" }}
+                    />
                     {/* </a> */}
 
                     <div className="place-info">
@@ -524,13 +591,13 @@ function Homepage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 > */}
-                  <img
-                    src={`/place_images/${place.place_id}.jpg`}
-                    alt={`Place ${place.name}`}
-                    className="place-image"
-                    onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
-                    style={{ cursor: "pointer" }}
-                  />
+                <img
+                  src={`/place_images/${place.place_id}.jpg`}
+                  alt={`Place ${place.name}`}
+                  className="place-image"
+                  onClick={() => handleClickPlace(place.place_id)} // ✅ แก้ตรงนี้
+                  style={{ cursor: "pointer" }}
+                />
                 {/* </a> */}
 
                 <div className="place-info">

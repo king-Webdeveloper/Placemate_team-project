@@ -399,10 +399,13 @@ router.get("/recommendations", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // หน้าปัจจุบัน (default: 1)
     const limit = parseInt(req.query.limit) || 6; // จำนวนข้อมูลต่อหน้า (default: 10)
+    const distance = parseFloat(req.query.distance); // จำนวนข้อมูลต่อหน้า (default: 10)
     const skip = (page - 1) * limit; // ข้ามข้อมูลไปตามหน้าปัจจุบัน
     const user_id = parseInt(req.query.user_id);
     const lat = parseFloat(req.query.lat);
     const lng = parseFloat(req.query.lng);
+
+    console.log("distance",distance)
 
     // console.log(page, limit, skip, user_id);
     // console.log(lat, lng);
@@ -472,13 +475,13 @@ router.get("/recommendations", async (req, res) => {
     // คำนวณ transformed values สำหรับระยะทาง
     const transformedValues = haversineDistances.map((h) => ({
       place_id: h.place_id,
-      transformed_value: (1 / (Math.exp(h.distance_km * 10) / 1e5 + 1)) * 0.35,
+      transformed_value: (1 / (Math.exp(h.distance_km * 10) / 10**distance + 1)),
     }));
+    
 
     // คำนวณ cosine similarity
     const cosineSimilarities = tagVectors.map((tv) => {
       const weightedCosineSimilarity =
-        0.45 *
         ((avg_food_drink * tv.food_drink +
           avg_entertainment * tv.entertainment +
           avg_shopping * tv.shopping) /
@@ -500,7 +503,7 @@ router.get("/recommendations", async (req, res) => {
       const transformedValue =
         transformedValues.find((t) => t.place_id === c.place_id)
           ?.transformed_value || 0;
-      const randomB = Math.random() * 0.2;
+      const randomB = Math.random();
       const score = c.weighted_cosine_similarity + transformedValue + randomB;
 
       return {
